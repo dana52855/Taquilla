@@ -97,7 +97,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                         onChange={(evento) => setConsulta(evento.target.value)}
                         placeholder={hero?.buscador?.placeholders?.que}
                       />
-                      <span className="home-buscador-resumen">
+                      <span className="home-buscador-resumen" hidden>
                         {ciudad} · {hero?.buscador?.placeholders?.cuando}
                       </span>
                     </span>
