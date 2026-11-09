@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useTextos } from "./hooks/useTextos";
 import Tarjeta from "./components/Tarjeta/Tarjeta";
 import useEventos from "./hooks/useEventos.js";
+import { Route, Routes } from "react-router-dom";
+import LayoutPublico from "./layouts/LayoutPublico.jsx";
+import Home from "./pages/Home/Home.jsx";
 
 function leerSeccion() {
   return window.location.hash.slice(1) || "inicio";
@@ -54,10 +57,32 @@ function App() {
     });
   }
 
-    const { eventos } = useEventos();
+  const enlaces = {
+    ingresar: '/ingresar',
+    crearCuenta: '/crearCuenta',
+    explorar: '/eventos',
+    terminos: '/terminos-de-uso',
+    accesibilidad: '/accesiblidad'
+  }
+
+  const { eventos } = useEventos();
   return (
     <div className="sitio">
-      <Tarjeta {...datos} evento={eventos?.[0]}/>
+      <Routes>
+        <Route path="/" element={<LayoutPublico
+          datos={datos}
+          en={en}
+          alternarIdioma={() => setIdioma(en ? 'es' : 'en')}
+          alternarTexto={() => setTextoGrande(!textoGrande)}
+          enlaces={enlaces}
+        />}>
+          <Route index element={<Home
+            datos={datos}
+            en={en}
+            enlaces={enlaces}
+          />} />
+        </Route>
+      </Routes>
     </div>
   );
 }

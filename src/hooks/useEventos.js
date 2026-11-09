@@ -28,7 +28,6 @@ function useEventos(destacados = false) {
         if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
 
         const datos = await respuesta.json();
-        console.log(datos)
         if (vigente) setEventos(datos?.datos);
       } catch (error) {
         if (vigente) {
