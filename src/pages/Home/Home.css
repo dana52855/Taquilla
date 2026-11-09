@@ -405,6 +405,13 @@
     display: none;
   }
 
+  .home-buscador-resumen {
+    display: block;
+    color: var(--texto-terciario);
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
   .home-buscador-campo:first-of-type input {
     font-size: 0.875rem;
     line-height: 1.25rem;
@@ -428,10 +435,14 @@
     font-size: 0;
   }
 
-  .home-buscador > .boton::after {
-    content: "☷";
-    font-size: 1.125rem;
-    line-height: 1;
+  .home-buscador > .boton > span {
+    display: none;
+  }
+
+  .home-buscador > .boton svg {
+    display: block;
+    width: 1.125rem;
+    height: 1.125rem;
   }
 
   .home-populares {
@@ -455,6 +466,17 @@
 
   .home-categorias::-webkit-scrollbar {
     display: none;
+  }
+
+  .home-categoria-todos {
+    display: inline-flex;
+    border-color: var(--fondo-inverso);
+    background: var(--fondo-inverso);
+    color: var(--texto-inverso);
+  }
+
+  .home-categoria-todos .home-categoria-textos > :first-child {
+    color: var(--texto-inverso);
   }
 
   .home-categoria {
@@ -607,7 +629,7 @@
   }
 
   .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .etiqueta,
-  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .info-evento:nth-of-type(2),
+  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .info-evento + .info-evento,
   .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .botones-evento > .boton {
     display: none;
   }
