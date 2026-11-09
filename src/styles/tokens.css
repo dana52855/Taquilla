@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap');
+
+:root {
+  /* Color */
+  --fondo-pagina: #f7f7f7;
+  --fondo-superficie: #ffffff;
+  --fondo-sutil: #f0f0f0;
+  --fondo-inverso: #141414;
+  --fondo-inverso-2: #262626;
+  --marca-primario: #141414;
+  --marca-primario-hover: #2e2e2e;
+  --marca-primario-suave: #f0f0f0;
+  --marca-acento: #c9a24d;
+  --texto-principal: #141414;
+  --texto-secundario: #525252;
+  --texto-terciario: #6b6b6b;
+  --texto-inverso: #ffffff;
+  --texto-inverso-suave: #a8a8a8;
+  --texto-marca: #141414;
+  --borde-sutil: #e5e5e5;
+  --borde-fuerte: #8c8c8c;
+  --borde-inverso: #3a3a3a;
+  --estado-exito: #1a7f4b;
+  --estado-exito-suave: #e8f5ec;
+  --estado-alerta: #9a6700;
+  --estado-alerta-suave: #fff4d6;
+  --estado-error: #c5221f;
+  --estado-error-suave: #fce8e6;
+  --zona-vip: #6f66b0;
+  --zona-platea: #3f78b5;
+  --zona-general: #4c9a76;
+  --asiento-ocupado: #e0e0e0;
+  --asiento-reservado: #e6c36a;
+  --marca-primario-presionado: #000000;
+  --fondo-presionado: #e5e5e5;
+  --fondo-inverso-presionado: #3a3a3a;
+  /* Medidas */
+  --espacio-1: 4px;
+  --espacio-2: 8px;
+  --espacio-3: 12px;
+  --espacio-4: 16px;
+  --espacio-6: 24px;
+  --espacio-8: 32px;
+  --espacio-12: 48px;
+  --espacio-16: 64px;
+  --radio-sm: 6px;
+  --radio-md: 8px;
+  --radio-lg: 12px;
+  --radio-xl: 16px;
+  --radio-completo: 999px;
+  /* Familias tipográficas (Google Fonts) */
+  --fuente-instrument-sans: 'Instrument Sans', system-ui, sans-serif;
+  /* Sombras */
+  --sombra-tarjeta: 0px 1px 2px 0px #1414140d;
+  --sombra-flotante: 0px 8px 24px 0px #1414141a;
+}

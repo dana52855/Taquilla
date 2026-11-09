@@ -1,0 +1,97 @@
+.titular-display {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 600;
+  font-size: 52px;
+  line-height: 56px;
+  letter-spacing: -0.025em;
+}
+.titular-h1 {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 600;
+  font-size: 34px;
+  line-height: 40px;
+  letter-spacing: -0.02em;
+}
+.titular-h2 {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 30px;
+  letter-spacing: -0.015em;
+}
+.titular-h3 {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 26px;
+  letter-spacing: -0.01em;
+}
+.titular-h4 {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: -0.005em;
+}
+.cuerpo-g {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 28px;
+}
+.cuerpo-m {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+}
+.cuerpo-m-fuerte {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+}
+.cuerpo-p {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+}
+.cuerpo-p-fuerte {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+}
+.detalle-nota {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+}
+.detalle-nota-fuerte {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+}
+.detalle-etiqueta {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+}
+.dato-cifra {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 34px;
+  letter-spacing: -0.02em;
+}
+.titular-gigante {
+  font-family: var(--fuente-instrument-sans);
+  font-weight: 600;
+  font-size: 112px;
+  line-height: 108px;
+  letter-spacing: -0.03em;
+}

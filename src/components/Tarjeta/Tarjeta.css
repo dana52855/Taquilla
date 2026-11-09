@@ -1,0 +1,37 @@
+.tarjeta-evento {
+    width: 18.75rem;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radio-lg);
+    background: var(--fondo-superficie);
+    flex-shrink: 0;
+    border: 1px solid var(--borde-sutil);
+    overflow: hidden;
+}
+
+.tarjeta-evento .tarjeta-album:hover {
+    box-shadow: var(--sombra-flotante);
+}
+
+.tarjeta-evento .portada-evento {
+    height: 11rem;
+}
+
+.tarjeta-evento .texto-evento {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 1rem;
+}
+
+.tarjeta-evento .info-evento {
+    display: flex;
+    gap: 0.5rem;
+    color: var(--texto-secundario);
+}
+
+.tarjeta-evento .botones-evento {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0 0;
+}

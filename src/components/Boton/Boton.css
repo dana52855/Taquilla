@@ -1,0 +1,78 @@
+.boton {
+    transition: all 150ms ease-out;
+    border-radius: var(--radio-md);
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    text-align: center;
+}
+
+.boton.cuerpo-p-fuerte {
+    padding: 0.625rem 1.125rem;
+}
+
+.boton.cuerpo-m-fuerte {
+    padding: 0.875rem 1.625rem;
+}
+
+.boton.primario {
+    color: var(--texto-inverso);
+    border: 0;
+    background: var(--marca-primario);
+}
+
+.boton.primario:hover {
+    background: var(--marca-primario-hover);
+}
+
+.boton.primario:active {
+    background: var(--marca-primario-presionado);
+}
+
+.boton.secundario {
+    color: var(--texto-principal);
+    border: 1px solid var(--borde-fuerte);
+    background: var(--fondo-superficie);
+}
+
+.boton.secundario:hover {
+    background: var(--fondo-sutil);
+}
+
+.boton.secundario:active {
+    background: var(--fondo-presionado);
+}
+
+.boton.fantasma {
+    color: var(--texto-principal);
+    border: 0;
+    background: none;
+}
+
+.boton.fantasma:hover {
+    background: var(--fondo-sutil);
+}
+
+.boton.fantasma:active {
+    background: var(--fondo-presionado);
+}
+
+.boton.inverso {
+    color: var(--texto-inverso);
+    border: 0;
+    background: var(--fondo-inverso);
+}
+
+.boton.inverso:hover {
+    background: var(--fondo-inverso-2);
+}
+
+.boton.inverso:active {
+    background: var(--fondo-inverso-presionado);
+}
+
+@media (max-width: 1024px) {     
+    .boton {
+        width: 100%;
+    }
+}
