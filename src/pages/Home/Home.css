@@ -563,6 +563,10 @@
     display: none;
   }
 
+  .home-eventos-grid > .tarjeta-evento:nth-child(n + 4) {
+    display: none;
+  }
+
   .home-eventos-grid .tarjeta-evento {
     width: 16.5rem;
     min-width: 16.5rem;
@@ -600,6 +604,10 @@
     gap: 0.75rem;
     overflow: visible;
     padding: 0 1.25rem;
+  }
+
+  .home-destacados:last-of-type .home-eventos-grid > .tarjeta-evento:nth-child(n + 4) {
+    display: none;
   }
 
   .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento {
