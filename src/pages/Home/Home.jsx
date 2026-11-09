@@ -137,28 +137,6 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                     {hero?.buscador?.botones?.buscar}
                   </Boton>
                 </form>
-
-                {/* {populares.length > 0 && (
-                  <div className="home-populares">
-                    <span>{PLACEHOLDER}</span>
-                    {populares.map((popular, indice) => {
-                      const valor =
-                        typeof popular === "string"
-                          ? popular
-                          : popular?.texto || popular?.nombre;
-                      if (!valor) return null;
-                      return (
-                        <button
-                          type="button"
-                          key={valor + indice}
-                          onClick={() => setConsulta(valor)}
-                        >
-                          {valor}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )} */}
               </div>
 
               <article className="home-evento-principal">
@@ -250,7 +228,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
               </div>
             ) : (
               <div className="home-eventos-grid">
-                {eventosDestacados?.map((evento) => (
+                {eventosDestacados?.slice(0,4)?.map((evento) => (
                   <Tarjeta
                     key={evento?.id}
                     textos={textos}
@@ -290,7 +268,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
               </div>
             ) : (
               <div className="home-eventos-grid">
-                {todosLosEventos?.map((evento) => (
+                {todosLosEventos?.slice(0,4)?.map((evento) => (
                   <Tarjeta
                     key={evento?.id}
                     textos={textos}
