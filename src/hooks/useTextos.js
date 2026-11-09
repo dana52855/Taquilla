@@ -57,7 +57,7 @@ export function useTextos(idioma) {
         if (vigente) setTextos(nuevosTextos);
       } catch (error) {
         if (vigente) {
-          console.error("Error al cargar los textos:", errorConsulta);
+          console.error("Error al cargar los textos:", error);
           setError(true);
         }
       } finally {

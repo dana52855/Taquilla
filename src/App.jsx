@@ -60,7 +60,7 @@ function App() {
   const enlaces = {
     ingresar: '/ingresar',
     crearCuenta: '/crearCuenta',
-    explorar: '/eventos',
+    eventos: '/eventos',
     terminos: '/terminos-de-uso',
     accesibilidad: '/accesiblidad'
   }
@@ -77,7 +77,7 @@ function App() {
           enlaces={enlaces}
         />}>
           <Route index element={<Home
-            datos={datos}
+            {...datos}
             en={en}
             enlaces={enlaces}
           />} />
