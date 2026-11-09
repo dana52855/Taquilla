@@ -138,7 +138,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
 
                   <Boton className="cuerpo-p-fuerte home-buscador-filtros" tipo="primario">
                     <span>{hero?.buscador?.botones?.buscar}</span>
-                    <Icono nombre="sliders" />
+                    <Icono nombre="sliders" hidden />
                   </Boton>
                 </form>
               </div>
@@ -180,6 +180,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
             <Link
               to={enlaces.eventos}
               className="home-categoria home-categoria-todos"
+              hidden
             >
               <span className="home-categoria-textos">
                 <span className="cuerpo-p-fuerte">{textosCategorias?.todos || PLACEHOLDER}</span>
