@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import useEventos from "../../hooks/useEventos";
+import useCategorias from "../../hooks/useCategorias";
 import Tarjeta from "../../components/Tarjeta/Tarjeta";
 import Portada from "../../components/Portada/Portada";
 import Etiqueta from "../../components/Etiqueta/Etiqueta";
@@ -8,70 +9,47 @@ import Boton from "../../components/Boton/Boton";
 import Icono from "../../components/Icono";
 import "./Home.css";
 
-const CATEGORIAS = [
-  { clave: "conciertos", icono: "music" },
-  { clave: "teatro", icono: "star" },
-  { clave: "deportes", icono: "trophy" },
-  { clave: "festivales", icono: "flag" },
-  { clave: "comedia", icono: "smile" },
-  { clave: "familiares", icono: "users" },
-];
-
 const PLACEHOLDER = "PLACEHOLDER";
 
-function leerTexto(objeto, rutas, alternativo = PLACEHOLDER) {
-  for (const ruta of rutas) {
-    const valor = ruta.split(".").reduce((actual, clave) => actual?.[clave], objeto);
-    if (typeof valor === "string" && valor.trim()) return valor;
-  }
-  return alternativo;
-}
+const iconosCategorias = {
+  conciertos: "music",
+  teatro: "star",
+  deportes: "trophy",
+  festivales: "flag",
+  comedia: "smile",
+  familiares: "user",
+};
 
-function normalizarCategoria(categoria) {
-  return String(categoria || "").toLowerCase();
-}
-
-function Home({ datos, en, enlaces }) {
-  const { textos, cargando: cargandoTextos } = datos;
-  const inicio = textos?.paginas?.inicio || {};
-  const hero = inicio.hero || {};
-  const seccionDestacados = inicio.destacados || inicio.destacadosSemana || {};
-  const textosCategorias = inicio.categorias || textos?.categorias || {};
+function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
+  const inicio = textos?.paginas?.inicio;
+  const hero = inicio?.hero;
+  const destacados = inicio?.destacados;
+  const proximos = inicio?.proximos;
+  const textosCategorias = inicio?.categorias;
 
   const [consulta, setConsulta] = useState("");
-  const [ciudad, setCiudad] = useState("");
+  const [ciudad, setCiudad] = useState("Manizales");
   const [fecha, setFecha] = useState("");
 
   const {
     eventos: eventosDestacados,
     cargando: cargandoDestacados,
     error: errorDestacados,
-    recargar: recargarDestacados,
   } = useEventos(true);
+
+  const {
+    categorias,
+    cargando: cargandoCategorias,
+    error: errorCargando,
+  } = useCategorias(true);
 
   const {
     eventos: todosLosEventos,
     cargando: cargandoEventos,
+    error: errorEventos,
   } = useEventos();
 
-  const listaDestacados = Array.isArray(eventosDestacados) ? eventosDestacados : [];
-  const listaEventos = Array.isArray(todosLosEventos) ? todosLosEventos : [];
-  const eventoPrincipal = listaDestacados[0] || listaEventos[0];
-
-  const cantidadPorCategoria = useMemo(() => {
-    return CATEGORIAS.reduce((resultado, categoria) => {
-      resultado[categoria.clave] = listaEventos.filter(
-        (evento) => normalizarCategoria(evento?.categoria) === categoria.clave
-      ).length;
-      return resultado;
-    }, {});
-  }, [listaEventos]);
-
-  const populares = Array.isArray(hero?.populares?.items)
-    ? hero.populares.items
-    : Array.isArray(hero?.populares)
-      ? hero.populares
-      : [];
+  const eventoPrincipal = eventosDestacados?.[0];
 
   function buscarEventos(evento) {
     evento.preventDefault();
@@ -81,69 +59,43 @@ function Home({ datos, en, enlaces }) {
     if (fecha) parametros.set("fecha", fecha);
     const sufijo = parametros.toString();
     window.location.href = sufijo
-      ? `${enlaces.explorar}?${sufijo}`
-      : enlaces.explorar;
+      ? `${enlaces.eventos}?${sufijo}`
+      : enlaces.eventos;
   }
-
-  function seleccionarCategoria(categoria) {
-    const parametros = new URLSearchParams({ categoria });
-    window.location.href = `${enlaces.explorar}?${parametros.toString()}`;
-  }
-
-  const textosTarjeta = {
-    ...textos,
-    paginas: {
-      ...textos?.paginas,
-      inicio: {
-        ...inicio,
-        hero: {
-          ...hero,
-          destacado: {
-            ...hero?.destacado,
-            desde: leerTexto(hero?.destacado || {}, ["desde"], PLACEHOLDER),
-            botones: {
-              ...hero?.destacado?.botones,
-              verEvento: leerTexto(hero?.destacado || {}, ["botones.verEvento"], PLACEHOLDER),
-            },
-          },
-        },
-      },
-    },
-  };
 
   return (
     <div className="inicio-publico">
       {cargandoTextos ? (
-        <div className="titular-h3 cargando">{en ? "LOADING HOME..." : "CARGANDO INICIO..."}</div>
+        <div className="titular-h3 cargando">
+          {en ? "LOADING HOME..." : "CARGANDO INICIO..."}
+        </div>
       ) : (
         <>
           <section className="home-hero">
             <div className="home-hero-interior">
               <div className="home-hero-mensaje">
-                <Etiqueta tono="marca">
-                  {leerTexto(hero, ["temporada", "etiqueta", "subtitulo"])}
-                </Etiqueta>
+                <Etiqueta tono="marca">{hero?.etiquetas?.temporada}</Etiqueta>
 
                 <h1 className="titular-display home-hero-titulo">
-                  {leerTexto(hero, ["titulo", "tituloPrincipal", "encabezado"])}
+                  {hero?.titulo}
                 </h1>
 
                 <p className="cuerpo-m home-hero-descripcion">
-                  {leerTexto(hero, ["descripcion", "texto", "bajada"])}
+                  {hero?.subtitulo}
                 </p>
 
                 <form className="home-buscador" onSubmit={buscarEventos}>
                   <label className="home-buscador-campo">
                     <Icono nombre="search" />
                     <span>
-                      <span className="detalle-nota home-buscador-etiqueta">
-                        {leerTexto(hero?.buscador || {}, ["que.titulo", "que.etiqueta", "etiquetaQue"])}
+                      <span className="detalle-nota-fuerte home-buscador-etiqueta">
+                        {hero?.buscador?.etiquetas?.que}
                       </span>
                       <input
-                        className="cuerpo-p"
+                        className="cuerpo-p-fuerte"
                         value={consulta}
                         onChange={(evento) => setConsulta(evento.target.value)}
-                        placeholder={leerTexto(hero?.buscador || {}, ["que.placeholder", "placeholder"])}
+                        placeholder={hero?.buscador?.placeholders?.que}
                       />
                     </span>
                   </label>
@@ -153,14 +105,13 @@ function Home({ datos, en, enlaces }) {
                   <label className="home-buscador-campo">
                     <Icono nombre="pin" />
                     <span>
-                      <span className="detalle-nota home-buscador-etiqueta">
-                        {leerTexto(hero?.buscador || {}, ["donde.titulo", "donde.etiqueta"])}
+                      <span className="detalle-nota-fuerte home-buscador-etiqueta">
+                        {hero?.buscador?.etiquetas?.donde}
                       </span>
                       <input
-                        className="cuerpo-p"
+                        className="cuerpo-p-fuerte"
                         value={ciudad}
                         onChange={(evento) => setCiudad(evento.target.value)}
-                        placeholder={leerTexto(hero?.buscador || {}, ["donde.placeholder", "ciudad.placeholder"])}
                       />
                     </span>
                   </label>
@@ -170,29 +121,31 @@ function Home({ datos, en, enlaces }) {
                   <label className="home-buscador-campo">
                     <Icono nombre="calendar" />
                     <span>
-                      <span className="detalle-nota home-buscador-etiqueta">
-                        {leerTexto(hero?.buscador || {}, ["cuando.titulo", "cuando.etiqueta"])}
+                      <span className="detalle-nota-fuerte home-buscador-etiqueta">
+                        {hero?.buscador?.etiquetas?.cuando}
                       </span>
                       <input
-                        className="cuerpo-p"
-                        type="date"
+                        className="cuerpo-p-fuerte"
                         value={fecha}
                         onChange={(evento) => setFecha(evento.target.value)}
-                        aria-label={leerTexto(hero?.buscador || {}, ["cuando.aria", "cuando.titulo"])}
+                        placeholder={hero?.buscador?.placeholders?.cuando}
                       />
                     </span>
                   </label>
 
                   <Boton className="cuerpo-p-fuerte" tipo="primario">
-                    {leerTexto(hero?.buscador || {}, ["boton", "buscar"])}
+                    {hero?.buscador?.botones?.buscar}
                   </Boton>
                 </form>
 
-                {populares.length > 0 && (
+                {/* {populares.length > 0 && (
                   <div className="home-populares">
-                    <span>{leerTexto(hero?.populares || {}, ["titulo", "etiqueta"])}</span>
+                    <span>{PLACEHOLDER}</span>
                     {populares.map((popular, indice) => {
-                      const valor = typeof popular === "string" ? popular : popular?.texto || popular?.nombre;
+                      const valor =
+                        typeof popular === "string"
+                          ? popular
+                          : popular?.texto || popular?.nombre;
                       if (!valor) return null;
                       return (
                         <button
@@ -205,33 +158,35 @@ function Home({ datos, en, enlaces }) {
                       );
                     })}
                   </div>
-                )}
+                )} */}
               </div>
 
               <article className="home-evento-principal">
                 <Portada tamano="g" {...eventoPrincipal?.afiche} />
                 <div className="home-evento-ficha">
-                  <Etiqueta tono="marca">
-                    {leerTexto(hero?.destacado || {}, ["etiqueta"], PLACEHOLDER)}
-                  </Etiqueta>
-                  <h2 className="titular-h2">
-                    {eventoPrincipal?.titulo || PLACEHOLDER}
-                  </h2>
+                  <Etiqueta tono="marca">{hero?.destacado?.etiqueta}</Etiqueta>
+                  <h2 className="titular-h2">{eventoPrincipal?.titulo}</h2>
                   <div className="home-evento-pie">
                     <div>
                       <p className="cuerpo-p">
-                        {eventoPrincipal?.fecha || PLACEHOLDER}
-                        {eventoPrincipal?.recinto?.nombre ? ` · ${eventoPrincipal.recinto.nombre}` : ""}
-                      </p>
-                      <p className="cuerpo-m-fuerte">
-                        {leerTexto(hero?.destacado || {}, ["desde"], PLACEHOLDER)}
-                        {eventoPrincipal?.precioDesde != null
-                          ? ` $${Number(eventoPrincipal.precioDesde).toLocaleString("es-CO")}`
+                        {eventoPrincipal?.fecha}
+                        {eventoPrincipal?.recinto?.nombre
+                          ? ` · ${eventoPrincipal.recinto.nombre}`
                           : ""}
                       </p>
+                      <p className="cuerpo-m-fuerte">
+                        {hero?.destacado?.desde?.replace(
+                          "{precio}",
+                          `$${eventoPrincipal?.precioDesde}`,
+                        )}
+                      </p>
                     </div>
-                    <Boton className="cuerpo-p-fuerte" tipo="primario" href={enlaces.explorar}>
-                      {leerTexto(hero?.destacado || {}, ["botones.verEvento"], PLACEHOLDER)}
+                    <Boton
+                      className="cuerpo-p-fuerte"
+                      tipo="primario"
+                      href={enlaces.eventos}
+                    >
+                      {hero?.destacado?.botones?.verEvento}
                     </Boton>
                   </div>
                 </div>
@@ -239,67 +194,110 @@ function Home({ datos, en, enlaces }) {
             </div>
           </section>
 
-          <section className="home-categorias" aria-label={leerTexto(inicio, ["categorias.titulo", "tituloCategorias"])}>
-            {CATEGORIAS.map((categoria) => (
-              <button
+          <section className="home-categorias">
+            {categorias?.map((categoria) => (
+              <Link
+                to={`${enlaces.eventos}?categoria=${categoria?.id}`}
                 className="home-categoria"
                 type="button"
-                key={categoria.clave}
-                onClick={() => seleccionarCategoria(categoria.clave)}
+                key={categoria?.id}
               >
                 <span className="home-categoria-icono">
-                  <Icono nombre={categoria.icono} />
+                  <Icono nombre={iconosCategorias[categoria?.id]} />
                 </span>
                 <span className="home-categoria-textos">
-                  <span className="cuerpo-p-fuerte">
-                    {leerTexto(textosCategorias, [categoria.clave, `${categoria.clave}.titulo`])}
-                  </span>
+                  <span className="cuerpo-p-fuerte">{categoria?.nombre}</span>
                   <span className="detalle-nota">
-                    {cantidadPorCategoria[categoria.clave]} {leerTexto(inicio, ["categorias.eventos", "categorias.sufijo"], PLACEHOLDER)}
+                    {categoria?.eventos === 1
+                      ? textosCategorias?.eventos?.uno?.replace(
+                          "{cantidad}",
+                          categoria?.eventos,
+                        )
+                      : textosCategorias?.eventos?.otro?.replace(
+                          "{cantidad}",
+                          categoria?.eventos,
+                        )}
                   </span>
                 </span>
-              </button>
+              </Link>
             ))}
           </section>
 
           <section className="home-destacados">
             <div className="home-seccion-cabecera">
               <div>
-                <h2 className="titular-h2">
-                  {leerTexto(seccionDestacados, ["titulo", "encabezado"])}
-                </h2>
-                <p className="cuerpo-m">
-                  {leerTexto(seccionDestacados, ["descripcion", "subtitulo", "texto"])}
-                </p>
+                <h2 className="titular-h2">{destacados?.titulo}</h2>
+                <p className="cuerpo-m">{destacados?.subtitulo}</p>
               </div>
-              <Link className="home-ver-todos cuerpo-p-fuerte" to={enlaces.explorar}>
-                {leerTexto(seccionDestacados, ["verTodos", "boton", "enlace"])}
+              <Link
+                className="home-ver-todos cuerpo-p-fuerte"
+                to={enlaces.eventos}
+              >
+                {destacados?.enlaces?.verTodos}
+                <Icono nombre="arrowr" />
               </Link>
             </div>
 
-            {cargandoDestacados || cargandoEventos ? (
+            {cargandoDestacados ? (
               <div className="titular-h3 cargando">
-                {en ? "LOADING EVENTS..." : "CARGANDO EVENTOS..."}
+                {en ? "Loading events..." : "Cargando eventos..."}
               </div>
             ) : errorDestacados ? (
               <div className="home-eventos-error">
-                <p className="cuerpo-p">{leerTexto(seccionDestacados, ["error"], PLACEHOLDER)}</p>
-                <Boton className="cuerpo-p-fuerte" tipo="secundario" onClick={recargarDestacados}>
-                  {leerTexto(seccionDestacados, ["reintentar"], PLACEHOLDER)}
-                </Boton>
+                <p className="cuerpo-p">
+                  {en ? "Error on loading events..." : "Error al cargar eventos..."}
+                </p>
               </div>
-            ) : listaDestacados.length > 0 ? (
+            ) : (
               <div className="home-eventos-grid">
-                {listaDestacados.slice(0, 4).map((evento) => (
+                {eventosDestacados?.map((evento) => (
                   <Tarjeta
-                    key={evento?.id || evento?.slug || evento?.titulo}
-                    textos={textosTarjeta}
+                    key={evento?.id}
+                    textos={textos}
                     evento={evento}
                   />
                 ))}
               </div>
+            )}
+          </section>
+
+          <section className="home-destacados">
+            <div className="home-seccion-cabecera">
+              <div>
+                <h2 className="titular-h2">
+                  {proximos?.titulo?.replace("{ciudad}", ciudad)}
+                </h2>
+                <p className="cuerpo-m">{proximos?.subtitulo}</p>
+              </div>
+              <Link
+                className="home-ver-todos cuerpo-p-fuerte"
+                to={enlaces.eventos}
+              >
+                {destacados?.enlaces?.verTodos}
+                <Icono nombre="arrowr" />
+              </Link>
+            </div>
+
+            {cargandoEventos ? (
+              <div className="titular-h3 cargando">
+                {en ? "Loading events..." : "Cargando eventos..."}
+              </div>
+            ) : errorEventos ? (
+              <div className="home-eventos-error">
+                <p className="cuerpo-p">
+                  {en ? "Error on loading events..." : "Error al cargar eventos..."}
+                </p>
+              </div>
             ) : (
-              <p className="cuerpo-p">{leerTexto(seccionDestacados, ["sinEventos", "vacio"], PLACEHOLDER)}</p>
+              <div className="home-eventos-grid">
+                {todosLosEventos?.map((evento) => (
+                  <Tarjeta
+                    key={evento?.id}
+                    textos={textos}
+                    evento={evento}
+                  />
+                ))}
+              </div>
             )}
           </section>
         </>

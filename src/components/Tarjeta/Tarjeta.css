@@ -15,6 +15,7 @@
 
 .tarjeta-evento .portada-evento {
     height: 11rem;
+    overflow: hidden;
 }
 
 .tarjeta-evento .texto-evento {
