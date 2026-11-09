@@ -274,7 +274,6 @@ function Home({ datos, en, enlaces }) {
               </div>
               <Link className="home-ver-todos cuerpo-p-fuerte" to={enlaces.explorar}>
                 {leerTexto(seccionDestacados, ["verTodos", "boton", "enlace"])}
-                <Icono nombre="arrow-right" />
               </Link>
             </div>
 
