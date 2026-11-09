@@ -1,3 +1,14 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fuente-instrument-sans);
+  color: var(--texto-principal);
+  background: var(--fondo-base);
+}
+
 .titular-display {
   font-family: var(--fuente-instrument-sans);
   font-weight: 600;
@@ -94,4 +105,11 @@
   font-size: 112px;
   line-height: 108px;
   letter-spacing: -0.03em;
+}
+
+.cargando {
+  width: 100%;
+  padding: 3rem;
+  display: flex;
+  align-items: center;
 }

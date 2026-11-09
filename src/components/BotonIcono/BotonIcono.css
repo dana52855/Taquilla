@@ -1,0 +1,54 @@
+.boton-icono {
+    transition: all 150ms ease-out;
+    border-radius: var(--radio-completo);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 1;
+    white-space: nowrap;
+}
+
+.boton-icono.primario {
+    color: var(--texto-sobre-marca);
+    background: var(--marca-primario);
+    border: 0;
+}
+
+.boton-icono.primario:hover {
+    background: var(--marca-primario-hover);
+}
+
+.boton-icono.primario:active {
+    background: var(--marca-primario-presionado);
+}
+
+.boton-icono.secundario {
+    color: var(--texto-principal);
+    border: 1px solid var(--borde-fuerte);
+    background: none;
+}
+
+.boton-icono.secundario:hover {
+    background: var(--fondo-sutil);
+    border: 1px solid var(--texto-secundario);
+}
+
+.boton-icono.secundario:active {
+    background: var(--fondo-elevada);
+    border: 1px solid var(--texto-secundario);
+}
+
+.boton-icono.fantasma {
+    color: var(--texto-principal);
+    border: 0;
+    background: none;
+}
+
+.boton-icono.fantasma:hover {
+    background: var(--fondo-sutil);
+}
+
+.boton-icono.fantasma:active {
+    background: var(--fondo-elevada);
+}
