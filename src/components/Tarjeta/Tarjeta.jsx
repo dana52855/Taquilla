@@ -27,7 +27,7 @@ const formatearFecha = (fecha, en) => {
   }).format(fechaEvento);
   const mes = new Intl.DateTimeFormat(idioma, {
     month: "short",
-  }).format(fechaEvento);
+  }).format(fechaEvento).replace(/\\.$/, "");
   const hora = new Intl.DateTimeFormat(idioma, {
     hour: "numeric",
     minute: "2-digit",
