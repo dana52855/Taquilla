@@ -18,6 +18,12 @@
     overflow: hidden;
 }
 
+.tarjeta-evento .portada-evento > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 .tarjeta-evento .texto-evento {
     display: flex;
     flex-direction: column;
