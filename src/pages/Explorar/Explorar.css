@@ -91,6 +91,46 @@
   gap: 0.625rem;
 }
 
+.explorar-categorias-opciones {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.explorar-categorias-opciones legend {
+  margin-bottom: 0.75rem;
+  padding: 0;
+}
+
+.explorar-categoria-opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 1.875rem;
+  color: var(--texto-principal);
+  font: 400 0.875rem/1.25rem var(--fuente-instrument-sans);
+  cursor: pointer;
+}
+
+.explorar-categoria-opcion input {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: 0 0 1.125rem;
+  margin: 0;
+  accent-color: var(--fondo-inverso);
+}
+
+.explorar-categoria-opcion span {
+  flex: 1;
+  min-width: 0;
+}
+
+.explorar-categoria-opcion small {
+  color: var(--texto-terciario);
+  font-size: 0.75rem;
+}
+
 .explorar-filtro-grupo > label {
   color: var(--texto-principal);
 }
