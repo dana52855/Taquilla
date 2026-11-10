@@ -61,6 +61,7 @@ function App() {
   const enlaces = {
     ingresar: '/ingresar',
     crearCuenta: '/crearCuenta',
+    inicio: '/',
     eventos: '/eventos',
     explorar: '/explorar',
     terminos: '/terminos-de-uso',
