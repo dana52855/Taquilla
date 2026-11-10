@@ -71,7 +71,6 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
   const paginacionTextos = explorar?.paginacion;
   const vacio = explorar?.vacio;
   const botonesVacio = vacio?.botones;
-  const textosCategorias = textos?.general?.categorias;
   const categoriaActual = searchParams.get("categoria") || "";
   const ciudadActual = searchParams.get("ciudad") || "";
   const busquedaActual = searchParams.get("q") || "";
@@ -208,6 +207,9 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
   const textoResultados = totalEventos === 1
     ? explorar?.resultados?.uno
     : explorar?.resultados?.otro;
+  const textoResultadosCorto = totalEventos === 1
+    ? explorar?.resultadosCorto?.uno
+    : explorar?.resultadosCorto?.otro;
 
   function controlesFiltros() {
     return (
@@ -268,7 +270,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
   }
 
   if (cargandoTextos) {
-    return <div className="explorar-cargando titular-h3">{en ? "LOADING EXPLORE..." : "CARGANDO EXPLORACIÓN..."}</div>;
+    return <div className="explorar-cargando titular-h3">{PLACEHOLDER}</div>;
   }
 
   return (
@@ -305,7 +307,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           </div>
 
           {cargando ? (
-            <div className="explorar-estado titular-h3">{en ? "LOADING EVENTS..." : "CARGANDO EVENTOS..."}</div>
+            <div className="explorar-estado titular-h3">{PLACEHOLDER}</div>
           ) : error ? (
             <div className="explorar-estado">
               <p className="cuerpo-m">{texto(PLACEHOLDER)}</p>
@@ -328,7 +330,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           )}
 
           {!cargando && !error && totalPaginas > 1 && (
-            <nav className="explorar-paginacion" aria-label={texto(PLACEHOLDER)}>
+            <nav className="explorar-paginacion" aria-label={texto(paginacionTextos?.anterior)}>
               <button type="button" disabled={paginaActual <= 1} onClick={() => setSearchParams((actuales) => { const siguientes = new URLSearchParams(actuales); siguientes.set("pagina", String(paginaActual - 1)); return siguientes; })} aria-label={texto(paginacionTextos?.anterior)}>
                 <Icono nombre="chevl" />
               </button>
