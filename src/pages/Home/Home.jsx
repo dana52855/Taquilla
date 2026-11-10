@@ -246,6 +246,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                     key={evento?.id}
                     textos={textos}
                     evento={evento}
+                    en={en}
                   />
                 ))}
               </div>
@@ -286,6 +287,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                     key={evento?.id}
                     textos={textos}
                     evento={evento}
+                    en={en}
                   />
                 ))}
               </div>
