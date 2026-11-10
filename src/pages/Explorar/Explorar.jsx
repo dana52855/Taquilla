@@ -317,7 +317,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
             <div className="explorar-vacio">
               <h2 className="titular-h3">{texto(vacio?.titulo)}</h2>
               <p className="cuerpo-p">{texto(vacio?.texto)}</p>
-              <button type="button" className="explorar-limpiar" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{texto(botonesFiltros?.limpiar)}</button>
+              <button type="button" className="explorar-limpiar" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{texto(botonesVacio?.limpiar)}</button>
             </div>
           ) : (
             <div className="explorar-grid">
