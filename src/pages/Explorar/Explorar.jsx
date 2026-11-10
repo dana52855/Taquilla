@@ -40,7 +40,7 @@ function obtenerPaginacion(respuesta) {
   return {
     total: Number.isFinite(total) && total >= 0 ? total : null,
     paginas: Number.isFinite(paginas) && paginas > 0 ? paginas : null,
-    paginaServidor: Boolean(pagina?.pagina || pagina?.current_page || pagina?.totalPaginas || pagina?.total_pages),
+    paginaServidor: Number.isFinite(total) || Number.isFinite(paginas) || Boolean(pagina?.pagina || pagina?.current_page || pagina?.totalPaginas || pagina?.total_pages),
   };
 }
 
@@ -207,17 +207,24 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           </button>
         </div>
 
-        <div className="explorar-filtro-grupo">
-          <label className="cuerpo-p-fuerte" htmlFor="explorar-categoria">{texto(filtrosTexto?.categoria || labels?.categoria)}</label>
-          <select id="explorar-categoria" className="explorar-select" value={categoriaActual} onChange={(evento) => actualizarFiltros({ categoria: evento.target.value })}>
-            <option value="">{texto(filtrosTexto?.todasCategorias || labels?.todasCategorias)}</option>
-            {categorias.map((categoria) => (
-              <option key={obtenerClaveCategoria(categoria)} value={obtenerClaveCategoria(categoria)}>
-                {obtenerNombre(categoria)}
-              </option>
-            ))}
-          </select>
-        </div>
+        <fieldset className="explorar-filtro-grupo explorar-categorias-opciones">
+          <legend className="cuerpo-p-fuerte">{texto(filtrosTexto?.categoria || labels?.categoria)}</legend>
+          {categorias.map((categoria) => {
+            const clave = obtenerClaveCategoria(categoria);
+            const cantidad = categoria?.eventos ?? categoria?.cantidadEventos ?? categoria?.totalEventos;
+            return (
+              <label className="explorar-categoria-opcion" key={clave}>
+                <input
+                  type="checkbox"
+                  checked={categoriaActual === clave}
+                  onChange={(evento) => actualizarFiltros({ categoria: evento.target.checked ? clave : "" })}
+                />
+                <span>{obtenerNombre(categoria)}</span>
+                {cantidad !== undefined && cantidad !== null && <small>{cantidad}</small>}
+              </label>
+            );
+          })}
+        </fieldset>
 
         <div className="explorar-filtro-grupo">
           <label className="cuerpo-p-fuerte" htmlFor="explorar-ciudad">{texto(filtrosTexto?.ciudad || labels?.ciudad)}</label>
@@ -310,7 +317,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
 
           {!cargando && !error && totalPaginas > 1 && (
             <nav className="explorar-paginacion" aria-label={texto(labels?.paginacion)}>
-              <button type="button" disabled={paginaActual <= 1} onClick={() => actualizarFiltros({ pagina: paginaActual - 1 })} aria-label={texto(botones?.anterior || labels?.anterior)}>
+              <button type="button" disabled={paginaActual <= 1} onClick={() => setSearchParams((actuales) => { const siguientes = new URLSearchParams(actuales); siguientes.set("pagina", String(paginaActual - 1)); return siguientes; })} aria-label={texto(botones?.anterior || labels?.anterior)}>
                 <Icono nombre="chevl" />
               </button>
               {Array.from({ length: totalPaginas }, (_, indice) => indice + 1).map((pagina) => (
@@ -318,7 +325,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
                   {pagina}
                 </button>
               ))}
-              <button type="button" disabled={paginaActual >= totalPaginas} onClick={() => actualizarFiltros({ pagina: paginaActual + 1 })} aria-label={texto(botones?.siguiente || labels?.siguiente)}>
+              <button type="button" disabled={paginaActual >= totalPaginas} onClick={() => setSearchParams((actuales) => { const siguientes = new URLSearchParams(actuales); siguientes.set("pagina", String(paginaActual + 1)); return siguientes; })} aria-label={texto(botones?.siguiente || labels?.siguiente)}>
                 <Icono nombre="chevr" />
               </button>
             </nav>
