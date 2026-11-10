@@ -31,7 +31,7 @@ function obtenerClaveCategoria(categoria) {
 }
 
 function obtenerPaginacion(respuesta) {
-  const pagina = respuesta?.paginacion || respuesta?.pagination || respuesta?.meta || {};
+  const pagina = respuesta?.paginacion ?? respuesta?.pagination ?? respuesta?.meta;
   const total = Number(
     pagina?.total ?? pagina?.totalRegistros ?? pagina?.totalEventos ??
     respuesta?.total ?? respuesta?.totalRegistros ?? respuesta?.totalEventos
@@ -63,10 +63,15 @@ function popularidadEvento(evento) {
 
 export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const paginaExplorar = textos?.paginas?.explorar || {};
-  const filtrosTexto = paginaExplorar?.filtros || {};
-  const labels = paginaExplorar?.etiquetas || {};
-  const botones = paginaExplorar?.botones || {};
+  const explorar = textos?.paginas?.explorar;
+  const filtros = explorar?.filtros;
+  const botonesFiltros = filtros?.botones;
+  const orden = explorar?.orden;
+  const opcionesOrden = orden?.opciones;
+  const paginacionTextos = explorar?.paginacion;
+  const vacio = explorar?.vacio;
+  const botonesVacio = vacio?.botones;
+  const textosCategorias = textos?.general?.categorias;
   const categoriaActual = searchParams.get("categoria") || "";
   const ciudadActual = searchParams.get("ciudad") || "";
   const busquedaActual = searchParams.get("q") || "";
@@ -200,19 +205,22 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
   const totalPaginas = paginacion.paginas ?? Math.max(1, Math.ceil(totalEventos / POR_PAGINA));
 
   const texto = (valor) => typeof valor === "string" && valor.trim() ? valor : PLACEHOLDER;
+  const textoResultados = totalEventos === 1
+    ? explorar?.resultados?.uno
+    : explorar?.resultados?.otro;
 
   function controlesFiltros() {
     return (
       <div className="explorar-filtros-contenido">
         <div className="explorar-filtros-cabecera">
-          <h2 className="titular-h3">{texto(paginaExplorar?.filtrosTitulo || labels?.filtros)}</h2>
+          <h2 className="titular-h3">{texto(filtros?.titulo)}</h2>
           <button className="explorar-limpiar" type="button" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>
-            {texto(botones?.limpiar || labels?.limpiar)}
+            {texto(botonesFiltros?.limpiar)}
           </button>
         </div>
 
         <fieldset className="explorar-filtro-grupo explorar-categorias-opciones">
-          <legend className="cuerpo-p-fuerte">{texto(filtrosTexto?.categoria || labels?.categoria)}</legend>
+          <legend className="cuerpo-p-fuerte">{texto(filtros?.categoria)}</legend>
           {categorias.map((categoria) => {
             const clave = obtenerClaveCategoria(categoria);
             const cantidad = categoria?.eventos ?? categoria?.cantidadEventos ?? categoria?.totalEventos;
@@ -231,9 +239,9 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
         </fieldset>
 
         <div className="explorar-filtro-grupo">
-          <label className="cuerpo-p-fuerte" htmlFor="explorar-ciudad">{texto(filtrosTexto?.ciudad || labels?.ciudad)}</label>
+          <label className="cuerpo-p-fuerte" htmlFor="explorar-ciudad">{texto(filtros?.ciudad)}</label>
           <select id="explorar-ciudad" className="explorar-select" value={ciudadActual} onChange={(evento) => actualizarFiltros({ ciudad: evento.target.value })}>
-            <option value="">{texto(filtrosTexto?.todasCiudades || labels?.todasCiudades)}</option>
+            <option value="">{texto(PLACEHOLDER)}</option>
             {ciudades.map((ciudad, indice) => {
               const nombre = obtenerNombre(ciudad);
               const valor = typeof ciudad === "string" ? ciudad : ciudad?.nombre || ciudad?.ciudad || ciudad?.slug || ciudad?.id || nombre;
@@ -243,16 +251,16 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
         </div>
 
         <div className="explorar-filtro-grupo">
-          <label className="cuerpo-p-fuerte" htmlFor="explorar-busqueda">{texto(filtrosTexto?.busqueda || labels?.busqueda)}</label>
+          <label className="cuerpo-p-fuerte" htmlFor="explorar-busqueda">{texto(PLACEHOLDER)}</label>
           <form className="explorar-busqueda" onSubmit={buscar}>
             <Icono nombre="search" />
-            <input id="explorar-busqueda" value={busqueda} onChange={(evento) => setBusqueda(evento.target.value)} placeholder={texto(filtrosTexto?.placeholderBusqueda || labels?.placeholderBusqueda)} />
-            <button type="submit" aria-label={texto(botones?.buscar || labels?.buscar)}><Icono nombre="arrowr" /></button>
+            <input id="explorar-busqueda" value={busqueda} onChange={(evento) => setBusqueda(evento.target.value)} placeholder={texto(PLACEHOLDER)} />
+            <button type="submit" aria-label={texto(PLACEHOLDER)}><Icono nombre="arrowr" /></button>
           </form>
         </div>
         <div className="explorar-filtros-acciones-movil">
           <Boton tipo="primario" className="cuerpo-p-fuerte" onClick={() => { actualizarFiltros({ q: busqueda.trim() }); setFiltrosAbiertos(false); }}>
-            {texto(botones?.aplicar || labels?.aplicar)}
+            {texto(botonesFiltros?.verResultados)}
           </Boton>
         </div>
       </div>
@@ -267,13 +275,13 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
     <div className="pagina-explorar">
       <section className="explorar-encabezado">
         <div className="explorar-migas cuerpo-p">
-          <Link to={enlaces?.inicio || "/"}>{texto(labels?.inicio)}</Link>
+          <Link to={enlaces?.inicio || "/"}>{texto(textos?.navbar?.enlaces?.inicio)}</Link>
           <Icono nombre="chevr" />
-          <span>{texto(paginaExplorar?.titulo)}</span>
+          <span>{texto(explorar?.seo?.titulo)}</span>
         </div>
-        <h1 className="titular-h1">{texto(paginaExplorar?.titulo)}</h1>
+        <h1 className="titular-h1">{texto(explorar?.seo?.titulo)}</h1>
         <p className="cuerpo-m explorar-resumen">
-          {totalEventos} {texto(paginaExplorar?.coincidencias || labels?.eventosCoinciden)}
+          {texto(textoResultados)?.replace("{cantidad}", totalEventos)}
         </p>
       </section>
 
@@ -284,14 +292,14 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           <div className="explorar-barra-resultados">
             <button type="button" className="explorar-abrir-filtros" onClick={() => setFiltrosAbiertos(true)}>
               <Icono nombre="sliders" />
-              {texto(botones?.filtros || labels?.filtros)}
+              {texto(filtros?.titulo)}
             </button>
             <label className="explorar-orden">
-              <span className="cuerpo-p">{texto(labels?.ordenarPor || filtrosTexto?.ordenarPor)}</span>
+              <span className="cuerpo-p">{texto(orden?.etiqueta)}</span>
               <select className="explorar-select explorar-select-orden" value={ordenActual} onChange={(evento) => actualizarFiltros({ orden: evento.target.value })}>
-                <option value="fecha">{texto(filtrosTexto?.fecha || labels?.fecha)}</option>
-                <option value="precio">{texto(filtrosTexto?.precio || labels?.precio)}</option>
-                <option value="popularidad">{texto(filtrosTexto?.popularidad || labels?.popularidad)}</option>
+                <option value="fecha">{texto(opcionesOrden?.fecha)}</option>
+                <option value="precio">{texto(opcionesOrden?.precio)}</option>
+                <option value="popularidad">{texto(opcionesOrden?.popularidad)}</option>
               </select>
             </label>
           </div>
@@ -300,14 +308,14 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
             <div className="explorar-estado titular-h3">{en ? "LOADING EVENTS..." : "CARGANDO EVENTOS..."}</div>
           ) : error ? (
             <div className="explorar-estado">
-              <p className="cuerpo-m">{texto(paginaExplorar?.error || labels?.error)}</p>
-              <button type="button" className="explorar-limpiar" onClick={() => setIntento((actual) => actual + 1)}>{texto(botones?.reintentar || labels?.reintentar)}</button>
+              <p className="cuerpo-m">{texto(PLACEHOLDER)}</p>
+              <button type="button" className="explorar-limpiar" onClick={() => setIntento((actual) => actual + 1)}>{texto(PLACEHOLDER)}</button>
             </div>
           ) : eventosVisibles.length === 0 ? (
             <div className="explorar-vacio">
-              <h2 className="titular-h3">{texto(paginaExplorar?.sinResultados || labels?.sinResultados)}</h2>
-              <p className="cuerpo-p">{texto(paginaExplorar?.ajustaFiltros || labels?.ajustaFiltros)}</p>
-              <button type="button" className="explorar-limpiar" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{texto(botones?.limpiar || labels?.limpiar)}</button>
+              <h2 className="titular-h3">{texto(vacio?.titulo)}</h2>
+              <p className="cuerpo-p">{texto(vacio?.texto)}</p>
+              <button type="button" className="explorar-limpiar" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{texto(botonesFiltros?.limpiar)}</button>
             </div>
           ) : (
             <div className="explorar-grid">
@@ -320,8 +328,8 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           )}
 
           {!cargando && !error && totalPaginas > 1 && (
-            <nav className="explorar-paginacion" aria-label={texto(labels?.paginacion)}>
-              <button type="button" disabled={paginaActual <= 1} onClick={() => setSearchParams((actuales) => { const siguientes = new URLSearchParams(actuales); siguientes.set("pagina", String(paginaActual - 1)); return siguientes; })} aria-label={texto(botones?.anterior || labels?.anterior)}>
+            <nav className="explorar-paginacion" aria-label={texto(PLACEHOLDER)}>
+              <button type="button" disabled={paginaActual <= 1} onClick={() => setSearchParams((actuales) => { const siguientes = new URLSearchParams(actuales); siguientes.set("pagina", String(paginaActual - 1)); return siguientes; })} aria-label={texto(paginacionTextos?.anterior)}>
                 <Icono nombre="chevl" />
               </button>
               {Array.from({ length: totalPaginas }, (_, indice) => indice + 1).map((pagina) => (
@@ -329,7 +337,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
                   {pagina}
                 </button>
               ))}
-              <button type="button" disabled={paginaActual >= totalPaginas} onClick={() => setSearchParams((actuales) => { const siguientes = new URLSearchParams(actuales); siguientes.set("pagina", String(paginaActual + 1)); return siguientes; })} aria-label={texto(botones?.siguiente || labels?.siguiente)}>
+              <button type="button" disabled={paginaActual >= totalPaginas} onClick={() => setSearchParams((actuales) => { const siguientes = new URLSearchParams(actuales); siguientes.set("pagina", String(paginaActual + 1)); return siguientes; })} aria-label={texto(paginacionTextos?.siguiente)}>
                 <Icono nombre="chevr" />
               </button>
             </nav>
@@ -339,10 +347,10 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
 
       {filtrosAbiertos && (
         <div className="explorar-panel-capa" role="presentation" onMouseDown={(evento) => { if (evento.target === evento.currentTarget) setFiltrosAbiertos(false); }}>
-          <section className="explorar-panel" role="dialog" aria-modal="true" aria-label={texto(labels?.filtrosAbiertos || botones?.filtros)}>
+          <section className="explorar-panel" role="dialog" aria-modal="true" aria-label={texto(filtros?.titulo)}>
             <div className="explorar-panel-titulo">
-              <h2 className="titular-h3">{texto(labels?.filtrosAbiertos || botones?.filtros)}</h2>
-              <button type="button" className="explorar-cerrar-panel" onClick={() => setFiltrosAbiertos(false)} aria-label={texto(botones?.cerrar || labels?.cerrar)}><Icono nombre="x" /></button>
+              <h2 className="titular-h3">{texto(filtros?.titulo)}</h2>
+              <button type="button" className="explorar-cerrar-panel" onClick={() => setFiltrosAbiertos(false)} aria-label={texto(PLACEHOLDER)}><Icono nombre="x" /></button>
             </div>
             {controlesFiltros()}
           </section>
