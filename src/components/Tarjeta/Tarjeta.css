@@ -9,6 +9,11 @@
     overflow: hidden;
 }
 
+.tarjeta-evento .botones-evento {
+    display: flex;
+    align-items: center;
+}
+
 .tarjeta-evento .tarjeta-album:hover {
     box-shadow: var(--sombra-flotante);
 }
