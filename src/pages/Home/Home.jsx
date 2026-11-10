@@ -138,7 +138,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
 
                   <Boton className="cuerpo-p-fuerte home-buscador-filtros" tipo="primario">
                     <span>{hero?.buscador?.botones?.buscar}</span>
-                    <Icono nombre="sliders" hidden />
+                    <Icono nombre="sliders" className='boton-buscar-mobile' />
                   </Boton>
                 </form>
               </div>
@@ -163,6 +163,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                         )}
                       </p>
                     </div>
+                    <div>
                     <Boton
                       className="cuerpo-p-fuerte"
                       tipo="primario"
@@ -170,6 +171,8 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                     >
                       {hero?.destacado?.botones?.verEvento}
                     </Boton>
+                    </div>
+
                   </div>
                 </div>
               </article>
@@ -180,11 +183,8 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
             <Link
               to={enlaces.eventos}
               className="home-categoria home-categoria-todos"
-              hidden
             >
-              <span className="home-categoria-textos">
-                <span className="cuerpo-p-fuerte">{textosCategorias?.todos || PLACEHOLDER}</span>
-              </span>
+              {inicio?.filtrosMovil?.todos}
             </Link>
             {categorias?.map((categoria) => (
               <Link
@@ -265,7 +265,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                 to={enlaces.eventos}
               >
                 {destacados?.enlaces?.verTodos}
-                <Icono nombre="arrowr" />
+                <Icono className="flecha" nombre="arrowr" />
               </Link>
             </div>
 

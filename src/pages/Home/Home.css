@@ -5,6 +5,10 @@
   background: var(--fondo-pagina);
 }
 
+.boton-buscar-mobile {
+  display: none;
+}
+
 .home-hero {
   width: 100%;
   padding: 72px 80px;
@@ -214,6 +218,10 @@
   color: var(--texto-principal);
 }
 
+.home-categoria-todos {
+  display: none;
+}
+
 .home-categoria-icono {
   width: 44px;
   height: 44px;
@@ -250,7 +258,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 48px 80px 64px;
+  padding: 48px 80px 0;
 }
 
 .home-seccion-cabecera {
@@ -469,10 +477,9 @@
   }
 
   .home-categoria-todos {
-    display: inline-flex;
-    border-color: var(--fondo-inverso);
-    background: var(--fondo-inverso);
-    color: var(--texto-inverso);
+    border-color: var(--fondo-inverso) !important;
+    background: var(--fondo-inverso) !important;
+    color: var(--texto-inverso) !important;
   }
 
   .home-categoria-todos .home-categoria-textos > :first-child {
@@ -606,7 +613,9 @@
     padding: 0 1.25rem;
   }
 
-  .home-destacados:last-of-type .home-eventos-grid > .tarjeta-evento:nth-child(n + 4) {
+  .home-destacados:last-of-type
+    .home-eventos-grid
+    > .tarjeta-evento:nth-child(n + 4) {
     display: none;
   }
 
@@ -621,7 +630,10 @@
     border-radius: var(--radio-lg);
   }
 
-  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .portada-evento {
+  .home-destacados:last-of-type
+    .home-eventos-grid
+    .tarjeta-evento
+    .portada-evento {
     width: 4.5rem;
     height: 4.5rem;
     flex: 0 0 4.5rem;
@@ -629,7 +641,10 @@
     border-radius: var(--radio-md);
   }
 
-  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .texto-evento {
+  .home-destacados:last-of-type
+    .home-eventos-grid
+    .tarjeta-evento
+    .texto-evento {
     min-width: 0;
     flex: 1;
     gap: 0.375rem;
@@ -637,9 +652,21 @@
   }
 
   .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .etiqueta,
-  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .info-evento + .info-evento,
-  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .botones-evento > .boton {
+  .home-destacados:last-of-type
+    .home-eventos-grid
+    .tarjeta-evento
+    .info-evento
+    + .info-evento,
+  .home-destacados:last-of-type
+    .home-eventos-grid
+    .tarjeta-evento
+    .botones-evento
+    > .boton {
     display: none;
+  }
+
+  .boton-buscar-mobile {
+    display: block;
   }
 
   .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .titular-h3 {
@@ -650,34 +677,60 @@
     white-space: nowrap;
   }
 
-  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .info-evento {
+  .home-destacados:last-of-type
+    .home-eventos-grid
+    .tarjeta-evento
+    .info-evento {
     gap: 0.375rem;
     font-size: 0.75rem;
     line-height: 1rem;
   }
 
-  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .info-evento svg {
+  .home-destacados:last-of-type
+    .home-eventos-grid
+    .tarjeta-evento
+    .info-evento
+    svg {
     width: 0.875rem;
     height: 0.875rem;
     flex-shrink: 0;
   }
 
-  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .botones-evento {
+  .home-destacados:last-of-type
+    .home-eventos-grid
+    .tarjeta-evento
+    .botones-evento {
     padding: 0;
   }
 
-  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .botones-evento > div {
+  .home-destacados:last-of-type
+    .home-eventos-grid
+    .tarjeta-evento
+    .botones-evento
+    > div {
     display: flex;
     gap: 0.25rem;
     align-items: baseline;
   }
 
-  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .botones-evento .detalle-nota {
+  .home-destacados:last-of-type
+    .home-eventos-grid
+    .tarjeta-evento
+    .botones-evento
+    .detalle-nota {
     display: none;
   }
 
-  .home-destacados:last-of-type .home-eventos-grid .tarjeta-evento .botones-evento .cuerpo-m-fuerte {
+  .home-destacados:last-of-type
+    .home-eventos-grid
+    .tarjeta-evento
+    .botones-evento
+    .cuerpo-m-fuerte {
     font-size: 0.875rem;
     line-height: 1.25rem;
+  }
+
+  .inicio-publico .flecha {
+    display: none;
   }
 }
