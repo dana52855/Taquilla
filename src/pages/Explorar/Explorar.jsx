@@ -15,6 +15,9 @@ function obtenerLista(respuesta) {
   if (Array.isArray(respuesta?.eventos)) return respuesta.eventos;
   if (Array.isArray(respuesta?.data)) return respuesta.data;
   if (Array.isArray(respuesta?.resultados)) return respuesta.resultados;
+  if (Array.isArray(respuesta?.categorias)) return respuesta.categorias;
+  if (Array.isArray(respuesta?.ciudades)) return respuesta.ciudades;
+  if (Array.isArray(respuesta?.items)) return respuesta.items;
   return [];
 }
 
@@ -78,6 +81,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
   const [paginacion, setPaginacion] = useState({ total: null, paginas: null, paginaServidor: false });
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(false);
+  const [intento, setIntento] = useState(0);
 
   useEffect(() => {
     setBusqueda(busquedaActual);
@@ -143,7 +147,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
     }
     cargarEventos();
     return () => controlador.abort();
-  }, [categoriaActual, ciudadActual, busquedaActual, ordenActual, paginaActual]);
+  }, [categoriaActual, ciudadActual, busquedaActual, ordenActual, paginaActual, intento]);
 
   function actualizarFiltros(cambios, limpiar = false) {
     const siguientes = limpiar ? new URLSearchParams() : new URLSearchParams(searchParams);
@@ -297,7 +301,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           ) : error ? (
             <div className="explorar-estado">
               <p className="cuerpo-m">{texto(paginaExplorar?.error || labels?.error)}</p>
-              <button type="button" className="explorar-limpiar" onClick={() => setSearchParams(new URLSearchParams(searchParams))}>{texto(botones?.reintentar || labels?.reintentar)}</button>
+              <button type="button" className="explorar-limpiar" onClick={() => setIntento((actual) => actual + 1)}>{texto(botones?.reintentar || labels?.reintentar)}</button>
             </div>
           ) : eventosVisibles.length === 0 ? (
             <div className="explorar-vacio">
