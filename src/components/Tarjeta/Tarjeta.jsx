@@ -12,7 +12,37 @@ const tipos = {
   familiares: "Familia",
 };
 
-const Tarjeta = ({ textos, evento }) => {
+const formatearFecha = (fecha, en) => {
+  if (!fecha) return "";
+
+  const fechaEvento = new Date(fecha);
+  if (Number.isNaN(fechaEvento.getTime())) return fecha;
+
+  const idioma = en ? "en-US" : "es-CO";
+  const diaSemana = new Intl.DateTimeFormat(idioma, {
+    weekday: "short",
+  }).format(fechaEvento);
+  const diaMes = new Intl.DateTimeFormat(idioma, {
+    day: "numeric",
+  }).format(fechaEvento);
+  const mes = new Intl.DateTimeFormat(idioma, {
+    month: "short",
+  }).format(fechaEvento);
+  const hora = new Intl.DateTimeFormat(idioma, {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(fechaEvento);
+
+  if (en) {
+    return `${diaSemana} ${mes} ${diaMes} · ${hora}`;
+  }
+
+  const diaCapitalizado = diaSemana.charAt(0).toUpperCase() + diaSemana.slice(1);
+  return `${diaCapitalizado} ${diaMes} ${mes} · ${hora}`;
+};
+
+const Tarjeta = ({ textos, evento, en = false }) => {
   const destacado = textos?.paginas?.inicio?.hero?.destacado;
   return (
     <span className="tarjeta-evento">
@@ -24,7 +54,7 @@ const Tarjeta = ({ textos, evento }) => {
         <div className="titular-h3">{evento?.titulo}</div>
         <div className="cuerpo-p info-evento">
           <Icono nombre="calendar" />
-          <div>{evento?.fecha}</div>
+          <div>{formatearFecha(evento?.fecha, en)}</div>
         </div>
         <div className="cuerpo-p info-evento">
           <Icono nombre="pin" />
