@@ -43,6 +43,10 @@
   color: var(--texto-secundario);
 }
 
+.explorar-resumen-corto {
+  display: none;
+}
+
 .explorar-cuerpo {
   display: grid;
   grid-template-columns: 18rem minmax(0, 1fr);
@@ -354,6 +358,14 @@
   .explorar-resumen {
     font-size: 0.875rem;
     line-height: 1.25rem;
+  }
+
+  .explorar-resumen-largo {
+    display: none;
+  }
+
+  .explorar-resumen-corto {
+    display: block;
   }
 
   .explorar-cuerpo {
