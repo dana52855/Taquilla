@@ -38,7 +38,7 @@ const Tarjeta = ({ textos, evento }) => {
             <div className="cuerpo-m-fuerte">{`$${evento?.precioDesde}`}</div>
           </div>
           <div>
-            <Boton className="cuerpo-p-fuerte" tipo="secundario">
+            <Boton className="cuerpo-p-fuerte" tipo="secundario" href={`eventos?slug=${evento?.slug}`}>
               {destacado?.botones?.verEvento}
             </Boton>
           </div>

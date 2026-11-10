@@ -167,7 +167,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                     <Boton
                       className="cuerpo-p-fuerte"
                       tipo="primario"
-                      href={enlaces.eventos}
+                      href={`${enlaces.eventos}?slug=${eventoPrincipal?.slug}`}
                     >
                       {hero?.destacado?.botones?.verEvento}
                     </Boton>
