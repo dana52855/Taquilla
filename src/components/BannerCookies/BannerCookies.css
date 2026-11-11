@@ -51,7 +51,7 @@
   .banner-cookies {
     bottom: 1rem;
     width: calc(100% - 2rem);
-    min-height: 0;
+    min-height: 188px;
     align-items: stretch;
     flex-direction: column;
     gap: 16px;
