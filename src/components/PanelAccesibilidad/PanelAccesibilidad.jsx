@@ -7,8 +7,8 @@ const CLAVE_PREFERENCIAS = 'taquilla-accesibilidad';
 function leerPreferencias() {
   try {
     const guardadas = JSON.parse(localStorage.getItem(CLAVE_PREFERENCIAS));
-    const altoContrasteSistema = window.matchMedia?.('(prefers-contrast: more)').matches ?? false;
-    const reducirMovimientoSistema = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    const altoContrasteSistema = window.matchMedia?.('(prefers-contrast: more)')?.matches ?? false;
+    const reducirMovimientoSistema = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
     return {
       tamanoTexto: guardadas?.tamanoTexto ?? 0,
       altoContraste: guardadas?.altoContraste ?? altoContrasteSistema,
