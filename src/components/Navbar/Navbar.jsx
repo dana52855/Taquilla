@@ -59,11 +59,11 @@ const Navbar = ({
             </div>
             <div className='seccion-utilidades'>
               {isMobile && menuMovil?.secciones?.accesibilidad}
-              <BotonIcono ancho={40} tipo='secundario' icono='accesibilidad' onClick={abrirAccesibilidad} />
+              <BotonIcono ancho={40} tipo='secundario' icono='person' ariaLabel={nav?.aria?.accesibilidad} onClick={abrirAccesibilidad} />
             </div>
             <div className='seccion-utilidades'>
               {isMobile && menuMovil?.secciones?.idioma}
-              <SelectorIdioma en={en} alternarIdioma={alternarIdioma} />
+              <SelectorIdioma en={en} alternarIdioma={alternarIdioma} aria-label={nav?.aria?.idioma} />
             </div>
             <div className="navbar-botones">
               <Boton className='cuerpo-p-fuerte' tipo={isMobile ? 'primario' : 'secundario'} href={enlaces['ingresar']}>{nav?.botones?.ingresar}</Boton>
