@@ -221,23 +221,50 @@ body.accesibilidad-espaciado-lectura label {
   letter-spacing: .03em;
 }
 
-body[data-tamano-texto="1"] .cuerpo-p,
-body[data-tamano-texto="1"] .cuerpo-p-fuerte,
+body[data-tamano-texto="1"] .titular-display { font-size: 57.2px; }
+body[data-tamano-texto="1"] .titular-h1 { font-size: 37.4px; }
+body[data-tamano-texto="1"] .titular-h2 { font-size: 26.4px; }
+body[data-tamano-texto="1"] .titular-h3 { font-size: 22px; }
+body[data-tamano-texto="1"] .titular-h4 { font-size: 17.6px; }
+body[data-tamano-texto="1"] .cuerpo-g { font-size: 19.8px; }
 body[data-tamano-texto="1"] .cuerpo-m,
-body[data-tamano-texto="1"] .cuerpo-m-fuerte {
-  font-size: 1.1em;
-}
+body[data-tamano-texto="1"] .cuerpo-m-fuerte { font-size: 17.6px; }
+body[data-tamano-texto="1"] .cuerpo-p,
+body[data-tamano-texto="1"] .cuerpo-p-fuerte { font-size: 15.4px; }
+body[data-tamano-texto="1"] .detalle-nota,
+body[data-tamano-texto="1"] .detalle-nota-fuerte,
+body[data-tamano-texto="1"] .detalle-etiqueta { font-size: 13.2px; }
+body[data-tamano-texto="1"] .dato-cifra { font-size: 33px; }
+body[data-tamano-texto="1"] .titular-gigante { font-size: 123.2px; }
 
-body[data-tamano-texto="2"] .cuerpo-p,
-body[data-tamano-texto="2"] .cuerpo-p-fuerte,
+body[data-tamano-texto="2"] .titular-display { font-size: 62.4px; }
+body[data-tamano-texto="2"] .titular-h1 { font-size: 40.8px; }
+body[data-tamano-texto="2"] .titular-h2 { font-size: 28.8px; }
+body[data-tamano-texto="2"] .titular-h3 { font-size: 24px; }
+body[data-tamano-texto="2"] .titular-h4 { font-size: 19.2px; }
+body[data-tamano-texto="2"] .cuerpo-g { font-size: 21.6px; }
 body[data-tamano-texto="2"] .cuerpo-m,
-body[data-tamano-texto="2"] .cuerpo-m-fuerte {
-  font-size: 1.2em;
-}
+body[data-tamano-texto="2"] .cuerpo-m-fuerte { font-size: 19.2px; }
+body[data-tamano-texto="2"] .cuerpo-p,
+body[data-tamano-texto="2"] .cuerpo-p-fuerte { font-size: 16.8px; }
+body[data-tamano-texto="2"] .detalle-nota,
+body[data-tamano-texto="2"] .detalle-nota-fuerte,
+body[data-tamano-texto="2"] .detalle-etiqueta { font-size: 14.4px; }
+body[data-tamano-texto="2"] .dato-cifra { font-size: 36px; }
+body[data-tamano-texto="2"] .titular-gigante { font-size: 134.4px; }
 
-body[data-tamano-texto="-1"] .cuerpo-p,
-body[data-tamano-texto="-1"] .cuerpo-p-fuerte,
+body[data-tamano-texto="-1"] .titular-display { font-size: 46.8px; }
+body[data-tamano-texto="-1"] .titular-h1 { font-size: 30.6px; }
+body[data-tamano-texto="-1"] .titular-h2 { font-size: 21.6px; }
+body[data-tamano-texto="-1"] .titular-h3 { font-size: 18px; }
+body[data-tamano-texto="-1"] .titular-h4 { font-size: 14.4px; }
+body[data-tamano-texto="-1"] .cuerpo-g { font-size: 16.2px; }
 body[data-tamano-texto="-1"] .cuerpo-m,
-body[data-tamano-texto="-1"] .cuerpo-m-fuerte {
-  font-size: .9em;
-}
+body[data-tamano-texto="-1"] .cuerpo-m-fuerte { font-size: 14.4px; }
+body[data-tamano-texto="-1"] .cuerpo-p,
+body[data-tamano-texto="-1"] .cuerpo-p-fuerte { font-size: 12.6px; }
+body[data-tamano-texto="-1"] .detalle-nota,
+body[data-tamano-texto="-1"] .detalle-nota-fuerte,
+body[data-tamano-texto="-1"] .detalle-etiqueta { font-size: 10.8px; }
+body[data-tamano-texto="-1"] .dato-cifra { font-size: 27px; }
+body[data-tamano-texto="-1"] .titular-gigante { font-size: 100.8px; }
