@@ -114,8 +114,8 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
   const paginaActual = Math.max(1, Number(searchParams.get("pagina") || 1) || 1);
   const fechaDesde = searchParams.get("desde") || "";
   const fechaHasta = searchParams.get("hasta") || "";
-  const precioDesde = Math.max(PRECIO_MINIMO, Number(searchParams.get("precioMin") || PRECIO_MINIMO));
-  const precioHasta = Math.min(PRECIO_MAXIMO, Number(searchParams.get("precioMax") || PRECIO_MAXIMO));
+  const precioDesde = Math.min(PRECIO_MAXIMO - 5000, Math.max(PRECIO_MINIMO, Number(searchParams.get("precioMin") || PRECIO_MINIMO)));
+  const precioHasta = Math.max(PRECIO_MINIMO + 5000, Math.min(PRECIO_MAXIMO, Number(searchParams.get("precioMax") || PRECIO_MAXIMO)));
 
   const [busqueda, setBusqueda] = useState(busquedaActual);
   const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
