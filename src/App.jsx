@@ -35,23 +35,10 @@ function App() {
       ? leerCookie("idioma") || "es"
       : "es";
   });
-  const [activo, setActivo] = useState(leerSeccion);
-  const [consulta, setConsulta] = useState("");
-  const [textoGrande, setTextoGrande] = useState(false);
   const [accesibilidadAbierta, setAccesibilidadAbierta] = useState(false);
 
   const datos = useTextos(idioma);
   const en = idioma === "en";
-
-  useEffect(() => {
-    function actualizarSeccion() {
-      setActivo(leerSeccion());
-      setConsulta("");
-    }
-
-    window.addEventListener("hashchange", actualizarSeccion);
-    return () => window.removeEventListener("hashchange", actualizarSeccion);
-  }, []);
 
   useEffect(() => {
     document.documentElement.lang = idioma;
@@ -95,7 +82,6 @@ function App() {
           datos={datos}
           en={en}
           alternarIdioma={alternarIdioma}
-          alternarTexto={() => setTextoGrande(!textoGrande)}
           enlaces={enlaces}
           consentimiento={consentimiento}
           onAceptarCookies={aceptarCookies}
