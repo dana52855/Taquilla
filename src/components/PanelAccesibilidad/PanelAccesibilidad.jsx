@@ -46,7 +46,7 @@ export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDe
     cuerpo.dataset.tamanoTexto = String(preferencias.tamanoTexto);
   }, [preferencias]);
 
-  if (!abierto) return null;
+  if (!abierto || !panel) return null;
 
   function cambiarPreferencia(clave) {
     setPreferencias((actuales) => ({
