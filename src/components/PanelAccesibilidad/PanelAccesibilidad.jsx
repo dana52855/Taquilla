@@ -4,26 +4,27 @@ import Icono from '../Icono';
 
 const CLAVE_PREFERENCIAS = 'taquilla-accesibilidad';
 
+function preferenciasPredeterminadas() {
+  return {
+    tamanoTexto: 0,
+    altoContraste: window.matchMedia?.('(prefers-contrast: more)')?.matches ?? false,
+    reducirMovimiento: window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false,
+    subrayarEnlaces: false,
+    espaciadoLectura: false,
+  };
+}
+
 function leerPreferencias() {
+  const iniciales = preferenciasPredeterminadas();
+
   try {
     const guardadas = JSON.parse(localStorage.getItem(CLAVE_PREFERENCIAS));
-    const altoContrasteSistema = window.matchMedia?.('(prefers-contrast: more)')?.matches ?? false;
-    const reducirMovimientoSistema = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
     return {
-      tamanoTexto: guardadas?.tamanoTexto ?? 0,
-      altoContraste: guardadas?.altoContraste ?? altoContrasteSistema,
-      reducirMovimiento: guardadas?.reducirMovimiento ?? reducirMovimientoSistema,
-      subrayarEnlaces: guardadas?.subrayarEnlaces ?? false,
-      espaciadoLectura: guardadas?.espaciadoLectura ?? false,
+      ...iniciales,
+      ...guardadas,
     };
   } catch {
-    return {
-      tamanoTexto: 0,
-      altoContraste: false,
-      reducirMovimiento: false,
-      subrayarEnlaces: false,
-      espaciadoLectura: false,
-    };
+    return iniciales;
   }
 }
 
@@ -83,13 +84,7 @@ export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDe
   }
 
   function restablecer() {
-    setPreferencias({
-      tamanoTexto: 0,
-      altoContraste: false,
-      reducirMovimiento: false,
-      subrayarEnlaces: false,
-      espaciadoLectura: false,
-    });
+    setPreferencias(preferenciasPredeterminadas());
   }
 
   const filas = [
