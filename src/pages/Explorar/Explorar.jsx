@@ -436,6 +436,9 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
               <input aria-label={filtros?.buscar} placeholder={filtros?.buscar} value={busqueda} onChange={(evento) => setBusqueda(evento.target.value)} />
               <button type="submit" aria-label={filtros?.buscar}><Icono nombre="arrowr" /></button>
             </form>
+            <button type="button" className="explorar-abrir-filtros" onClick={() => setFiltrosAbiertos(true)} aria-label={filtros?.titulo}>
+              <Icono nombre="sliders" />
+            </button>
             <label className="explorar-orden">
               <span className="cuerpo-p">{orden?.etiqueta}</span>
               <select className="explorar-select explorar-select-orden" value={ordenActual} onChange={(evento) => actualizarFiltros({ orden: evento.target.value })}>
