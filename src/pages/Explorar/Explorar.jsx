@@ -350,17 +350,17 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           <h3 className="cuerpo-p-fuerte">{filtros?.fecha ?? PLACEHOLDER}</h3>
           <div className="explorar-chips explorar-chips-fecha">
             {[
-              ["hoy", filtros?.fechas?.hoy],
-              ["finSemana", filtros?.fechas?.finSemana],
-              ["mes", filtros?.fechas?.mes],
-            ].filter((opcion) => opcion[1]).map(([clave, etiqueta]) => {
+              ["hoy", filtros?.fechas?.hoy ?? PLACEHOLDER],
+              ["finSemana", filtros?.fechas?.finSemana ?? PLACEHOLDER],
+              ["mes", filtros?.fechas?.mes ?? PLACEHOLDER],
+            ].map(([clave, etiqueta]) => {
               const rango = rangoFecha(clave);
               const activo = fechaDesde === rango.desde && fechaHasta === rango.hasta;
               return <button key={clave} type="button" className={`explorar-chip ${activo ? "activo" : ""}`} aria-pressed={activo} onClick={() => aplicarFecha(activo ? "" : clave)}>{etiqueta}</button>;
             })}
-            {filtros?.fechas?.elegir && (
+            {(
               <button type="button" className={`explorar-chip ${fechaActiva === "personalizada" ? "activo" : ""}`} onClick={() => document.getElementById(movil ? "explorar-fecha-desde-movil" : "explorar-fecha-desde")?.focus()}>
-                {filtros.fechas.elegir}
+                {filtros?.fechas?.elegir ?? PLACEHOLDER}
               </button>
             )}
           </div>
