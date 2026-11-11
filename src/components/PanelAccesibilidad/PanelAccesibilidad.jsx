@@ -46,6 +46,17 @@ export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDe
     cuerpo.dataset.tamanoTexto = String(preferencias.tamanoTexto);
   }, [preferencias]);
 
+  useEffect(() => {
+    if (!abierto) return;
+
+    function cerrarConEscape(evento) {
+      if (evento.key === 'Escape') onCerrar?.();
+    }
+
+    document.addEventListener('keydown', cerrarConEscape);
+    return () => document.removeEventListener('keydown', cerrarConEscape);
+  }, [abierto, onCerrar]);
+
   if (!abierto || !panel) return null;
 
   function cambiarPreferencia(clave) {
@@ -104,7 +115,7 @@ export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDe
           {filas.map(({ clave, contenido }) => (
             <div className="panel-accesibilidad-fila" key={clave}>
               <div className="panel-accesibilidad-descripcion">
-                <p className="cuerpo-m-fuerte">{obtenerTexto(contenido?.titulo)}</p>
+                <p className="cuerpo-m-fuerte">{obtenerTexto(contenido?.titulo ?? contenido?.label ?? contenido)}</p>
                 <p className="cuerpo-p">{obtenerTexto(contenido?.descripcion ?? contenido?.texto)}</p>
               </div>
               <button
