@@ -25,10 +25,13 @@ function eliminarCookie(nombre) {
 }
 
 function App() {
-  const [consentimiento, setConsentimiento] = useState(() => leerCookie("consentimiento"));
+  const [consentimiento, setConsentimiento] = useState(() => {
+    const guardado = leerCookie("consentimiento");
+    return guardado === "aceptado" || guardado === "rechazado" ? guardado : null;
+  });
   const [idioma, setIdioma] = useState(() => {
     return leerCookie("consentimiento") === "aceptado"
-      ? leerCookie("idioma") || "es"
+      ? (leerCookie("idioma") === "en" ? "en" : "es")
       : "es";
   });
   const [accesibilidadAbierta, setAccesibilidadAbierta] = useState(false);
