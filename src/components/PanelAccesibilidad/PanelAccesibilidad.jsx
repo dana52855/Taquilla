@@ -27,7 +27,7 @@ function leerPreferencias() {
 
 function obtenerTexto(valor) {
   if (typeof valor === 'string') return valor;
-  return valor?.titulo ?? valor?.texto ?? valor?.descripcion ?? '';
+  return valor?.titulo ?? valor?.label ?? valor?.nombre ?? valor?.texto ?? valor?.descripcion ?? '';
 }
 
 export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDeclaracion }) {
@@ -86,7 +86,7 @@ export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDe
       <section className="panel-accesibilidad" role="dialog" aria-modal="true" aria-labelledby="titulo-accesibilidad">
         <header className="panel-accesibilidad-encabezado">
           <h2 id="titulo-accesibilidad" className="titular-h3">{obtenerTexto(panel?.titulo)}</h2>
-          <button className="panel-accesibilidad-cerrar" type="button" onClick={onCerrar} aria-label={obtenerTexto(panel?.cerrar)}>
+          <button className="panel-accesibilidad-cerrar" type="button" onClick={onCerrar} aria-label={obtenerTexto(panel?.cerrar ?? panel?.aria?.cerrar)}>
             <Icono nombre="x" />
           </button>
         </header>
@@ -121,12 +121,12 @@ export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDe
           ))}
         </div>
 
-        <p className="panel-accesibilidad-nota detalle-nota">{obtenerTexto(panel?.nota)}</p>
+        <p className="panel-accesibilidad-nota detalle-nota">{obtenerTexto(panel?.nota ?? panel?.textoGuardado)}</p>
 
         <footer className="panel-accesibilidad-pie">
-          <a href={enlaceDeclaracion}>{obtenerTexto(panel?.declaracion)}</a>
+          <a href={enlaceDeclaracion}>{obtenerTexto(panel?.declaracion ?? panel?.enlaceDeclaracion)}</a>
           <button type="button" className="cuerpo-p-fuerte" onClick={restablecer}>
-            {obtenerTexto(panel?.restablecer)}
+            {obtenerTexto(panel?.restablecer ?? panel?.botones?.restablecer)}
           </button>
         </footer>
       </section>
