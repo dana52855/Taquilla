@@ -1,50 +1,71 @@
 .banner-cookies {
-    position: fixed;
-    z-index: 10;
-    bottom: 1rem;
-    left: 1rem;
-    right: 1rem;
-    display: flex;
-    max-width: 75rem;
-    align-items: center;
-    border-radius: var(--radio-xl);
-    background: var(--fondo-superficie);
-    border: 1px solid var(--borde-fuerte);
-    padding: 1.5rem 2rem;
-    gap: var(--espacio-8);
-    margin: 0 auto;
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  width: min(1200px, calc(100% - 2rem));
+  min-height: 98px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.5rem 2rem;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-xl);
+  background: var(--fondo-superficie);
+  box-shadow: 0 8px 12px #1414141a;
 }
 
-.banner-cookies .texto {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    width: 100%;
-    box-sizing: border-box;
+.banner-cookies-texto {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.banner-cookies .texto .titulo {
-    color: var(--texto-principal);
+.banner-cookies-texto p {
+  margin: 0;
 }
 
-.banner-cookies .texto .descripcion {
-    color: var(--texto-secundario);
+.banner-cookies-texto .cuerpo-m-fuerte {
+  color: var(--texto-principal);
 }
 
-.banner-cookies .botones {
-    display: flex;
-    gap: var(--espacio-3);
-    align-items: center;
+.banner-cookies-texto .cuerpo-p {
+  color: var(--texto-secundario);
+}
+
+.banner-cookies-botones {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.banner-cookies-botones .boton {
+  min-width: 100px;
 }
 
 @media (max-width: 640px) {
-    .banner-cookies {
-        flex-direction: column;
-        padding: 1.25rem;
-        gap: var(--espacio-4);
-    }
+  .banner-cookies {
+    bottom: 1rem;
+    width: calc(100% - 2rem);
+    min-height: 0;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
 
-    .banner-cookies .botones {
-        width: 100%;
-    }
+  .banner-cookies-botones {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .banner-cookies-botones .boton {
+    flex: 1;
+    min-width: 0;
+  }
 }
