@@ -24,10 +24,6 @@ function eliminarCookie(nombre) {
   document.cookie = `${nombre}=; max-age=0; path=/; SameSite=Lax`;
 }
 
-function leerSeccion() {
-  return window.location.hash.slice(1) || "inicio";
-}
-
 function App() {
   const [consentimiento, setConsentimiento] = useState(() => leerCookie("consentimiento"));
   const [idioma, setIdioma] = useState(() => {
