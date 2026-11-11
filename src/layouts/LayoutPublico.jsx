@@ -8,7 +8,6 @@ export default function LayoutPublico({
   datos,
   en,
   alternarIdioma,
-  alternarTexto,
   enlaces,
   consentimiento,
   onAceptarCookies,
@@ -23,7 +22,6 @@ export default function LayoutPublico({
         {...datos}
         en={en}
         alternarIdioma={alternarIdioma}
-        alternarTexto={alternarTexto}
         onAbrirAccesibilidad={onAbrirAccesibilidad}
         enlaces={enlaces}
       />
