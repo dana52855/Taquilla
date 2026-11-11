@@ -12,11 +12,8 @@ import Icono from '../Icono';
 const Navbar = ({
   textos,
   cargando,
-  error,
-  recargar,
   en,
   alternarIdioma,
-  alternarTexto,
   onAbrirAccesibilidad,
   enlaces
 }) => {
