@@ -97,6 +97,9 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                         onChange={(evento) => setConsulta(evento.target.value)}
                         placeholder={hero?.buscador?.placeholders?.que}
                       />
+                      <span className="home-buscador-resumen" hidden>
+                        {ciudad} · {hero?.buscador?.placeholders?.cuando}
+                      </span>
                     </span>
                   </label>
 
@@ -133,8 +136,9 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                     </span>
                   </label>
 
-                  <Boton className="cuerpo-p-fuerte" tipo="primario">
-                    {hero?.buscador?.botones?.buscar}
+                  <Boton className="cuerpo-p-fuerte home-buscador-filtros" tipo="primario">
+                    <span>{hero?.buscador?.botones?.buscar}</span>
+                    <Icono nombre="sliders" className='boton-buscar-mobile' />
                   </Boton>
                 </form>
               </div>
@@ -159,13 +163,16 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                         )}
                       </p>
                     </div>
+                    <div>
                     <Boton
                       className="cuerpo-p-fuerte"
                       tipo="primario"
-                      href={enlaces.eventos}
+                      href={`${enlaces.eventos}?slug=${eventoPrincipal?.slug}`}
                     >
                       {hero?.destacado?.botones?.verEvento}
                     </Boton>
+                    </div>
+
                   </div>
                 </div>
               </article>
@@ -173,6 +180,12 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
           </section>
 
           <section className="home-categorias">
+            <Link
+              to={enlaces.eventos}
+              className="home-categoria home-categoria-todos"
+            >
+              {inicio?.filtrosMovil?.todos}
+            </Link>
             {categorias?.map((categoria) => (
               <Link
                 to={`${enlaces.eventos}?categoria=${categoria?.id}`}
@@ -233,6 +246,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                     key={evento?.id}
                     textos={textos}
                     evento={evento}
+                    en={en}
                   />
                 ))}
               </div>
@@ -252,7 +266,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                 to={enlaces.eventos}
               >
                 {destacados?.enlaces?.verTodos}
-                <Icono nombre="arrowr" />
+                <Icono className="flecha" nombre="arrowr" />
               </Link>
             </div>
 
@@ -273,6 +287,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                     key={evento?.id}
                     textos={textos}
                     evento={evento}
+                    en={en}
                   />
                 ))}
               </div>

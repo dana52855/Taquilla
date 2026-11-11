@@ -27,6 +27,7 @@ const Portada = ({ tamano = 'p', patron, color1, color2 }) => {
   return (
     <svg
       viewBox={`0 0 ${ancho} ${alto}`}
+      preserveAspectRatio="xMidYMid meet"
       xmlns="http://www.w3.org/2000/svg"
     >
       {renderizarPlantilla()}

@@ -5,6 +5,7 @@ import useEventos from "./hooks/useEventos.js";
 import { Route, Routes } from "react-router-dom";
 import LayoutPublico from "./layouts/LayoutPublico.jsx";
 import Home from "./pages/Home/Home.jsx";
+import Explorar from "./pages/Explorar/Explorar.jsx";
 
 function leerSeccion() {
   return window.location.hash.slice(1) || "inicio";
@@ -60,7 +61,9 @@ function App() {
   const enlaces = {
     ingresar: '/ingresar',
     crearCuenta: '/crearCuenta',
+    inicio: '/',
     eventos: '/eventos',
+    explorar: '/explorar',
     terminos: '/terminos-de-uso',
     accesibilidad: '/accesiblidad'
   }
@@ -77,6 +80,11 @@ function App() {
           enlaces={enlaces}
         />}>
           <Route index element={<Home
+            {...datos}
+            en={en}
+            enlaces={enlaces}
+          />} />
+          <Route path="explorar" element={<Explorar
             {...datos}
             en={en}
             enlaces={enlaces}
