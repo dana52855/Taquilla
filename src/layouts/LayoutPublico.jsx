@@ -35,7 +35,7 @@ export default function LayoutPublico({
         en={en}
         enlaces={enlaces}
       />
-      {consentimiento === null && (
+      {consentimiento === null && datos?.textos?.cookies?.banner && (
         <BannerCookies
           textos={datos?.textos}
           onAceptar={onAceptarCookies}
