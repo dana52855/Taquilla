@@ -12,11 +12,9 @@ import Icono from '../Icono';
 const Navbar = ({
   textos,
   cargando,
-  error,
-  recargar,
   en,
   alternarIdioma,
-  alternarTexto,
+  onAbrirAccesibilidad,
   enlaces
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,12 +22,17 @@ const Navbar = ({
   const menuMovil = textos?.menuMovil;
   const isMobile = useMediaQuery("(max-width: 1023px)");
 
+  function abrirAccesibilidad() {
+    setIsOpen(false);
+    onAbrirAccesibilidad?.();
+  }
+
   return (
     <header className='header'>
       <div className="header-mobile">
         <MarcaInverso />
         <div className="header-mobile-botones">
-          <BotonIcono ancho={44} tipo='primario' icono='search'></BotonIcono>
+          <BotonIcono ancho={44} tipo='primario' icono='search' />
           {!isOpen && <Boton className='cuerpo-p-fuerte' tipo='primario' href={enlaces['ingresar']}>{menuMovil?.botones?.ingresar}</Boton>}
           <BotonIcono ancho={44} tipo='primario' icono='menu' onClick={() => setIsOpen(true)} />
         </div>
@@ -39,7 +42,7 @@ const Navbar = ({
           <div className="navbar-left">
             <div className='marca-navbar'>
               <Marca />
-              {isMobile && <BotonIcono ancho={44} tipo='fantasma' icono='x' onClick={() => setIsOpen(false)}></BotonIcono>}
+              {isMobile && <BotonIcono ancho={44} tipo='fantasma' icono='x' onClick={() => setIsOpen(false)} />}
             </div>
             <div className="cuerpo-p-fuerte navbar-enlaces">
               <Link to={enlaces['inicio']}>{nav?.enlaces?.inicio}</Link>
@@ -48,16 +51,16 @@ const Navbar = ({
           </div>
           <div className="navbar-right">
             <div className="buscador-navbar">
-              <Icono nombre='search'></Icono>
+              <Icono nombre='search' />
               <input className='cuerpo-p' type="text" placeholder={nav?.buscador?.placeholder} />
             </div>
             <div className='seccion-utilidades'>
               {isMobile && menuMovil?.secciones?.accesibilidad}
-              <BotonIcono ancho={40} tipo='secundario' icono='person' />
+              <BotonIcono ancho={40} tipo='secundario' icono='person' ariaLabel={nav?.aria?.accesibilidad} onClick={abrirAccesibilidad} />
             </div>
             <div className='seccion-utilidades'>
               {isMobile && menuMovil?.secciones?.idioma}
-              <SelectorIdioma en={en} alternarIdioma={alternarIdioma} />
+              <SelectorIdioma en={en} alternarIdioma={alternarIdioma} aria-label={nav?.aria?.idioma} />
             </div>
             <div className="navbar-botones">
               <Boton className='cuerpo-p-fuerte' tipo={isMobile ? 'primario' : 'secundario'} href={enlaces['ingresar']}>{nav?.botones?.ingresar}</Boton>
@@ -66,7 +69,7 @@ const Navbar = ({
           </div>
         </nav>
       }
-    </header >
+    </header>
   )
 };
 

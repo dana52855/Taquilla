@@ -1,61 +1,67 @@
 import { useEffect, useState } from "react";
 import { useTextos } from "./hooks/useTextos";
-import Tarjeta from "./components/Tarjeta/Tarjeta";
-import useEventos from "./hooks/useEventos.js";
 import { Route, Routes } from "react-router-dom";
 import LayoutPublico from "./layouts/LayoutPublico.jsx";
 import Home from "./pages/Home/Home.jsx";
 import Explorar from "./pages/Explorar/Explorar.jsx";
 
-function leerSeccion() {
-  return window.location.hash.slice(1) || "inicio";
+const DURACION_COOKIE = 60 * 60 * 24 * 365;
+
+function leerCookie(nombre) {
+  const prefijo = `${nombre}=`;
+  const encontrada = document.cookie
+    .split("; ")
+    .find((cookie) => cookie.startsWith(prefijo));
+
+  return encontrada ? decodeURIComponent(encontrada.slice(prefijo.length)) : null;
+}
+
+function guardarCookie(nombre, valor) {
+  document.cookie = `${nombre}=${encodeURIComponent(valor)}; max-age=${DURACION_COOKIE}; path=/; SameSite=Lax`;
+}
+
+function eliminarCookie(nombre) {
+  document.cookie = `${nombre}=; max-age=0; path=/; SameSite=Lax`;
 }
 
 function App() {
-  const [idioma, setIdioma] = useState("es");
-  const [activo, setActivo] = useState(leerSeccion);
-  const [consulta, setConsulta] = useState("");
-  const [textoGrande, setTextoGrande] = useState(false);
+  const [consentimiento, setConsentimiento] = useState(() => {
+    const guardado = leerCookie("consentimiento");
+    return guardado === "aceptado" || guardado === "rechazado" ? guardado : null;
+  });
+  const [idioma, setIdioma] = useState(() => {
+    return leerCookie("consentimiento") === "aceptado"
+      ? (leerCookie("idioma") === "en" ? "en" : "es")
+      : "es";
+  });
+  const [accesibilidadAbierta, setAccesibilidadAbierta] = useState(false);
 
   const datos = useTextos(idioma);
   const en = idioma === "en";
 
-  const [filtros, setFiltros] = useState({
-    consulta: "",
-  });
-
-  const destacado = null;
-
   useEffect(() => {
-    function actualizarSeccion() {
-      setActivo(leerSeccion());
-      setConsulta("");
+    document.documentElement.lang = idioma;
+  }, [idioma]);
+
+  function aceptarCookies() {
+    guardarCookie("consentimiento", "aceptado");
+    guardarCookie("idioma", idioma);
+    setConsentimiento("aceptado");
+  }
+
+  function rechazarCookies() {
+    guardarCookie("consentimiento", "rechazado");
+    eliminarCookie("idioma");
+    setConsentimiento("rechazado");
+  }
+
+  function alternarIdioma() {
+    const nuevoIdioma = en ? "es" : "en";
+    setIdioma(nuevoIdioma);
+
+    if (consentimiento === "aceptado") {
+      guardarCookie("idioma", nuevoIdioma);
     }
-
-    window.addEventListener("hashchange", actualizarSeccion);
-
-    return () => {
-      window.removeEventListener("hashchange", actualizarSeccion);
-    };
-  }, []);
-
-  function buscar(valor) {
-    setConsulta(valor);
-  }
-
-  function abrirEvento(evento) {
-    console.log("Evento seleccionado:", evento);
-  }
-
-  function filtrarCategoria(categoria) {
-    setFiltros({
-      consulta: "",
-      categoria: categoria,
-    });
-
-    document.getElementById("eventos")?.scrollIntoView({
-      behavior: "smooth",
-    });
   }
 
   const enlaces = {
@@ -65,19 +71,23 @@ function App() {
     eventos: '/eventos',
     explorar: '/explorar',
     terminos: '/terminos-de-uso',
-    accesibilidad: '/accesiblidad'
-  }
+    accesibilidad: '/accesibilidad'
+  };
 
-  const { eventos } = useEventos();
   return (
     <div className="sitio">
       <Routes>
         <Route path="/" element={<LayoutPublico
           datos={datos}
           en={en}
-          alternarIdioma={() => setIdioma(en ? 'es' : 'en')}
-          alternarTexto={() => setTextoGrande(!textoGrande)}
+          alternarIdioma={alternarIdioma}
           enlaces={enlaces}
+          consentimiento={consentimiento}
+          onAceptarCookies={aceptarCookies}
+          onRechazarCookies={rechazarCookies}
+          accesibilidadAbierta={accesibilidadAbierta}
+          onAbrirAccesibilidad={() => setAccesibilidadAbierta(true)}
+          onCerrarAccesibilidad={() => setAccesibilidadAbierta(false)}
         />}>
           <Route index element={<Home
             {...datos}
