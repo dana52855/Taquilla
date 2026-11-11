@@ -7,6 +7,7 @@ import "./Explorar.css";
 
 const API = import.meta.env.VITE_API_URL;
 const POR_PAGINA = 12;
+const PLACEHOLDER = "PLACEHOLDER";
 const PRECIO_MINIMO = 30000;
 const PRECIO_MAXIMO = 150000;
 
@@ -314,15 +315,15 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
       <div className={`explorar-filtros-contenido ${movil ? "explorar-filtros-contenido-movil" : ""}`}>
         {!movil && (
           <div className="explorar-filtros-cabecera">
-            <h2 className="titular-h3">{filtros?.titulo}</h2>
+            <h2 className="titular-h3">{filtros?.titulo ?? PLACEHOLDER}</h2>
             <button className="explorar-limpiar" type="button" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>
-              {botonesFiltros?.limpiar}
+              {botonesFiltros?.limpiar ?? PLACEHOLDER}
             </button>
           </div>
         )}
 
         <section className="explorar-filtro-grupo explorar-categorias-opciones">
-          <h3 className="cuerpo-p-fuerte">{filtros?.categoria}</h3>
+          <h3 className="cuerpo-p-fuerte">{filtros?.categoria ?? PLACEHOLDER}</h3>
           <div className={movil ? "explorar-chips" : "explorar-lista-categorias"}>
             {categorias.map((categoria) => {
               const clave = obtenerClaveCategoria(categoria);
@@ -346,7 +347,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
         <div className="explorar-filtro-separador" />
 
         <section className="explorar-filtro-grupo">
-          <h3 className="cuerpo-p-fuerte">{filtros?.fecha}</h3>
+          <h3 className="cuerpo-p-fuerte">{filtros?.fecha ?? PLACEHOLDER}</h3>
           <div className="explorar-chips explorar-chips-fecha">
             {[
               ["hoy", filtros?.fechas?.hoy],
@@ -364,20 +365,20 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
             )}
           </div>
           <div className="explorar-fechas-personalizadas">
-            <label htmlFor={movil ? "explorar-fecha-desde-movil" : "explorar-fecha-desde"}>{filtros?.fechas?.desde}</label>
+            <label htmlFor={movil ? "explorar-fecha-desde-movil" : "explorar-fecha-desde"}>{filtros?.fechas?.desde ?? PLACEHOLDER}</label>
             <input id={movil ? "explorar-fecha-desde-movil" : "explorar-fecha-desde"} type="date" value={fechaPersonalizadaDesde} onChange={(evento) => setFechaPersonalizadaDesde(evento.target.value)} />
-            <label htmlFor={movil ? "explorar-fecha-hasta-movil" : "explorar-fecha-hasta"}>{filtros?.fechas?.hasta}</label>
+            <label htmlFor={movil ? "explorar-fecha-hasta-movil" : "explorar-fecha-hasta"}>{filtros?.fechas?.hasta ?? PLACEHOLDER}</label>
             <input id={movil ? "explorar-fecha-hasta-movil" : "explorar-fecha-hasta"} type="date" min={fechaPersonalizadaDesde || undefined} value={fechaPersonalizadaHasta} onChange={(evento) => setFechaPersonalizadaHasta(evento.target.value)} />
-            <button type="button" className="explorar-aplicar-secundario" onClick={aplicarFechaPersonalizada}>{filtros?.fechas?.aplicar}</button>
+            <button type="button" className="explorar-aplicar-secundario" onClick={aplicarFechaPersonalizada}>{filtros?.fechas?.aplicar ?? PLACEHOLDER}</button>
           </div>
         </section>
 
         <div className="explorar-filtro-separador" />
 
         <section className="explorar-filtro-grupo">
-          <label className="cuerpo-p-fuerte" htmlFor={movil ? "explorar-ciudad-movil" : "explorar-ciudad"}>{filtros?.ciudad}</label>
+          <label className="cuerpo-p-fuerte" htmlFor={movil ? "explorar-ciudad-movil" : "explorar-ciudad"}>{filtros?.ciudad ?? PLACEHOLDER}</label>
           <select id={movil ? "explorar-ciudad-movil" : "explorar-ciudad"} className="explorar-select" value={ciudadActual} onChange={(evento) => actualizarFiltros({ ciudad: evento.target.value })}>
-            <option value="">{filtros?.ciudades?.todas}</option>
+            <option value="">{filtros?.ciudades?.todas ?? PLACEHOLDER}</option>
             {ciudades.map((ciudad, indice) => {
               const nombre = obtenerNombre(ciudad);
               const valor = typeof ciudad === "string" ? ciudad : ciudad?.nombre || ciudad?.ciudad || ciudad?.slug || ciudad?.id || nombre;
@@ -389,22 +390,22 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
         <div className="explorar-filtro-separador" />
 
         <section className="explorar-filtro-grupo">
-          <h3 className="cuerpo-p-fuerte">{filtros?.precio}</h3>
+          <h3 className="cuerpo-p-fuerte">{filtros?.precio ?? PLACEHOLDER}</h3>
           <div className="explorar-precio-rangos">
-            <input aria-label={filtros?.precioMinimo} type="range" min={PRECIO_MINIMO} max={PRECIO_MAXIMO} step="5000" value={precioTemporalDesde} onChange={(evento) => setPrecioTemporalDesde(Math.min(Number(evento.target.value), precioTemporalHasta - 5000))} />
-            <input aria-label={filtros?.precioMaximo} type="range" min={PRECIO_MINIMO} max={PRECIO_MAXIMO} step="5000" value={precioTemporalHasta} onChange={(evento) => setPrecioTemporalHasta(Math.max(Number(evento.target.value), precioTemporalDesde + 5000))} />
+            <input aria-label={filtros?.precioMinimo ?? PLACEHOLDER} type="range" min={PRECIO_MINIMO} max={PRECIO_MAXIMO} step="5000" value={precioTemporalDesde} onChange={(evento) => setPrecioTemporalDesde(Math.min(Number(evento.target.value), precioTemporalHasta - 5000))} />
+            <input aria-label={filtros?.precioMaximo ?? PLACEHOLDER} type="range" min={PRECIO_MINIMO} max={PRECIO_MAXIMO} step="5000" value={precioTemporalHasta} onChange={(evento) => setPrecioTemporalHasta(Math.max(Number(evento.target.value), precioTemporalDesde + 5000))} />
           </div>
           <div className="explorar-precio-valores">
             <span>{formatoPrecio(precioTemporalDesde)}</span>
             <span>{formatoPrecio(precioTemporalHasta)}</span>
           </div>
-          <button type="button" className="explorar-aplicar-secundario" onClick={aplicarPrecio}>{filtros?.aplicarPrecio}</button>
+          <button type="button" className="explorar-aplicar-secundario" onClick={aplicarPrecio}>{filtros?.aplicarPrecio ?? PLACEHOLDER}</button>
         </section>
 
         {movil && (
           <div className="explorar-filtros-acciones-movil">
             <Boton tipo="primario" className="cuerpo-p-fuerte" onClick={() => setFiltrosAbiertos(false)}>
-              {botonesFiltros?.verResultados?.replace("{cantidad}", String(totalEventos))}
+              {botonesFiltros?.verResultados?.replace("{cantidad}", String(totalEventos)) ?? PLACEHOLDER}
             </Boton>
           </div>
         )}
@@ -433,10 +434,10 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           <div className="explorar-barra-resultados">
             <form className="explorar-busqueda-resultados" onSubmit={buscar}>
               <Icono nombre="search" />
-              <input aria-label={filtros?.buscar} placeholder={filtros?.buscar} value={busqueda} onChange={(evento) => setBusqueda(evento.target.value)} />
-              <button type="submit" aria-label={filtros?.buscar}><Icono nombre="arrowr" /></button>
+              <input aria-label={filtros?.buscar ?? PLACEHOLDER} placeholder={filtros?.buscar ?? PLACEHOLDER} value={busqueda} onChange={(evento) => setBusqueda(evento.target.value)} />
+              <button type="submit" aria-label={filtros?.buscar ?? PLACEHOLDER}><Icono nombre="arrowr" /></button>
             </form>
-            <button type="button" className="explorar-abrir-filtros" onClick={() => setFiltrosAbiertos(true)} aria-label={filtros?.titulo}>
+            <button type="button" className="explorar-abrir-filtros" onClick={() => setFiltrosAbiertos(true)} aria-label={filtros?.titulo ?? PLACEHOLDER}>
               <Icono nombre="sliders" />
             </button>
             <label className="explorar-orden">
@@ -457,9 +458,9 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
               })}
               {ciudadActual && <button type="button" onClick={() => actualizarFiltros({ ciudad: "" })}>{ciudadActual} <Icono nombre="x" /></button>}
               {busquedaActual && <button type="button" onClick={() => { actualizarFiltros({ q: "" }); setBusqueda(""); }}>{busquedaActual} <Icono nombre="x" /></button>}
-              {(fechaDesde || fechaHasta) && <button type="button" onClick={() => aplicarFecha("")}>{filtros?.fecha} <Icono nombre="x" /></button>}
+              {(fechaDesde || fechaHasta) && <button type="button" onClick={() => aplicarFecha("")}>{filtros?.fecha ?? PLACEHOLDER} <Icono nombre="x" /></button>}
               {(precioDesde > PRECIO_MINIMO || precioHasta < PRECIO_MAXIMO) && <button type="button" onClick={() => actualizarFiltros({ precioMin: "", precioMax: "" })}>{formatoPrecio(precioDesde)} – {formatoPrecio(precioHasta)} <Icono nombre="x" /></button>}
-              <button type="button" className="explorar-limpiar-activos" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{botonesFiltros?.limpiar}</button>
+              <button type="button" className="explorar-limpiar-activos" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{botonesFiltros?.limpiar ?? PLACEHOLDER}</button>
             </div>
           )}
 
@@ -506,11 +507,11 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
 
       {filtrosAbiertos && (
         <div className="explorar-panel-capa" role="presentation" onMouseDown={(evento) => { if (evento.target === evento.currentTarget) setFiltrosAbiertos(false); }}>
-          <section className="explorar-panel" role="dialog" aria-modal="true" aria-label={filtros?.titulo}>
+          <section className="explorar-panel" role="dialog" aria-modal="true" aria-label={filtros?.titulo ?? PLACEHOLDER}>
             <div className="explorar-panel-titulo">
-              <h2 className="titular-h3">{filtros?.titulo}</h2>
-              <button className="explorar-limpiar" type="button" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{botonesFiltros?.limpiar}</button>
-              <button type="button" className="explorar-cerrar-panel" onClick={() => setFiltrosAbiertos(false)} aria-label={filtros?.cerrar}><Icono nombre="x" /></button>
+              <h2 className="titular-h3">{filtros?.titulo ?? PLACEHOLDER}</h2>
+              <button className="explorar-limpiar" type="button" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{botonesFiltros?.limpiar ?? PLACEHOLDER}</button>
+              <button type="button" className="explorar-cerrar-panel" onClick={() => setFiltrosAbiertos(false)} aria-label={filtros?.cerrar ?? PLACEHOLDER}><Icono nombre="x" /></button>
             </div>
             {controlesFiltros(true)}
           </section>
