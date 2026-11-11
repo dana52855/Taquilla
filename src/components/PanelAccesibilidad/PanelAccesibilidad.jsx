@@ -7,10 +7,12 @@ const CLAVE_PREFERENCIAS = 'taquilla-accesibilidad';
 function leerPreferencias() {
   try {
     const guardadas = JSON.parse(localStorage.getItem(CLAVE_PREFERENCIAS));
+    const altoContrasteSistema = window.matchMedia?.('(prefers-contrast: more)').matches ?? false;
+    const reducirMovimientoSistema = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
     return {
       tamanoTexto: guardadas?.tamanoTexto ?? 0,
-      altoContraste: guardadas?.altoContraste ?? false,
-      reducirMovimiento: guardadas?.reducirMovimiento ?? false,
+      altoContraste: guardadas?.altoContraste ?? altoContrasteSistema,
+      reducirMovimiento: guardadas?.reducirMovimiento ?? reducirMovimientoSistema,
       subrayarEnlaces: guardadas?.subrayarEnlaces ?? false,
       espaciadoLectura: guardadas?.espaciadoLectura ?? false,
     };
@@ -28,6 +30,13 @@ function leerPreferencias() {
 function obtenerTexto(valor) {
   if (typeof valor === 'string') return valor;
   return valor?.titulo ?? valor?.label ?? valor?.nombre ?? valor?.texto ?? valor?.descripcion ?? '';
+}
+
+function obtenerOpcion(opciones, clave) {
+  if (Array.isArray(opciones)) {
+    return opciones.find((opcion) => opcion?.clave === clave || opcion?.id === clave || opcion?.key === clave);
+  }
+  return opciones?.[clave];
 }
 
 export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDeclaracion }) {
@@ -84,10 +93,10 @@ export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDe
   }
 
   const filas = [
-    { clave: 'altoContraste', contenido: opciones?.altoContraste },
-    { clave: 'reducirMovimiento', contenido: opciones?.reducirMovimiento },
-    { clave: 'subrayarEnlaces', contenido: opciones?.subrayarEnlaces },
-    { clave: 'espaciadoLectura', contenido: opciones?.espaciadoLectura },
+    { clave: 'altoContraste', contenido: obtenerOpcion(opciones, 'altoContraste') },
+    { clave: 'reducirMovimiento', contenido: obtenerOpcion(opciones, 'reducirMovimiento') },
+    { clave: 'subrayarEnlaces', contenido: obtenerOpcion(opciones, 'subrayarEnlaces') },
+    { clave: 'espaciadoLectura', contenido: obtenerOpcion(opciones, 'espaciadoLectura') },
   ];
 
   return (
