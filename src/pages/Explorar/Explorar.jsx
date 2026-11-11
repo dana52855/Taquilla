@@ -10,6 +10,13 @@ const POR_PAGINA = 12;
 const PRECIO_MINIMO = 30000;
 const PRECIO_MAXIMO = 150000;
 
+function obtenerTexto(valor, propiedad = "titulo") {
+  if (typeof valor === "string" || typeof valor === "number") return String(valor);
+  if (!valor || typeof valor !== "object") return "";
+  const texto = valor?.[propiedad] ?? valor?.texto ?? valor?.label ?? valor?.nombre ?? valor?.descripcion;
+  return typeof texto === "string" || typeof texto === "number" ? String(texto) : "";
+}
+
 function obtenerLista(respuesta) {
   if (Array.isArray(respuesta)) return respuesta;
   if (Array.isArray(respuesta?.datos)) return respuesta.datos;
@@ -421,9 +428,9 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
         <div className="explorar-migas cuerpo-p">
           <Link to={enlaces?.inicio || "/"}>{textos?.navbar?.enlaces?.inicio}</Link>
           <Icono nombre="chevr" />
-          <span>{explorar?.seo?.titulo}</span>
+          <span>{obtenerTexto(explorar?.seo?.titulo)}</span>
         </div>
-        <h1 className="titular-h1">{explorar?.seo?.titulo}</h1>
+        <h1 className="titular-h1">{obtenerTexto(explorar?.seo?.titulo)}</h1>
         <p className="cuerpo-m explorar-resumen">{textoResultados?.replace("{cantidad}", totalEventos)}</p>
       </section>
 
@@ -441,11 +448,11 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
               <Icono nombre="sliders" />
             </button>
             <label className="explorar-orden">
-              <span className="cuerpo-p">{orden?.etiqueta}</span>
+              <span className="cuerpo-p">{obtenerTexto(orden?.etiqueta)}</span>
               <select className="explorar-select explorar-select-orden" value={ordenActual} onChange={(evento) => actualizarFiltros({ orden: evento.target.value })}>
-                <option value="fecha">{opcionesOrden?.fecha}</option>
-                <option value="precio">{opcionesOrden?.precio}</option>
-                <option value="popularidad">{opcionesOrden?.popularidad}</option>
+                <option value="fecha">{obtenerTexto(opcionesOrden?.fecha)}</option>
+                <option value="precio">{obtenerTexto(opcionesOrden?.precio)}</option>
+                <option value="popularidad">{obtenerTexto(opcionesOrden?.popularidad)}</option>
               </select>
             </label>
           </div>
@@ -468,14 +475,14 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
             <div className="explorar-estado titular-h3" />
           ) : error ? (
             <div className="explorar-estado">
-              <p className="cuerpo-m">{explorar?.error?.texto}</p>
-              <button type="button" className="explorar-limpiar" onClick={() => setIntento((actual) => actual + 1)}>{explorar?.error?.boton}</button>
+              <p className="cuerpo-m">{obtenerTexto(explorar?.error?.texto, "texto")}</p>
+              <button type="button" className="explorar-limpiar" onClick={() => setIntento((actual) => actual + 1)}>{obtenerTexto(explorar?.error?.boton)}</button>
             </div>
           ) : eventosVisibles.length === 0 ? (
             <div className="explorar-vacio">
-              <h2 className="titular-h3">{vacio?.titulo}</h2>
-              <p className="cuerpo-p">{vacio?.texto}</p>
-              <button type="button" className="explorar-limpiar" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{botonesVacio?.limpiar}</button>
+              <h2 className="titular-h3">{obtenerTexto(vacio?.titulo)}</h2>
+              <p className="cuerpo-p">{obtenerTexto(vacio?.texto, "texto")}</p>
+              <button type="button" className="explorar-limpiar" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{obtenerTexto(botonesVacio?.limpiar)}</button>
             </div>
           ) : (
             <div className="explorar-grid">
@@ -488,8 +495,8 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           )}
 
           {!cargando && !error && totalPaginas > 1 && (
-            <nav className="explorar-paginacion" aria-label={paginacionTextos?.anterior}>
-              <button type="button" disabled={paginaActual <= 1} onClick={() => setSearchParams((actuales) => { const siguientes = new URLSearchParams(actuales); siguientes.set("pagina", String(paginaActual - 1)); return siguientes; })} aria-label={paginacionTextos?.anterior}>
+            <nav className="explorar-paginacion" aria-label={obtenerTexto(paginacionTextos?.anterior)}>
+              <button type="button" disabled={paginaActual <= 1} onClick={() => setSearchParams((actuales) => { const siguientes = new URLSearchParams(actuales); siguientes.set("pagina", String(paginaActual - 1)); return siguientes; })} aria-label={obtenerTexto(paginacionTextos?.anterior)}>
                 <Icono nombre="chevl" />
               </button>
               {Array.from({ length: totalPaginas }, (_, indice) => indice + 1).map((pagina) => (
@@ -497,7 +504,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
                   {pagina}
                 </button>
               ))}
-              <button type="button" disabled={paginaActual >= totalPaginas} onClick={() => setSearchParams((actuales) => { const siguientes = new URLSearchParams(actuales); siguientes.set("pagina", String(paginaActual + 1)); return siguientes; })} aria-label={paginacionTextos?.siguiente}>
+              <button type="button" disabled={paginaActual >= totalPaginas} onClick={() => setSearchParams((actuales) => { const siguientes = new URLSearchParams(actuales); siguientes.set("pagina", String(paginaActual + 1)); return siguientes; })} aria-label={obtenerTexto(paginacionTextos?.siguiente)}>
                 <Icono nombre="chevr" />
               </button>
             </nav>
