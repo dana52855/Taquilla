@@ -371,13 +371,6 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
               </button>
             )}
           </div>
-          <div className="explorar-fechas-personalizadas">
-            <label htmlFor={movil ? "explorar-fecha-desde-movil" : "explorar-fecha-desde"}>{typeof fechaFiltro?.elegir === "string" ? fechaFiltro.elegir : ""}</label>
-            <input id={movil ? "explorar-fecha-desde-movil" : "explorar-fecha-desde"} type="date" value={fechaPersonalizadaDesde} onChange={(evento) => setFechaPersonalizadaDesde(evento.target.value)} />
-            <label htmlFor={movil ? "explorar-fecha-hasta-movil" : "explorar-fecha-hasta"}>{typeof fechaFiltro?.elegir === "string" ? fechaFiltro.elegir : ""}</label>
-            <input id={movil ? "explorar-fecha-hasta-movil" : "explorar-fecha-hasta"} type="date" min={fechaPersonalizadaDesde || undefined} value={fechaPersonalizadaHasta} onChange={(evento) => setFechaPersonalizadaHasta(evento.target.value)} />
-            <button type="button" className="explorar-aplicar-secundario" onClick={aplicarFechaPersonalizada}>{typeof fechaFiltro?.elegir === "string" ? fechaFiltro.elegir : ""}</button>
-          </div>
         </section>
 
         <div className="explorar-filtro-separador" />
