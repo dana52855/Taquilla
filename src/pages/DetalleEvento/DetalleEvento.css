@@ -73,9 +73,7 @@
 }
 
 .detalle-contenido {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 48px;
+  display: block;
   padding: 40px 80px 64px;
 }
 
