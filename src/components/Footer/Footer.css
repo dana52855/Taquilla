@@ -41,6 +41,11 @@
 
 .enlaces-footer .detalle-etiqueta {
   color: var(--texto-inverso-suave);
+  color: var(--texto-inverso-suave);
+  background: transparent;
+  padding: 0;
+  border: none;
+  border-radius: 0;
 }
 
 .footer-bottom {

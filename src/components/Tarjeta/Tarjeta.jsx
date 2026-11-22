@@ -44,13 +44,16 @@ const formatearFecha = (fecha, en) => {
 
 const Tarjeta = ({ textos, evento, en = false }) => {
   const destacado = textos?.paginas?.inicio?.hero?.destacado;
+  const categoria = evento?.categoria?.nombre ?? evento?.categoria;
+  const slug = evento?.slug;
+
   return (
     <span className="tarjeta-evento">
       <div className="portada-evento">
         <Portada {...evento?.afiche} tamano="p" />
       </div>
       <div className="texto-evento">
-        <Etiqueta tono="marca">{tipos[evento?.categoria]}</Etiqueta>
+        <Etiqueta tono="marca">{tipos[categoria] ?? categoria ?? ""}</Etiqueta>
         <div className="titular-h3">{evento?.titulo}</div>
         <div className="cuerpo-p info-evento">
           <Icono nombre="calendar" />
@@ -58,18 +61,18 @@ const Tarjeta = ({ textos, evento, en = false }) => {
         </div>
         <div className="cuerpo-p info-evento">
           <Icono nombre="pin" />
-          <div>{evento?.recinto?.nombre}</div>
+          <div>{evento?.recinto?.nombre ?? evento?.recinto ?? ""}</div>
         </div>
         <div className="botones-evento">
           <div>
             <div className="detalle-nota">
               {destacado?.desde?.replace("{precio}", "")}
             </div>
-            <div className="cuerpo-m-fuerte">{`$${evento?.precioDesde}`}</div>
+            <div className="cuerpo-m-fuerte">{evento?.precioDesde != null ? `$${evento.precioDesde}` : ""}</div>
           </div>
           <div>
-            <Boton className="cuerpo-p-fuerte" tipo="secundario" href={`/eventos?slug=${evento?.slug}`}>
-              {destacado?.botones?.verEvento}
+            <Boton className="cuerpo-p-fuerte" tipo="secundario" href={slug ? `/eventos/${encodeURIComponent(slug)}` : "/explorar"}>
+              {destacado?.botones?.verEvento ?? "Ver evento"}
             </Boton>
           </div>
         </div>

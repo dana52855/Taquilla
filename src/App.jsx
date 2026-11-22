@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import LayoutPublico from "./layouts/LayoutPublico.jsx";
 import Home from "./pages/Home/Home.jsx";
 import Explorar from "./pages/Explorar/Explorar.jsx";
+import DetalleEvento from "./pages/DetalleEvento/DetalleEvento.jsx";
 
 const DURACION_COOKIE = 60 * 60 * 24 * 365;
 
@@ -95,6 +96,11 @@ function App() {
             enlaces={enlaces}
           />} />
           <Route path="explorar" element={<Explorar
+            {...datos}
+            en={en}
+            enlaces={enlaces}
+          />} />
+          <Route path="eventos/:slug" element={<DetalleEvento
             {...datos}
             en={en}
             enlaces={enlaces}
