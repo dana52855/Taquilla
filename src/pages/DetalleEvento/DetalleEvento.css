@@ -182,18 +182,16 @@
   border-bottom: 1px solid var(--borde-sutil);
 }
 
-.detalle-pestanas button {
+.detalle-pestanas a {
   padding: 0 0 12px;
-  border: 0;
   border-bottom: 3px solid transparent;
   margin-bottom: -1px;
-  background: transparent;
   color: var(--texto-secundario);
-  cursor: pointer;
+  text-decoration: none;
   font: 500 16px/24px var(--fuente-instrument-sans);
 }
 
-.detalle-pestanas button.activa {
+.detalle-pestanas a.activa {
   border-bottom-color: var(--marca-primario);
   color: var(--texto-principal);
 }
@@ -201,6 +199,16 @@
 .detalle-seccion-texto {
   padding-top: 40px;
   color: var(--texto-secundario);
+}
+
+.detalle-seccion-llegar,
+.detalle-seccion-politicas {
+  margin-top: 40px;
+  padding-top: 0;
+}
+
+.detalle-leer-mas {
+  display: none;
 }
 
 .detalle-seccion-texto > h2 {
@@ -358,8 +366,23 @@
   color: var(--texto-principal);
 }
 
-.detalle-mapa a {
+.detalle-mapa span {
+  color: var(--texto-terciario);
+  font-size: 12px;
+}
+
+.detalle-direccion {
+  margin: 12px 0 0;
+  color: var(--texto-secundario);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.detalle-enlace-mapa {
+  display: inline-block;
+  margin-top: 8px;
   color: var(--texto-principal);
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -507,8 +530,43 @@
   }
 
   .detalle-pestanas {
-    margin-top: 28px;
-    gap: 24px;
+    display: none;
+  }
+
+  .detalle-seccion-descripcion {
+    padding-top: 28px;
+  }
+
+  .detalle-descripcion:not(.expandida) {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .detalle-leer-mas {
+    display: inline-flex;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--texto-principal);
+    font: 500 14px/20px var(--fuente-instrument-sans);
+    cursor: pointer;
+  }
+
+  .detalle-subseccion,
+  .detalle-relacionados {
+    display: none;
+  }
+
+  .detalle-expandido .detalle-subseccion,
+  .detalle-expandido .detalle-relacionados {
+    display: flex;
+  }
+
+  .detalle-seccion-llegar,
+  .detalle-seccion-politicas {
+    display: none;
   }
 
   .detalle-seccion-texto {
@@ -553,7 +611,7 @@
     gap: 18px;
   }
 
-  .detalle-pestanas button {
+  .detalle-pestanas a {
     font-size: 14px;
   }
 
