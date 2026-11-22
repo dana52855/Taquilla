@@ -119,8 +119,6 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
   const orden = explorar?.orden;
   const opcionesOrden = orden?.opciones;
   const paginacionTextos = explorar?.paginacion;
-  const vacio = explorar?.vacio;
-  const botonesVacio = vacio?.botones;
 
   const categoriasActuales = searchParams.getAll("categoria").flatMap((valor) => valor.split(",")).filter(Boolean);
   const ciudadActual = searchParams.get("ciudad") || "";
