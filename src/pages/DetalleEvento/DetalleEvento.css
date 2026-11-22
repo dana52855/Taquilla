@@ -559,7 +559,10 @@
     display: none;
   }
 
-  .detalle-expandido .detalle-subseccion,
+  .detalle-expandido .detalle-subseccion {
+    display: block;
+  }
+
   .detalle-expandido .detalle-relacionados {
     display: flex;
   }
