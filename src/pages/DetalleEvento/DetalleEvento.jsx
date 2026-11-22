@@ -147,7 +147,7 @@ export default function DetalleEvento({ textos, en = false }) {
   }
 
   return (
-    <div className="pagina-detalle-evento">
+    <div className={`pagina-detalle-evento ${descripcionExpandida ? "detalle-expandido" : ""}`}>
       <title>{titulo} | Taquilla</title>
       <meta name="description" content={String(descripcion).slice(0, 160)} />
 
