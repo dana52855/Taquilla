@@ -70,7 +70,7 @@ function PortadaDetalle({ afiche, onVolver, onCompartir }) {
 
 
 function mensajeEstado(textos, tipo, campo = "texto") {
-  const origen = textos?.estados?.[tipo] ?? textos?.errores?.[tipo];
+  const origen = textos?.estados?.[tipo] ?? (tipo === "vacio" ? textos?.estados?.sinResultados ?? textos?.estados?.sin_resultados : null) ?? (tipo === "error" ? textos?.errores?.api ?? textos?.errores?.carga ?? textos?.errores?.general : textos?.errores?.[tipo]);
   if (typeof origen === "string") return origen;
   const valor = campo === "titulo" ? origen?.titulo ?? origen?.encabezado : origen?.texto ?? origen?.mensaje ?? origen?.descripcion;
   return typeof valor === "string" && valor.trim() ? valor : "PLACEHOLDER";
