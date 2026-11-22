@@ -10,6 +10,14 @@ const POR_PAGINA = 12;
 const PRECIO_MINIMO = 30000;
 const PRECIO_MAXIMO = 150000;
 
+
+function mensajeEstado(textos, tipo, campo = "texto") {
+  const origen = textos?.estados?.[tipo] ?? textos?.errores?.[tipo];
+  if (typeof origen === "string") return origen;
+  const valor = campo === "titulo" ? origen?.titulo ?? origen?.encabezado : origen?.texto ?? origen?.mensaje ?? origen?.descripcion;
+  return typeof valor === "string" && valor.trim() ? valor : "PLACEHOLDER";
+}
+
 function obtenerTexto(valor, propiedad = "titulo") {
   if (typeof valor === "string" || typeof valor === "number") return String(valor);
   if (!valor || typeof valor !== "object") return "";
@@ -413,7 +421,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
     );
   }
 
-  if (cargandoTextos) return <div className="explorar-cargando titular-h3" />;
+  if (cargandoTextos) return <div className="pagina-explorar explorar-cargando" role="status" aria-label={mensajeEstado(textos, "cargando")}><div className="explorar-esqueleto-grid">{Array.from({ length: 6 }, (_, i) => <div className="explorar-esqueleto-tarjeta" key={i}><span /><span /><span /></div>)}</div></div>;
 
   return (
     <div className="pagina-explorar">
@@ -465,17 +473,18 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           )}
 
           {cargando ? (
-            <div className="explorar-estado titular-h3" />
+            <div className="explorar-esqueleto-grid" role="status" aria-label={mensajeEstado(textos, "cargando")}>{Array.from({ length: 6 }, (_, i) => <div className="explorar-esqueleto-tarjeta" key={i}><span /><span /><span /></div>)}</div>
           ) : error ? (
-            <div className="explorar-estado">
-              <p className="cuerpo-m">{obtenerTexto(explorar?.error?.texto, "texto")}</p>
-              <button type="button" className="explorar-limpiar" onClick={() => setIntento((actual) => actual + 1)}>{obtenerTexto(explorar?.error?.boton)}</button>
+            <div className="explorar-estado" role="alert">
+              <h2 className="titular-h3">{mensajeEstado(textos, "error", "titulo")}</h2>
+              <p className="cuerpo-m">{mensajeEstado(textos, "error")}</p>
+              <button type="button" className="explorar-limpiar" onClick={() => setIntento((actual) => actual + 1)}>{textos?.errores?.reintentar ?? textos?.errores?.botonReintentar ?? "PLACEHOLDER"}</button>
             </div>
           ) : eventosVisibles.length === 0 ? (
-            <div className="explorar-vacio">
-              <h2 className="titular-h3">{obtenerTexto(vacio?.titulo)}</h2>
-              <p className="cuerpo-p">{obtenerTexto(vacio?.texto, "texto")}</p>
-              <button type="button" className="explorar-limpiar" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{obtenerTexto(botonesVacio?.limpiar)}</button>
+            <div className="explorar-vacio" role="status">
+              <h2 className="titular-h3">{mensajeEstado(textos, "vacio", "titulo")}</h2>
+              <p className="cuerpo-p">{mensajeEstado(textos, "vacio")}</p>
+              <button type="button" className="explorar-limpiar" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{textos?.estados?.limpiarFiltros ?? "PLACEHOLDER"}</button>
             </div>
           ) : (
             <div className="explorar-grid">
