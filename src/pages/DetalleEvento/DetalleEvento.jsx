@@ -198,7 +198,7 @@ export default function DetalleEvento({ textos, en = false }) {
               <div className="detalle-subseccion">
                 <h3 className="titular-h3">Localidades y entradas</h3>
                 {localidades.length > 0 ? (
-                  <div className="detalle-localidades">
+                  <div className="detalle-localidades" id="localidades">
                     {localidades.map((localidad, indice) => {
                       const precio = localidad?.precio ?? localidad?.valor ?? localidad?.precioDesde ?? localidad?.precio_desde;
                       const disponibles = localidad?.disponibilidad ?? localidad?.disponibles ?? localidad?.cantidadDisponible ?? localidad?.cantidad_disponible;
