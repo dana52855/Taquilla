@@ -795,3 +795,18 @@
     justify-content: center;
   }
 }
+
+
+/* Esqueletos y estados de resultados */
+.explorar-esqueleto-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; width:100%; }
+.explorar-esqueleto-tarjeta { min-height:280px; display:flex; flex-direction:column; gap:12px; padding:12px; border:1px solid var(--borde-sutil); border-radius:var(--radio-lg); background:var(--fondo-superficie); }
+.explorar-esqueleto-tarjeta span { display:block; border-radius:8px; background:var(--fondo-sutil); animation:explorar-pulso 1.2s ease-in-out infinite alternate; }
+.explorar-esqueleto-tarjeta span:first-child { min-height:170px; }
+.explorar-esqueleto-tarjeta span:nth-child(2) { width:72%; height:18px; }
+.explorar-esqueleto-tarjeta span:nth-child(3) { width:48%; height:14px; }
+.explorar-cargando { min-height:420px; padding:40px 80px; }
+.explorar-estado { min-height:300px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+.explorar-estado h2,.explorar-estado p { margin:0; }
+@keyframes explorar-pulso { from { opacity:.55; } to { opacity:1; } }
+@media (max-width:1023px) { .explorar-esqueleto-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; } .explorar-cargando { padding:24px 20px; } }
+@media (max-width:560px) { .explorar-esqueleto-grid { grid-template-columns:1fr; } }
