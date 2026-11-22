@@ -68,12 +68,20 @@ function PortadaDetalle({ afiche, onVolver, onCompartir }) {
   );
 }
 
-function EstadoDetalle({ estado, recargar }) {
+
+function mensajeEstado(textos, tipo, campo = "texto") {
+  const origen = textos?.estados?.[tipo] ?? textos?.errores?.[tipo];
+  if (typeof origen === "string") return origen;
+  const valor = campo === "titulo" ? origen?.titulo ?? origen?.encabezado : origen?.texto ?? origen?.mensaje ?? origen?.descripcion;
+  return typeof valor === "string" && valor.trim() ? valor : "PLACEHOLDER";
+}
+
+function EstadoDetalle({ estado, recargar, textos }) {
   if (estado === "cargando") {
     return (
       <div className="detalle-estado" role="status">
         <span className="detalle-spinner" />
-        <p className="cuerpo-m">Cargando información del evento...</p>
+        <p className="cuerpo-m">{mensajeEstado(textos, "cargando")}</p>
       </div>
     );
   }
@@ -81,8 +89,8 @@ function EstadoDetalle({ estado, recargar }) {
   if (estado === "no-encontrado") {
     return (
       <section className="detalle-estado" role="alert">
-        <h1 className="titular-h2">No encontramos este evento</h1>
-        <p className="cuerpo-m">Puede que el evento ya no esté disponible o que el enlace sea incorrecto.</p>
+        <h1 className="titular-h2">{mensajeEstado(textos, "vacio", "titulo")}</h1>
+        <p className="cuerpo-m">{mensajeEstado(textos, "vacio")}</p>
         <Link className="detalle-boton detalle-boton-primario" to="/explorar">Explorar eventos</Link>
       </section>
     );
@@ -91,9 +99,9 @@ function EstadoDetalle({ estado, recargar }) {
   if (estado === "error") {
     return (
       <section className="detalle-estado" role="alert">
-        <h1 className="titular-h2">No pudimos cargar el evento</h1>
-        <p className="cuerpo-m">Comprueba tu conexión e inténtalo de nuevo.</p>
-        <button className="detalle-boton detalle-boton-primario" type="button" onClick={recargar}>Volver a intentar</button>
+        <h1 className="titular-h2">{mensajeEstado(textos, "error", "titulo")}</h1>
+        <p className="cuerpo-m">{mensajeEstado(textos, "error")}</p>
+        <button className="detalle-boton detalle-boton-primario" type="button" onClick={recargar}>{textos?.errores?.reintentar ?? textos?.errores?.botonReintentar ?? "PLACEHOLDER"}</button>
       </section>
     );
   }
@@ -110,7 +118,15 @@ export default function DetalleEvento({ textos, en = false }) {
   if (estado !== "listo" || !evento) {
     return (
       <div className={`pagina-detalle-evento ${descripcionExpandida ? "detalle-expandido" : ""}`}>
-        <EstadoDetalle estado={estado} recargar={recargar} />
+        {estado === "cargando" ? (
+          <div className="detalle-esqueleto" role="status" aria-label={mensajeEstado(textos, "cargando")}>
+            <span className="detalle-esqueleto-portada" />
+            <span className="detalle-esqueleto-linea corta" />
+            <span className="detalle-esqueleto-linea" />
+            <span className="detalle-esqueleto-linea corta" />
+            <span className="detalle-esqueleto-bloque" />
+          </div>
+        ) : <EstadoDetalle estado={estado} recargar={recargar} textos={textos} />}
       </div>
     );
   }
