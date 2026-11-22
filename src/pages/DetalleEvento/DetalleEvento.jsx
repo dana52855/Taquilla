@@ -108,11 +108,11 @@ export default function DetalleEvento({ textos, en = false }) {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { evento, relacionados, estado, recargar } = useDetalleEvento(slug);
-  const [pestana, setPestana] = useState("descripcion");
+  const [descripcionExpandida, setDescripcionExpandida] = useState(false);
 
   if (estado !== "listo" || !evento) {
     return (
-      <div className="pagina-detalle-evento">
+      <div className={`pagina-detalle-evento ${descripcionExpandida ? "detalle-expandido" : ""}`}>
         <EstadoDetalle estado={estado} recargar={recargar} />
       </div>
     );
@@ -130,7 +130,8 @@ export default function DetalleEvento({ textos, en = false }) {
   const funciones = obtenerFunciones(evento);
   const localidades = obtenerLocalidades(evento);
   const desde = evento?.precioDesde ?? evento?.precio_desde ?? evento?.precio;
-  const politicas = typeof evento?.politicas === "string" ? evento.politicas : typeof evento?.condiciones === "string" ? evento.condiciones : "Consulta las condiciones de ingreso y las políticas del evento con el organizador.";
+  const politicas = typeof evento?.politicas === "string" ? evento.politicas : typeof evento?.condiciones === "string" ? evento.condiciones : "";
+  const hayMasInformacion = descripcion.length > 140 || funciones.length > 0 || localidades.length > 0 || relacionados.length > 0;
 
   async function compartirEvento() {
     const url = window.location.href;
@@ -194,82 +195,87 @@ export default function DetalleEvento({ textos, en = false }) {
             </div>
           </div>
 
-          <div className="detalle-pestanas" role="tablist" aria-label="Información del evento">
-            <button type="button" role="tab" aria-selected={pestana === "descripcion"} className={pestana === "descripcion" ? "activa" : ""} onClick={() => setPestana("descripcion")}>Descripción</button>
-            <button type="button" role="tab" aria-selected={pestana === "llegar"} className={pestana === "llegar" ? "activa" : ""} onClick={() => setPestana("llegar")}>Cómo llegar</button>
-            <button type="button" role="tab" aria-selected={pestana === "politicas"} className={pestana === "politicas" ? "activa" : ""} onClick={() => setPestana("politicas")}>Políticas</button>
-          </div>
+          <nav className="detalle-pestanas" aria-label="Información del evento">
+            <a className="activa" href="#descripcion">Descripción</a>
+            <a href="#llegar">Cómo llegar</a>
+            {politicas && <a href="#politicas">Políticas</a>}
+          </nav>
 
-          {pestana === "descripcion" && (
-            <div className="detalle-seccion-texto" role="tabpanel">
-              <h2 className="titular-h2">Sobre el evento</h2>
-              {descripcion ? <p className="cuerpo-m">{descripcion}</p> : <p className="cuerpo-m">Consulta los detalles de este evento.</p>}
-              {funciones.length > 0 && (
-                <div className="detalle-subseccion">
-                  <h3 className="titular-h3">Funciones</h3>
-                  <div className="detalle-lista-funciones">
-                    {funciones.map((funcion, indice) => {
-                      const fechaFuncion = formatoFecha(funcion?.fecha ?? funcion?.fechaInicio ?? funcion?.inicio);
-                      const horaFuncion = funcion?.hora ?? funcion?.horaInicio ?? funcion?.hora_inicio ?? "";
-                      return (
-                        <div className="detalle-funcion" key={funcion?.id ?? funcion?.slug ?? indice}>
-                          <span className="detalle-dato-icono"><Icono nombre="calendar" /></span>
-                          <span><strong>{fechaFuncion || funcion?.nombre || `Función ${indice + 1}`}</strong>{horaFuncion && <small>{horaFuncion}</small>}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
+          <section className="detalle-seccion-texto detalle-seccion-descripcion" id="descripcion">
+            <h2 className="titular-h2">Sobre el evento</h2>
+            <p className={`cuerpo-m detalle-descripcion ${descripcionExpandida ? "expandida" : ""}`}>
+              {descripcion || "Consulta los detalles de este evento."}
+            </p>
+            {hayMasInformacion && (
+              <button className="detalle-leer-mas" type="button" onClick={() => setDescripcionExpandida((actual) => !actual)} aria-expanded={descripcionExpandida}>
+                {descripcionExpandida ? "Leer menos" : "Leer más"}
+              </button>
+            )}
+
+            {funciones.length > 0 && (
+              <div className="detalle-subseccion">
+                <h3 className="titular-h3">Funciones</h3>
+                <div className="detalle-lista-funciones">
+                  {funciones.map((funcion, indice) => {
+                    const fechaFuncion = formatoFecha(funcion?.fecha ?? funcion?.fechaInicio ?? funcion?.inicio);
+                    const horaFuncion = funcion?.hora ?? funcion?.horaInicio ?? funcion?.hora_inicio ?? "";
+                    return (
+                      <div className="detalle-funcion" key={funcion?.id ?? funcion?.slug ?? indice}>
+                        <span className="detalle-dato-icono"><Icono nombre="calendar" /></span>
+                        <span><strong>{fechaFuncion || funcion?.nombre || `Función ${indice + 1}`}</strong>{horaFuncion && <small>{horaFuncion}</small>}</span>
+                      </div>
+                    );
+                  })}
                 </div>
-              )}
-              <div className="detalle-subseccion" id="localidades">
-                <h3 className="titular-h3">Localidades y entradas</h3>
-                {localidades.length > 0 ? (
-                  <div className="detalle-localidades">
-                    {localidades.map((localidad, indice) => {
-                      const precio = localidad?.precio ?? localidad?.valor ?? localidad?.precioDesde ?? localidad?.precio_desde;
-                      const disponibles = localidad?.disponibilidad ?? localidad?.disponibles ?? localidad?.cantidadDisponible ?? localidad?.cantidad_disponible;
-                      const disponibilidadTexto = typeof disponibles === "string" && Number.isNaN(Number(disponibles))
-                        ? disponibles
-                        : disponibles != null ? `${disponibles} disponibles` : "Disponibilidad por confirmar";
-                      const agotada = localidad?.agotada === true || localidad?.disponible === false || String(disponibles).toLowerCase() === "agotada" || (disponibles != null && Number.isFinite(Number(disponibles)) && Number(disponibles) <= 0);
-                      return (
-                        <article className="detalle-localidad" key={localidad?.id ?? localidad?.nombre ?? indice}>
-                          <div>
-                            <h4 className="cuerpo-p-fuerte">{localidad?.nombre ?? localidad?.tipo ?? `Localidad ${indice + 1}`}</h4>
-                            <p className="detalle-nota">{agotada ? "Agotada" : disponibilidadTexto}</p>
-                          </div>
-                          <strong>{formatoPrecio(precio)}</strong>
-                        </article>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="cuerpo-p detalle-sin-datos">La información de localidades estará disponible próximamente.</p>
-                )}
               </div>
-              {desde != null && (
-                <p className="detalle-desde cuerpo-p">Entradas desde <strong>{formatoPrecio(desde)}</strong></p>
+            )}
+
+            <div className="detalle-subseccion" id="localidades">
+              <h3 className="titular-h3">Localidades y entradas</h3>
+              {localidades.length > 0 ? (
+                <div className="detalle-localidades">
+                  {localidades.map((localidad, indice) => {
+                    const precio = localidad?.precio ?? localidad?.valor ?? localidad?.precioDesde ?? localidad?.precio_desde;
+                    const disponibles = localidad?.disponibilidad ?? localidad?.disponibles ?? localidad?.cantidadDisponible ?? localidad?.cantidad_disponible;
+                    const disponibilidadTexto = typeof disponibles === "string" && Number.isNaN(Number(disponibles))
+                      ? disponibles
+                      : disponibles != null ? `${disponibles} disponibles` : "Disponibilidad por confirmar";
+                    const agotada = localidad?.agotada === true || localidad?.disponible === false || String(disponibles).toLowerCase() === "agotada" || (disponibles != null && Number.isFinite(Number(disponibles)) && Number(disponibles) <= 0);
+                    return (
+                      <article className="detalle-localidad" key={localidad?.id ?? localidad?.nombre ?? indice}>
+                        <div>
+                          <h4 className="cuerpo-p-fuerte">{localidad?.nombre ?? localidad?.tipo ?? `Localidad ${indice + 1}`}</h4>
+                          <p className="detalle-nota">{agotada ? "Agotada" : disponibilidadTexto}</p>
+                        </div>
+                        <strong>{formatoPrecio(precio)}</strong>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="cuerpo-p detalle-sin-datos">La información de localidades estará disponible próximamente.</p>
               )}
             </div>
-          )}
+            {desde != null && (
+              <p className="detalle-desde cuerpo-p">Entradas desde <strong>{formatoPrecio(desde)}</strong></p>
+            )}
+          </section>
 
-          {pestana === "llegar" && (
-            <div className="detalle-seccion-texto" role="tabpanel">
-              <h2 className="titular-h2">Cómo llegar</h2>
-              <div className="detalle-mapa">
-                <Icono nombre="pin" />
-                <strong>{recinto || "Ubicación del evento"}</strong>
-                <span>{direccion || "Consulta la dirección con el organizador."}</span>
-                {direccion && <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`} target="_blank" rel="noreferrer">Ver indicaciones</a>}
-              </div>
+          <section className="detalle-seccion-texto detalle-seccion-llegar" id="llegar">
+            <h2 className="titular-h2">Cómo llegar</h2>
+            <div className="detalle-mapa">
+              <Icono nombre="pin" />
+              <span>Mapa del lugar</span>
             </div>
-          )}
+            <p className="detalle-direccion">{[recinto, direccion].filter(Boolean).join(" · ") || "Consulta la ubicación con el organizador."}</p>
+            {direccion && <a className="detalle-enlace-mapa" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`} target="_blank" rel="noreferrer">Ver indicaciones</a>}
+          </section>
 
-          {pestana === "politicas" && (
-            <div className="detalle-seccion-texto" role="tabpanel">
+          {politicas && (
+            <section className="detalle-seccion-texto detalle-seccion-politicas" id="politicas">
               <h2 className="titular-h2">Políticas</h2>
               <p className="cuerpo-m">{politicas}</p>
-            </div>
+            </section>
           )}
         </div>
 
