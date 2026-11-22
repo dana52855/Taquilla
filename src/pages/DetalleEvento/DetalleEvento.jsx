@@ -263,11 +263,6 @@ export default function DetalleEvento({ textos, en = false }) {
           )}
         </div>
 
-        <aside className="detalle-compra">
-          <p className="detalle-nota">Entradas desde</p>
-          <strong>{desde != null ? formatoPrecio(desde) : "Consultar"}</strong>
-          <a className="detalle-boton detalle-boton-primario" href="#localidades">Ver localidades</a>
-        </aside>
       </section>
 
       <section className="detalle-relacionados">
