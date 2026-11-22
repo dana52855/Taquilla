@@ -422,6 +422,10 @@
 }
 
 @media (max-width: 1023px) {
+  .sitio:has(.pagina-detalle-evento) .header {
+    display: none;
+  }
+
   .detalle-portada-seccion {
     padding: 0;
   }
