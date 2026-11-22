@@ -623,3 +623,20 @@
     flex-direction: column;
   }
 }
+
+
+/* Esqueleto mientras se carga el detalle */
+.detalle-esqueleto { min-height:680px; padding:32px 80px 64px; }
+.detalle-esqueleto-portada,.detalle-esqueleto-linea,.detalle-esqueleto-bloque { display:block; border-radius:8px; background:var(--fondo-sutil); animation:detalle-pulso 1.2s ease-in-out infinite alternate; }
+.detalle-esqueleto-portada { height:360px; margin-bottom:40px; }
+.detalle-esqueleto-linea { height:22px; width:55%; margin:16px 0; }
+.detalle-esqueleto-linea.corta { width:28%; }
+.detalle-esqueleto-bloque { height:110px; width:80%; margin-top:32px; }
+@keyframes detalle-pulso { from { opacity:.55; } to { opacity:1; } }
+@media (max-width:1023px) {
+  .detalle-esqueleto { padding:0 20px 32px; }
+  .detalle-esqueleto-portada { height:280px; margin:0 -20px 28px; border-radius:0; }
+  .detalle-esqueleto-linea { width:90%; }
+  .detalle-esqueleto-linea.corta { width:55%; }
+  .detalle-esqueleto-bloque { width:100%; }
+}
