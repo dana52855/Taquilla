@@ -49,7 +49,11 @@
   border-radius: var(--radio-lg);
 }
 
-.detalle-portada-acciones {\n  display: none;\n}\n\n.detalle-portada-circulo {
+.detalle-portada-acciones {
+  display: none;
+}
+
+.detalle-portada-circulo {
   position: absolute;
   display: block;
   border-radius: 50%;
@@ -431,7 +435,35 @@
     border-radius: 0;
   }
 
-  .detalle-portada-acciones {\n    position: absolute;\n    z-index: 2;\n    top: 52px;\n    left: 20px;\n    right: 20px;\n    display: flex;\n    justify-content: space-between;\n  }\n\n  .detalle-portada-acciones button {\n    width: 40px;\n    height: 40px;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    border: 0;\n    border-radius: 50%;\n    background: var(--fondo-superficie);\n    color: var(--texto-principal);\n    cursor: pointer;\n  }\n\n  .detalle-portada-acciones svg {\n    width: 18px;\n    height: 18px;\n  }\n\n  .detalle-portada-circulo-uno {
+  .detalle-portada-acciones {
+    position: absolute;
+    z-index: 2;
+    top: 52px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .detalle-portada-acciones button {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background: var(--fondo-superficie);
+    color: var(--texto-principal);
+    cursor: pointer;
+  }
+
+  .detalle-portada-acciones svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .detalle-portada-circulo-uno {
     width: 340px;
     height: 340px;
     right: -80px;
