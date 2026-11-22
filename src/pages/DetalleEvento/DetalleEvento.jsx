@@ -5,16 +5,6 @@ import Tarjeta from "../../components/Tarjeta/Tarjeta";
 import Icono from "../../components/Icono";
 import "./DetalleEvento.css";
 
-function formatoPrecio(valor) {
-  const precio = Number(valor);
-  if (!Number.isFinite(precio)) return "Consultar";
-  return new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    maximumFractionDigits: 0,
-  }).format(precio);
-}
-
 function formatoFecha(fecha) {
   if (!fecha) return "";
   const valor = new Date(fecha);
@@ -34,10 +24,24 @@ function obtenerFunciones(evento) {
   return [];
 }
 
-function obtenerLocalidades(evento) {
-  if (Array.isArray(evento?.localidades)) return evento.localidades;
-  if (Array.isArray(evento?.entradas)) return evento.entradas;
-  return [];
+function obtenerHoraEvento(evento) {
+  const horaExplicita = evento?.hora ?? evento?.horaInicio ?? evento?.hora_inicio ?? evento?.hora_inicio_evento;
+  if (horaExplicita) return horaExplicita;
+
+  const fechaCompleta = evento?.fecha ?? evento?.fechaInicio ?? evento?.fecha_inicio ?? evento?.fechaHora ?? evento?.fecha_hora ?? evento?.inicio;
+  if (!fechaCompleta || typeof fechaCompleta !== "string") return "";
+
+  // Si la fecha viene con hora desde la API, la mostramos aunque no exista un campo "hora".
+  if (!/[T ]\\d{1,2}:\\d{2}/.test(fechaCompleta)) return "";
+
+  const valor = new Date(fechaCompleta);
+  if (Number.isNaN(valor.getTime())) return "";
+
+  return new Intl.DateTimeFormat("es-CO", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(valor);
 }
 
 function obtenerNombreRecinto(evento) {
@@ -120,18 +124,17 @@ export default function DetalleEvento({ textos, en = false }) {
 
   const titulo = typeof evento?.titulo === "string" ? evento.titulo : "Evento";
   const descripcion = typeof evento?.descripcion === "string" ? evento.descripcion : "";
-  const fecha = formatoFecha(evento?.fecha ?? evento?.fechaInicio);
-  const hora = evento?.hora ?? evento?.horaInicio ?? evento?.hora_inicio ?? "";
+  const fechaCompleta = evento?.fecha ?? evento?.fechaInicio ?? evento?.fecha_inicio ?? evento?.fechaHora ?? evento?.fecha_hora ?? evento?.inicio;
+  const fecha = formatoFecha(fechaCompleta);
+  const hora = obtenerHoraEvento(evento);
   const recinto = obtenerNombreRecinto(evento);
   const direccion = obtenerDireccion(evento);
   const categoria = typeof evento?.categoria === "string" ? evento.categoria : evento?.categoria?.nombre ?? "";
   const edadValor = evento?.edadMinima ?? evento?.edad_minima ?? evento?.clasificacion ?? "";
   const edad = typeof edadValor === "string" || typeof edadValor === "number" ? edadValor : "";
   const funciones = obtenerFunciones(evento);
-  const localidades = obtenerLocalidades(evento);
-  const desde = evento?.precioDesde ?? evento?.precio_desde ?? evento?.precio;
   const politicas = typeof evento?.politicas === "string" ? evento.politicas : typeof evento?.condiciones === "string" ? evento.condiciones : "";
-  const hayMasInformacion = descripcion.length > 140 || funciones.length > 0 || localidades.length > 0 || relacionados.length > 0;
+  const hayMasInformacion = descripcion.length > 140 || funciones.length > 0 || relacionados.length > 0;
 
   async function compartirEvento() {
     const url = window.location.href;
@@ -230,35 +233,6 @@ export default function DetalleEvento({ textos, en = false }) {
               </div>
             )}
 
-            <div className="detalle-subseccion" id="localidades">
-              <h3 className="titular-h3">Localidades y entradas</h3>
-              {localidades.length > 0 ? (
-                <div className="detalle-localidades">
-                  {localidades.map((localidad, indice) => {
-                    const precio = localidad?.precio ?? localidad?.valor ?? localidad?.precioDesde ?? localidad?.precio_desde;
-                    const disponibles = localidad?.disponibilidad ?? localidad?.disponibles ?? localidad?.cantidadDisponible ?? localidad?.cantidad_disponible;
-                    const disponibilidadTexto = typeof disponibles === "string" && Number.isNaN(Number(disponibles))
-                      ? disponibles
-                      : disponibles != null ? `${disponibles} disponibles` : "Disponibilidad por confirmar";
-                    const agotada = localidad?.agotada === true || localidad?.disponible === false || String(disponibles).toLowerCase() === "agotada" || (disponibles != null && Number.isFinite(Number(disponibles)) && Number(disponibles) <= 0);
-                    return (
-                      <article className="detalle-localidad" key={localidad?.id ?? localidad?.nombre ?? indice}>
-                        <div>
-                          <h4 className="cuerpo-p-fuerte">{localidad?.nombre ?? localidad?.tipo ?? `Localidad ${indice + 1}`}</h4>
-                          <p className="detalle-nota">{agotada ? "Agotada" : disponibilidadTexto}</p>
-                        </div>
-                        <strong>{formatoPrecio(precio)}</strong>
-                      </article>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className="cuerpo-p detalle-sin-datos">La información de localidades estará disponible próximamente.</p>
-              )}
-            </div>
-            {desde != null && (
-              <p className="detalle-desde cuerpo-p">Entradas desde <strong>{formatoPrecio(desde)}</strong></p>
-            )}
           </section>
 
           <section className="detalle-seccion-texto detalle-seccion-llegar" id="llegar">
