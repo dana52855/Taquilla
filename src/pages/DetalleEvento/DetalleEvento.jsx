@@ -193,7 +193,7 @@ export default function DetalleEvento({ textos, en = false }) {
           <nav className="detalle-pestanas" aria-label="Información del evento">
             <a className="activa" href="#descripcion">Descripción</a>
             <a href="#llegar">Cómo llegar</a>
-            {politicas && <a href="#politicas">Políticas</a>}
+            <a href="#politicas">Políticas</a>
           </nav>
 
           <section className="detalle-seccion-texto detalle-seccion-descripcion" id="descripcion">
@@ -220,12 +220,12 @@ export default function DetalleEvento({ textos, en = false }) {
             {direccion && <a className="detalle-enlace-mapa" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`} target="_blank" rel="noreferrer">Ver indicaciones</a>}
           </section>
 
-          {politicas && (
-            <section className="detalle-seccion-texto detalle-seccion-politicas" id="politicas">
-              <h2 className="titular-h2">Políticas</h2>
-              <p className="cuerpo-m">{politicas}</p>
-            </section>
-          )}
+          <section className="detalle-seccion-texto detalle-seccion-politicas" id="politicas">
+            <h2 className="titular-h2">Políticas</h2>
+            <p className="cuerpo-m">
+              {politicas || "Consulta las políticas y condiciones de ingreso establecidas por el organizador del evento."}
+            </p>
+          </section>
         </div>
 
       </section>
