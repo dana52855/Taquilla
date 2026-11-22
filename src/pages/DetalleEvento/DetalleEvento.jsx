@@ -32,7 +32,7 @@ function obtenerHoraEvento(evento) {
   if (!fechaCompleta || typeof fechaCompleta !== "string") return "";
 
   // Si la fecha viene con hora desde la API, la mostramos aunque no exista un campo "hora".
-  if (!/[T ]\\d{1,2}:\\d{2}/.test(fechaCompleta)) return "";
+  if (!/[T ]\d{1,2}:\d{2}/.test(fechaCompleta)) return "";
 
   const valor = new Date(fechaCompleta);
   if (Number.isNaN(valor.getTime())) return "";
