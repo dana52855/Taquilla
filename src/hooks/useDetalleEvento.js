@@ -15,7 +15,7 @@ function extraerLista(respuesta) {
 }
 
 function codigoError(respuesta) {
-  return respuesta?.codigo ?? respuesta?.code ?? respuesta?.error?.codigo ?? respuesta?.error?.code;
+  return respuesta?.codigo ?? respuesta?.code ?? respuesta?.error?.codigo ?? respuesta?.error?.code ?? (typeof respuesta?.error === "string" ? respuesta.error : undefined);
 }
 
 export default function useDetalleEvento(slug) {
