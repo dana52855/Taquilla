@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import useDetalleEvento from "../../hooks/useDetalleEvento";
 import Portada from "../../components/Portada/Portada";
 import Tarjeta from "../../components/Tarjeta/Tarjeta";
@@ -49,7 +49,7 @@ function obtenerDireccion(evento) {
   return evento?.recinto?.direccion ?? evento?.lugar?.direccion ?? evento?.direccion ?? "";
 }
 
-function PortadaDetalle({ afiche }) {
+function PortadaDetalle({ afiche, onVolver, onCompartir }) {
   return (
     <div
       className="detalle-portada"
@@ -61,6 +61,10 @@ function PortadaDetalle({ afiche }) {
     >
       <span className="detalle-portada-circulo detalle-portada-circulo-uno" />
       <span className="detalle-portada-circulo detalle-portada-circulo-dos" />
+      <div className="detalle-portada-acciones">
+        <button type="button" onClick={onVolver} aria-label="Volver"><Icono nombre="chevl" /></button>
+        <button type="button" onClick={onCompartir} aria-label="Compartir evento"><Icono nombre="share" /></button>
+      </div>
     </div>
   );
 }
@@ -100,6 +104,7 @@ function EstadoDetalle({ estado, recargar }) {
 
 export default function DetalleEvento({ textos, en = false }) {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const { evento, relacionados, estado, recargar } = useDetalleEvento(slug);
   const [pestana, setPestana] = useState("descripcion");
 
@@ -107,17 +112,31 @@ export default function DetalleEvento({ textos, en = false }) {
     return <EstadoDetalle estado={estado} recargar={recargar} />;
   }
 
-  const titulo = evento?.titulo ?? "Evento";
-  const descripcion = evento?.descripcion ?? "";
+  const titulo = typeof evento?.titulo === "string" ? evento.titulo : "Evento";
+  const descripcion = typeof evento?.descripcion === "string" ? evento.descripcion : "";
   const fecha = formatoFecha(evento?.fecha ?? evento?.fechaInicio);
   const hora = evento?.hora ?? evento?.horaInicio ?? evento?.hora_inicio ?? "";
   const recinto = obtenerNombreRecinto(evento);
   const direccion = obtenerDireccion(evento);
-  const categoria = evento?.categoria?.nombre ?? evento?.categoria ?? "";
+  const categoria = typeof evento?.categoria === "string" ? evento.categoria : evento?.categoria?.nombre ?? "";
   const edad = evento?.edadMinima ?? evento?.edad_minima ?? evento?.clasificacion ?? "";
   const funciones = obtenerFunciones(evento);
   const localidades = obtenerLocalidades(evento);
   const desde = evento?.precioDesde ?? evento?.precio_desde ?? evento?.precio;
+  const politicas = typeof evento?.politicas === "string" ? evento.politicas : typeof evento?.condiciones === "string" ? evento.condiciones : "Consulta las condiciones de ingreso y las políticas del evento con el organizador.";
+
+  async function compartirEvento() {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: titulo, text: descripcion, url });
+      } catch (error) {
+        if (error?.name !== "AbortError") console.error("No se pudo compartir el evento:", error);
+      }
+    } else if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+    }
+  }
 
   return (
     <div className="pagina-detalle-evento">
@@ -133,7 +152,7 @@ export default function DetalleEvento({ textos, en = false }) {
           <span aria-current="page">{titulo}</span>
         </nav>
         <div className="detalle-portada-contenedor">
-          <PortadaDetalle afiche={evento?.afiche} />
+          <PortadaDetalle afiche={evento?.afiche} onVolver={() => navigate(-1)} onCompartir={compartirEvento} />
         </div>
       </section>
 
@@ -202,7 +221,7 @@ export default function DetalleEvento({ textos, en = false }) {
                     {localidades.map((localidad, indice) => {
                       const precio = localidad?.precio ?? localidad?.valor ?? localidad?.precioDesde ?? localidad?.precio_desde;
                       const disponibles = localidad?.disponibilidad ?? localidad?.disponibles ?? localidad?.cantidadDisponible ?? localidad?.cantidad_disponible;
-                      const agotada = localidad?.agotada === true || localidad?.disponible === false || (Number.isFinite(Number(disponibles)) && Number(disponibles) <= 0);
+                      const agotada = localidad?.agotada === true || localidad?.disponible === false || (disponibles != null && Number.isFinite(Number(disponibles)) && Number(disponibles) <= 0);
                       return (
                         <article className="detalle-localidad" key={localidad?.id ?? localidad?.nombre ?? indice}>
                           <div>
@@ -239,7 +258,7 @@ export default function DetalleEvento({ textos, en = false }) {
           {pestana === "politicas" && (
             <div className="detalle-seccion-texto" role="tabpanel">
               <h2 className="titular-h2">Políticas</h2>
-              <p className="cuerpo-m">{evento?.politicas ?? evento?.condiciones ?? "Consulta las condiciones de ingreso y las políticas del evento con el organizador."}</p>
+              <p className="cuerpo-m">{politicas}</p>
             </div>
           )}
         </div>
