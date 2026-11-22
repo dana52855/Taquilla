@@ -109,7 +109,11 @@ export default function DetalleEvento({ textos, en = false }) {
   const [pestana, setPestana] = useState("descripcion");
 
   if (estado !== "listo" || !evento) {
-    return <EstadoDetalle estado={estado} recargar={recargar} />;
+    return (
+      <div className="pagina-detalle-evento">
+        <EstadoDetalle estado={estado} recargar={recargar} />
+      </div>
+    );
   }
 
   const titulo = typeof evento?.titulo === "string" ? evento.titulo : "Evento";
@@ -221,12 +225,15 @@ export default function DetalleEvento({ textos, en = false }) {
                     {localidades.map((localidad, indice) => {
                       const precio = localidad?.precio ?? localidad?.valor ?? localidad?.precioDesde ?? localidad?.precio_desde;
                       const disponibles = localidad?.disponibilidad ?? localidad?.disponibles ?? localidad?.cantidadDisponible ?? localidad?.cantidad_disponible;
-                      const agotada = localidad?.agotada === true || localidad?.disponible === false || (disponibles != null && Number.isFinite(Number(disponibles)) && Number(disponibles) <= 0);
+                      const disponibilidadTexto = typeof disponibles === "string" && Number.isNaN(Number(disponibles))
+                        ? disponibles
+                        : disponibles != null ? `${disponibles} disponibles` : "Disponibilidad por confirmar";
+                      const agotada = localidad?.agotada === true || localidad?.disponible === false || String(disponibles).toLowerCase() === "agotada" || (disponibles != null && Number.isFinite(Number(disponibles)) && Number(disponibles) <= 0);
                       return (
                         <article className="detalle-localidad" key={localidad?.id ?? localidad?.nombre ?? indice}>
                           <div>
                             <h4 className="cuerpo-p-fuerte">{localidad?.nombre ?? localidad?.tipo ?? `Localidad ${indice + 1}`}</h4>
-                            <p className="detalle-nota">{agotada ? "Agotada" : disponibles != null ? `${disponibles} disponibles` : "Disponibilidad por confirmar"}</p>
+                            <p className="detalle-nota">{agotada ? "Agotada" : disponibilidadTexto}</p>
                           </div>
                           <strong>{formatoPrecio(precio)}</strong>
                         </article>
