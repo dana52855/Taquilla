@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useDetalleEvento from "../../hooks/useDetalleEvento";
-import Portada from "../../components/Portada/Portada";
 import Tarjeta from "../../components/Tarjeta/Tarjeta";
 import Icono from "../../components/Icono";
 import "./DetalleEvento.css";
@@ -42,11 +41,14 @@ function obtenerLocalidades(evento) {
 }
 
 function obtenerNombreRecinto(evento) {
-  return evento?.recinto?.nombre ?? evento?.lugar?.nombre ?? evento?.recinto ?? evento?.lugar ?? "";
+  const recinto = evento?.recinto ?? evento?.lugar;
+  if (typeof recinto === "string") return recinto;
+  return recinto?.nombre ?? "";
 }
 
 function obtenerDireccion(evento) {
-  return evento?.recinto?.direccion ?? evento?.lugar?.direccion ?? evento?.direccion ?? "";
+  const direccion = evento?.recinto?.direccion ?? evento?.lugar?.direccion ?? evento?.direccion;
+  return typeof direccion === "string" ? direccion : "";
 }
 
 function PortadaDetalle({ afiche, onVolver, onCompartir }) {
@@ -123,7 +125,8 @@ export default function DetalleEvento({ textos, en = false }) {
   const recinto = obtenerNombreRecinto(evento);
   const direccion = obtenerDireccion(evento);
   const categoria = typeof evento?.categoria === "string" ? evento.categoria : evento?.categoria?.nombre ?? "";
-  const edad = evento?.edadMinima ?? evento?.edad_minima ?? evento?.clasificacion ?? "";
+  const edadValor = evento?.edadMinima ?? evento?.edad_minima ?? evento?.clasificacion ?? "";
+  const edad = typeof edadValor === "string" || typeof edadValor === "number" ? edadValor : "";
   const funciones = obtenerFunciones(evento);
   const localidades = obtenerLocalidades(evento);
   const desde = evento?.precioDesde ?? evento?.precio_desde ?? evento?.precio;
@@ -168,7 +171,7 @@ export default function DetalleEvento({ textos, en = false }) {
               {edad && <span className="detalle-etiqueta detalle-etiqueta-secundaria">{typeof edad === "number" ? `Mayores de ${edad}` : edad}</span>}
             </div>
             <h1 className="titular-display detalle-titulo">{titulo}</h1>
-            {evento?.artista && <p className="cuerpo-g detalle-artista">{evento.artista}</p>}
+            {typeof evento?.artista === "string" && <p className="cuerpo-g detalle-artista">{evento.artista}</p>}
             <div className="detalle-datos">
               {fecha && (
                 <div className="detalle-dato">
@@ -218,10 +221,10 @@ export default function DetalleEvento({ textos, en = false }) {
                   </div>
                 </div>
               )}
-              <div className="detalle-subseccion">
+              <div className="detalle-subseccion" id="localidades">
                 <h3 className="titular-h3">Localidades y entradas</h3>
                 {localidades.length > 0 ? (
-                  <div className="detalle-localidades" id="localidades">
+                  <div className="detalle-localidades">
                     {localidades.map((localidad, indice) => {
                       const precio = localidad?.precio ?? localidad?.valor ?? localidad?.precioDesde ?? localidad?.precio_desde;
                       const disponibles = localidad?.disponibilidad ?? localidad?.disponibles ?? localidad?.cantidadDisponible ?? localidad?.cantidad_disponible;
