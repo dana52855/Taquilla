@@ -17,13 +17,6 @@ function formatoFecha(fecha) {
   }).format(valor).replace(".", "");
 }
 
-function obtenerFunciones(evento) {
-  if (Array.isArray(evento?.funciones)) return evento.funciones;
-  if (Array.isArray(evento?.horarios)) return evento.horarios;
-  if (Array.isArray(evento?.fechas)) return evento.fechas;
-  return [];
-}
-
 function obtenerHoraEvento(evento) {
   const horaExplicita = evento?.hora ?? evento?.horaInicio ?? evento?.hora_inicio ?? evento?.hora_inicio_evento;
   if (horaExplicita) return horaExplicita;
@@ -132,9 +125,8 @@ export default function DetalleEvento({ textos, en = false }) {
   const categoria = typeof evento?.categoria === "string" ? evento.categoria : evento?.categoria?.nombre ?? "";
   const edadValor = evento?.edadMinima ?? evento?.edad_minima ?? evento?.clasificacion ?? "";
   const edad = typeof edadValor === "string" || typeof edadValor === "number" ? edadValor : "";
-  const funciones = obtenerFunciones(evento);
   const politicas = typeof evento?.politicas === "string" ? evento.politicas : typeof evento?.condiciones === "string" ? evento.condiciones : "";
-  const hayMasInformacion = descripcion.length > 140 || funciones.length > 0 || relacionados.length > 0;
+  const hayMasInformacion = descripcion.length > 140;
 
   async function compartirEvento() {
     const url = window.location.href;
@@ -215,23 +207,6 @@ export default function DetalleEvento({ textos, en = false }) {
               </button>
             )}
 
-            {funciones.length > 0 && (
-              <div className="detalle-subseccion">
-                <h3 className="titular-h3">Funciones</h3>
-                <div className="detalle-lista-funciones">
-                  {funciones.map((funcion, indice) => {
-                    const fechaFuncion = formatoFecha(funcion?.fecha ?? funcion?.fechaInicio ?? funcion?.inicio);
-                    const horaFuncion = funcion?.hora ?? funcion?.horaInicio ?? funcion?.hora_inicio ?? "";
-                    return (
-                      <div className="detalle-funcion" key={funcion?.id ?? funcion?.slug ?? indice}>
-                        <span className="detalle-dato-icono"><Icono nombre="calendar" /></span>
-                        <span><strong>{fechaFuncion || funcion?.nombre || `Función ${indice + 1}`}</strong>{horaFuncion && <small>{horaFuncion}</small>}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
 
           </section>
 
