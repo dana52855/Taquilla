@@ -218,13 +218,6 @@ export default function DetalleEvento({ textos, en = false }) {
             </div>
             <p className="detalle-direccion">{[recinto, direccion].filter(Boolean).join(" · ") || "Consulta la ubicación con el organizador."}</p>
           </section>
-
-          <section className="detalle-seccion-texto detalle-seccion-politicas" id="politicas">
-            <h2 className="titular-h2">Políticas</h2>
-            <p className="cuerpo-m">
-              {politicas || "Consulta las políticas y condiciones de ingreso establecidas por el organizador del evento."}
-            </p>
-          </section>
         </div>
 
       </section>
