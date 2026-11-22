@@ -217,7 +217,6 @@ export default function DetalleEvento({ textos, en = false }) {
               <span>Mapa del lugar</span>
             </div>
             <p className="detalle-direccion">{[recinto, direccion].filter(Boolean).join(" · ") || "Consulta la ubicación con el organizador."}</p>
-            {direccion && <a className="detalle-enlace-mapa" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`} target="_blank" rel="noreferrer">Ver indicaciones</a>}
           </section>
 
           {politicas && (
