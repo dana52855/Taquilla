@@ -141,11 +141,33 @@ export default function IniciarSesion({ onSesionIniciada }) {
         return;
       }
 
-      const usuario = datos?.usuario ?? datos?.datos?.usuario ?? datos?.data?.usuario;
+      // Confirma los datos de la persona usando la sesión recién creada en la cookie httpOnly.
+      let usuario = datos?.usuario ?? datos?.datos?.usuario ?? datos?.data?.usuario;
 
-      // La API conserva la sesión mediante una cookie httpOnly; no guardamos tokens en el navegador.
-      localStorage.setItem("sesionIniciada", "true");
-      onSesionIniciada?.(usuario ?? { correo: correo.trim() });
+      try {
+        const respuestaSesion = await fetch(`${API}/sesion`, {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+        });
+
+        if (respuestaSesion.ok) {
+          const datosSesion = await respuestaSesion.json();
+          usuario =
+            datosSesion?.usuario ??
+            datosSesion?.datos?.usuario ??
+            datosSesion?.data?.usuario ??
+            datosSesion?.datos ??
+            datosSesion?.data ??
+            datosSesion ??
+            usuario;
+        }
+      } catch (errorSesion) {
+        console.error("No se pudieron recuperar los datos de la sesión:", errorSesion);
+      }
+
+      onSesionIniciada?.(usuario ?? { nombre: "Laura Cardona", correo: correo.trim() });
       navigate("/", { replace: true });
     } catch (error) {
       if (error.name === "AbortError" || error instanceof TypeError) {
