@@ -24,7 +24,7 @@ const Navbar = ({
   const isMobile = useMediaQuery("(max-width: 1023px)");
 
   function obtenerIniciales() {
-    return "Lc";
+    return "LC";
   }
 
   function abrirAccesibilidad() {
