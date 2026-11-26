@@ -283,6 +283,10 @@
     align-items: stretch;
   }
 
+  .navbar-cuenta {
+    display: none;
+  }
+
   .navbar-cuenta-menu {
     display: none;
   }
