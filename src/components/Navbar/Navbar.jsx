@@ -31,8 +31,7 @@ const Navbar = ({
     usuario?.nombreCompleto ??
     usuario?.nombre ??
     usuario?.name ??
-    [usuario?.nombres, usuario?.apellidos].filter(Boolean).join(" ") ??
-    "Mi cuenta"
+    ([usuario?.nombres, usuario?.apellidos].filter(Boolean).join(" ") || "Mi cuenta")
   );
   const correoUsuario = usuario?.correo ?? usuario?.email ?? "";
 
