@@ -8,7 +8,7 @@ import DetalleEvento from "./pages/DetalleEvento/DetalleEvento.jsx";
 import IniciarSesion from "./pages/IniciarSesion/IniciarSesion.jsx";
 
 const DURACION_COOKIE = 60 * 60 * 24 * 365;
-const API = (import.meta.env.VITE_API_URL || "https://yanethm-taquilla-api.fly.dev/api/v1").replace(/\\/+$/, "");
+const API = "https://yanethm-taquilla-api.fly.dev/api/v1";
 
 function leerCookie(nombre) {
   const prefijo = `${nombre}=`;
