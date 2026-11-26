@@ -4,7 +4,7 @@ import Marca from "../../assets/logos/logo-normal.svg?react";
 import MarcaInverso from "../../assets/logos/logo-inverso.svg?react";
 import "./IniciarSesion.css";
 
-const API = (import.meta.env.VITE_API_URL || "https://yanethm-taquilla-api.fly.dev/api/v1").replace(/\\/+$/, "");
+const API = "https://yanethm-taquilla-api.fly.dev/api/v1";
 
 export default function IniciarSesion({ onSesionIniciada }) {
   const navigate = useNavigate();
