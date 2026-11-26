@@ -68,8 +68,10 @@ export default function IniciarSesion({ onSesionIniciada }) {
   }
 
   async function iniciarSesion(evento) {
-    evento.preventDefault();
+    evento?.preventDefault?.();
+    if (envioEnCursoRef.current || segundosRestantes > 0) return;
     setErrorGeneral("");
+    setErrorConexion(false);
 
     if (!validarFormulario()) return;
 
@@ -78,7 +80,8 @@ export default function IniciarSesion({ onSesionIniciada }) {
       return;
     }
 
-    envioEnCursoRef.current = true;\n    setCargando(true);
+    envioEnCursoRef.current = true;
+    setCargando(true);
     const controlador = new AbortController();
     const limite = setTimeout(() => controlador.abort(), 12000);
 
@@ -195,12 +198,14 @@ export default function IniciarSesion({ onSesionIniciada }) {
                 name="email"
                 type="email"
                 autoComplete="email"
+                disabled={formularioBloqueado}
                 placeholder="nombre@correo.com"
                 value={correo}
                 onChange={(evento) => {
                   setCorreo(evento.target.value);
                   setErrores((actuales) => ({ ...actuales, correo: "" }));
                   setErrorGeneral("");
+                  setErrorConexion(false);
                 }}
                 aria-invalid={Boolean(errores.correo)}
                 aria-describedby={errores.correo ? "error-correo" : undefined}
@@ -221,6 +226,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
                   name="password"
                   type={mostrarContrasena ? "text" : "password"}
                   autoComplete="current-password"
+                  disabled={formularioBloqueado}
                   placeholder="Ingresa tu contraseña"
                   value={contrasena}
                   onChange={(evento) => {
@@ -234,6 +240,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
                 <button
                   className="inicio-sesion-ojo"
                   type="button"
+                  disabled={formularioBloqueado}
                   onClick={() => setMostrarContrasena((valor) => !valor)}
                   aria-label={mostrarContrasena ? "Ocultar contraseña" : "Mostrar contraseña"}
                   aria-pressed={mostrarContrasena}
@@ -267,6 +274,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
               <label className="inicio-sesion-recordar cuerpo-p">
                 <input
                   type="checkbox"
+                  disabled={formularioBloqueado}
                   checked={mantenerSesion}
                   onChange={(evento) => setMantenerSesion(evento.target.checked)}
                 />
