@@ -73,6 +73,22 @@
 .navbar-botones {
   display: flex;
   gap: inherit;
+  align-items: center;
+}
+
+.avatar-usuario {
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--fondo-inverso);
+  color: var(--texto-inverso);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
 }
 
 @media (max-width: 1023px) {
