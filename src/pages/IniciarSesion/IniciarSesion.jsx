@@ -24,7 +24,7 @@ export default function IniciarSesion() {
 
     if (!correo.trim()) {
       nuevosErrores.correo = "Ingresa tu correo electrónico.";
-    } else if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(correo.trim())) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim())) {
       nuevosErrores.correo = "Ingresa un correo electrónico válido.";
     }
 
