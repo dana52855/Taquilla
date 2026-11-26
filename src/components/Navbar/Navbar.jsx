@@ -23,6 +23,18 @@ const Navbar = ({
   const menuMovil = textos?.menuMovil;
   const isMobile = useMediaQuery("(max-width: 1023px)");
 
+  function obtenerIniciales() {
+    const nombre = usuario?.nombre ?? usuario?.nombres ?? "";
+    const apellido = usuario?.apellido ?? usuario?.apellidos ?? "";
+    const partes = `${nombre} ${apellido}`.trim().split(/\\s+/).filter(Boolean);
+
+    if (partes.length >= 2) {
+      return `${partes[0][0]}${partes[partes.length - 1][0]}`.toUpperCase();
+    }
+
+    return "LS";
+  }
+
   function abrirAccesibilidad() {
     setIsOpen(false);
     onAbrirAccesibilidad?.();
@@ -34,7 +46,11 @@ const Navbar = ({
         <MarcaInverso />
         <div className="header-mobile-botones">
           <BotonIcono ancho={44} tipo='primario' icono='search' />
-          {!isOpen && !usuario && <Boton className='cuerpo-p-fuerte' tipo='primario' href={enlaces['ingresar']}>{menuMovil?.botones?.ingresar}</Boton>}
+          {usuario ? (
+            <span className="avatar-usuario" aria-label="Sesión iniciada" title="Sesión iniciada">{obtenerIniciales()}</span>
+          ) : (
+            !isOpen && <Boton className='cuerpo-p-fuerte' tipo='primario' href={enlaces['ingresar']}>{menuMovil?.botones?.ingresar}</Boton>
+          )}
           <BotonIcono ancho={44} tipo='primario' icono='menu' onClick={() => setIsOpen(true)} />
         </div>
       </div>
@@ -65,8 +81,8 @@ const Navbar = ({
             </div>
             <div className="navbar-botones">
               {usuario ? (
-                <span className="cuerpo-p-fuerte" aria-label="Sesión iniciada">
-                  {usuario.nombre ?? usuario.correo ?? usuario.email ?? "Sesión iniciada"}
+                <span className="avatar-usuario" aria-label="Sesión iniciada" title="Sesión iniciada">
+                  {obtenerIniciales()}
                 </span>
               ) : (
                 <>
