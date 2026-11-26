@@ -233,6 +233,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
                     setContrasena(evento.target.value);
                     setErrores((actuales) => ({ ...actuales, contrasena: "" }));
                     setErrorGeneral("");
+                    setErrorConexion(false);
                   }}
                   aria-invalid={Boolean(errores.contrasena)}
                   aria-describedby={errores.contrasena ? "error-contrasena" : undefined}
