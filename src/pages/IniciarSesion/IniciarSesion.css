@@ -316,7 +316,7 @@
   .inicio-sesion-contenido {
     display: block;
     min-height: 100vh;
-    padding: 20px 24px 32px;
+    padding: 62px 24px 32px;
   }
 
   .inicio-sesion-formulario {
@@ -328,6 +328,7 @@
     display: inline-flex;
     width: 109px;
     height: 32px;
+    margin-bottom: 7px;
   }
 
   .inicio-sesion-encabezado h2 {
