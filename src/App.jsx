@@ -9,6 +9,26 @@ import IniciarSesion from "./pages/IniciarSesion/IniciarSesion.jsx";
 
 const API = "https://yanethm-taquilla-api.fly.dev/api/v1";
 
+const DURACION_COOKIE = 60 * 60 * 24 * 365;
+
+function leerCookie(nombre) {
+  const prefijo = `${nombre}=`;
+  const encontrada = document.cookie
+    .split("; ")
+    .find((cookie) => cookie.startsWith(prefijo));
+
+  return encontrada ? decodeURIComponent(encontrada.slice(prefijo.length)) : null;
+}
+
+function guardarCookie(nombre, valor) {
+  document.cookie = `${nombre}=${encodeURIComponent(valor)}; max-age=${DURACION_COOKIE}; path=/; SameSite=Lax`;
+}
+
+function eliminarCookie(nombre) {
+  document.cookie = `${nombre}=; max-age=0; path=/; SameSite=Lax`;
+}
+
+
 function App() {
   const navigate = useNavigate();
   const [consentimiento, setConsentimiento] = useState(() => {
