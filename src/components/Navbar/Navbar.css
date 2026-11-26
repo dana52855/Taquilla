@@ -73,6 +73,22 @@
 .navbar-botones {
   display: flex;
   gap: inherit;
+  align-items: center;
+}
+
+.avatar-usuario {
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--marca-primario-suave);
+  color: var(--texto-marca);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
 }
 
 @media (max-width: 1023px) {
@@ -165,5 +181,132 @@
     gap: 0.75rem;
     padding: 1rem 1.5rem;
     order: -1;
+  }
+}
+
+
+.navbar-cuenta {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-cuenta > .avatar-usuario {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.navbar-cuenta-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 20;
+  width: 280px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid var(--borde-sutil);
+  border-radius: 12px;
+  background: var(--fondo-superficie);
+  box-shadow: var(--sombra-flotante);
+}
+
+.navbar-cuenta-persona,
+.navbar-sesion-persona {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.navbar-cuenta-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  color: var(--texto-principal);
+}
+
+.navbar-cuenta-datos strong,
+.navbar-cuenta-datos small {
+  overflow-wrap: anywhere;
+}
+
+.navbar-cuenta-datos strong {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.navbar-cuenta-datos small {
+  color: var(--texto-secundario);
+  font-size: 12px;
+}
+
+.navbar-cerrar-sesion {
+  min-height: 42px;
+  width: 100%;
+  padding: 10px 18px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: 8px;
+  background: var(--fondo-superficie);
+  color: var(--texto-principal);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.navbar-cerrar-sesion:hover {
+  background: var(--fondo-sutil);
+}
+
+.navbar-error-sesion {
+  margin: 0;
+  color: var(--estado-error);
+  font-size: 12px;
+}
+
+.navbar-sesion-movil {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .navbar-right {
+    flex-direction: column;
+  }
+
+  .navbar-botones {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    order: 0;
+  }
+
+  .navbar-cuenta {
+    display: none;
+  }
+
+  .navbar-cuenta-menu {
+    display: none;
+  }
+
+  .navbar-sesion-movil {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 24px 24px;
+    border-top: 1px solid var(--borde-sutil);
+  }
+
+  .navbar-sesion-persona {
+    width: 100%;
+  }
+
+  .navbar-botones:has(.navbar-sesion-movil) {
+    padding: 0;
   }
 }

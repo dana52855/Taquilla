@@ -15,12 +15,43 @@ const Navbar = ({
   en,
   alternarIdioma,
   onAbrirAccesibilidad,
-  enlaces
+  enlaces,
+  usuario,
+  onCerrarSesion
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [cuentaAbierta, setCuentaAbierta] = useState(false);
+  const [errorCerrarSesion, setErrorCerrarSesion] = useState("");
   const nav = textos?.navbar;
   const menuMovil = textos?.menuMovil;
   const isMobile = useMediaQuery("(max-width: 1023px)");
+
+  const nombreUsuario = String(
+    usuario?.nombre_completo ??
+    usuario?.nombreCompleto ??
+    usuario?.nombre ??
+    usuario?.name ??
+    ([usuario?.nombres, usuario?.apellidos].filter(Boolean).join(" ") || "Mi cuenta")
+  );
+  const correoUsuario = usuario?.correo ?? usuario?.email ?? "";
+
+  function obtenerIniciales() {
+    const partes = nombreUsuario.trim().split(/\s+/).filter(Boolean);
+    return partes.length > 1
+      ? `${partes[0][0]}${partes[partes.length - 1][0]}`.toUpperCase()
+      : (partes[0]?.slice(0, 2) ?? "LC").toUpperCase();
+  }
+
+  async function salirDeLaCuenta() {
+    try {
+      setErrorCerrarSesion("");
+      await onCerrarSesion?.();
+      setCuentaAbierta(false);
+      setIsOpen(false);
+    } catch (error) {
+      setErrorCerrarSesion(error.message || "No fue posible cerrar sesión.");
+    }
+  }
 
   function abrirAccesibilidad() {
     setIsOpen(false);
@@ -33,7 +64,11 @@ const Navbar = ({
         <MarcaInverso />
         <div className="header-mobile-botones">
           <BotonIcono ancho={44} tipo='primario' icono='search' />
-          {!isOpen && <Boton className='cuerpo-p-fuerte' tipo='primario' href={enlaces['ingresar']}>{menuMovil?.botones?.ingresar}</Boton>}
+          {!usuario && !isOpen && (
+            <Boton className='cuerpo-p-fuerte' tipo='primario' href={enlaces['ingresar']}>
+              {menuMovil?.botones?.ingresar}
+            </Boton>
+          )}
           <BotonIcono ancho={44} tipo='primario' icono='menu' onClick={() => setIsOpen(true)} />
         </div>
       </div>
@@ -63,8 +98,54 @@ const Navbar = ({
               <SelectorIdioma en={en} alternarIdioma={alternarIdioma} aria-label={nav?.aria?.idioma} />
             </div>
             <div className="navbar-botones">
-              <Boton className='cuerpo-p-fuerte' tipo={isMobile ? 'primario' : 'secundario'} href={enlaces['ingresar']}>{nav?.botones?.ingresar}</Boton>
-              <Boton className='cuerpo-p-fuerte' tipo={isMobile ? 'secundario' : 'primario'} href={enlaces['crearCuenta']}>{nav?.botones?.crearCuenta}</Boton>
+              {usuario ? (
+                <div className="navbar-cuenta">
+                  <button
+                    className="avatar-usuario"
+                    type="button"
+                    aria-label="Abrir menú de cuenta"
+                    aria-expanded={cuentaAbierta}
+                    onClick={() => setCuentaAbierta((abierta) => !abierta)}
+                  >
+                    {obtenerIniciales()}
+                  </button>
+                  {cuentaAbierta && (
+                    <div className="navbar-cuenta-menu">
+                      <div className="navbar-cuenta-persona">
+                        <span className="avatar-usuario">{obtenerIniciales()}</span>
+                        <span className="navbar-cuenta-datos">
+                          <strong>{nombreUsuario}</strong>
+                          {correoUsuario && <small>{correoUsuario}</small>}
+                        </span>
+                      </div>
+                      <button type="button" className="navbar-cerrar-sesion" onClick={salirDeLaCuenta}>
+                        Cerrar sesión
+                      </button>
+                      {errorCerrarSesion && <p className="navbar-error-sesion" role="alert">{errorCerrarSesion}</p>}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <Boton className='cuerpo-p-fuerte' tipo={isMobile ? 'primario' : 'secundario'} href={enlaces['ingresar']}>{nav?.botones?.ingresar}</Boton>
+                  <Boton className='cuerpo-p-fuerte' tipo={isMobile ? 'secundario' : 'primario'} href={enlaces['crearCuenta']}>{nav?.botones?.crearCuenta}</Boton>
+                </>
+              )}
+              {usuario && isMobile && (
+                <div className="navbar-sesion-movil">
+                  <div className="navbar-sesion-persona">
+                    <span className="avatar-usuario">{obtenerIniciales()}</span>
+                    <span className="navbar-cuenta-datos">
+                      <strong>{nombreUsuario}</strong>
+                      {correoUsuario && <small>{correoUsuario}</small>}
+                    </span>
+                  </div>
+                  <button type="button" className="navbar-cerrar-sesion" onClick={salirDeLaCuenta}>
+                    Cerrar sesión
+                  </button>
+                  {errorCerrarSesion && <p className="navbar-error-sesion" role="alert">{errorCerrarSesion}</p>}
+                </div>
+              )}
             </div>
           </div>
         </nav>
