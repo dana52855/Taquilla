@@ -10,6 +10,7 @@ export default function LayoutPublico({
   alternarIdioma,
   enlaces,
   usuario,
+  onCerrarSesion,
   consentimiento,
   onAceptarCookies,
   onRechazarCookies,
@@ -26,6 +27,7 @@ export default function LayoutPublico({
         onAbrirAccesibilidad={onAbrirAccesibilidad}
         enlaces={enlaces}
         usuario={usuario}
+        onCerrarSesion={onCerrarSesion}
       />
       <main>
         <Outlet />
