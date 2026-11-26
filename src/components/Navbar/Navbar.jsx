@@ -31,7 +31,7 @@ const Navbar = ({
     usuario?.nombreCompleto ??
     usuario?.nombre ??
     usuario?.name ??
-    "Laura Cardona";
+    "Mi cuenta";
   const correoUsuario = usuario?.correo ?? usuario?.email ?? "";
 
   function obtenerIniciales() {
