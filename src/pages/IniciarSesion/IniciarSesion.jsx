@@ -167,7 +167,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
         console.error("No se pudieron recuperar los datos de la sesión:", errorSesion);
       }
 
-      onSesionIniciada?.(usuario ?? { nombre: "Laura Cardona", correo: correo.trim() });
+      onSesionIniciada?.(usuario ?? { correo: correo.trim() });
       navigate("/", { replace: true });
     } catch (error) {
       if (error.name === "AbortError" || error instanceof TypeError) {
