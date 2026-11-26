@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTextos } from "./hooks/useTextos";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import LayoutPublico from "./layouts/LayoutPublico.jsx";
@@ -22,6 +22,8 @@ function App() {
   });
   const [accesibilidadAbierta, setAccesibilidadAbierta] = useState(false);
   const [usuario, setUsuario] = useState(null);
+  const usuarioRef = useRef(usuario);
+  usuarioRef.current = usuario;
 
   // Consulta la cookie httpOnly del servidor al cargar y al volver a la pestaña.
   useEffect(() => {
@@ -39,7 +41,7 @@ function App() {
         if (respuesta.status === 401) {
           if (vigente) {
             setUsuario(null);
-            if (usuario) navigate("/ingresar", { replace: true });
+            if (usuarioRef.current) navigate("/ingresar", { replace: true });
           }
           return;
         }
@@ -68,7 +70,7 @@ function App() {
       vigente = false;
       window.removeEventListener("focus", consultarSesion);
     };
-  }, [navigate, usuario]);
+  }, []);
 
   async function cerrarSesion() {
     const respuesta = await fetch(`${API}/sesion`, {
