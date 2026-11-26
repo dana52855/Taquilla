@@ -108,7 +108,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
         const codigo = datos?.error?.codigo ?? datos?.codigo;
 
         if (respuesta.status === 401 || codigo === "credenciales_invalidas") {
-          setErrorGeneral("Correo o contraseña incorrectos. Revisa los datos e inténtalo de nuevo. Si no recuerdas tu contraseña, puedes restablecerla.");
+          setErrorGeneral("Correo o contraseña incorrectos");
           return;
         }
 
@@ -279,7 +279,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
 
             {errorGeneral && (
               <div className="inicio-sesion-error-general cuerpo-p" role="alert">
-                <strong>{errorGeneral.startsWith("Correo o contraseña incorrectos") ? "Correo o contraseña incorrectos" : errorGeneral}</strong>
+                <strong>{errorGeneral}</strong>
                 {errorGeneral.startsWith("Correo o contraseña incorrectos") && (
                   <span>Revisa los datos e inténtalo de nuevo. Si no recuerdas tu contraseña, puedes restablecerla.</span>
                 )}
