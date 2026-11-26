@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Marca from "../../assets/logos/logo-normal.svg?react";
 import MarcaInverso from "../../assets/logos/logo-inverso.svg?react";
@@ -10,6 +10,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
   const navigate = useNavigate();
   const correoRef = useRef(null);
   const contrasenaRef = useRef(null);
+  const envioEnCursoRef = useRef(false);
 
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
@@ -18,6 +19,25 @@ export default function IniciarSesion({ onSesionIniciada }) {
   const [errores, setErrores] = useState({});
   const [cargando, setCargando] = useState(false);
   const [errorGeneral, setErrorGeneral] = useState("");
+  const [errorConexion, setErrorConexion] = useState(false);
+  const [segundosRestantes, setSegundosRestantes] = useState(0);
+  const [bloqueoHasta, setBloqueoHasta] = useState(null);
+
+  const formularioBloqueado = cargando || segundosRestantes > 0;
+
+  useEffect(() => {
+    if (!bloqueoHasta) return undefined;
+
+    function actualizarCuentaRegresiva() {
+      const restantes = Math.max(0, Math.ceil((bloqueoHasta - Date.now()) / 1000));
+      setSegundosRestantes(restantes);
+      if (restantes === 0) setBloqueoHasta(null);
+    }
+
+    actualizarCuentaRegresiva();
+    const intervalo = window.setInterval(actualizarCuentaRegresiva, 1000);
+    return () => window.clearInterval(intervalo);
+  }, [bloqueoHasta]);
 
   function validarFormulario() {
     const nuevosErrores = {};
@@ -58,7 +78,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
       return;
     }
 
-    setCargando(true);
+    envioEnCursoRef.current = true;\n    setCargando(true);
     const controlador = new AbortController();
     const limite = setTimeout(() => controlador.abort(), 12000);
 
@@ -88,19 +108,34 @@ export default function IniciarSesion({ onSesionIniciada }) {
         const codigo = datos?.error?.codigo ?? datos?.codigo;
 
         if (respuesta.status === 401 || codigo === "credenciales_invalidas") {
-          throw new Error("El correo o la contraseña son incorrectos.");
+          setErrorGeneral("Correo o contraseña incorrectos. Revisa los datos e inténtalo de nuevo. Si no recuerdas tu contraseña, puedes restablecerla.");
+          return;
         }
 
         if (respuesta.status === 429 || codigo === "demasiadas_peticiones") {
-          throw new Error("Has realizado demasiados intentos. Espera unos minutos e inténtalo de nuevo.");
+          const retryAfter = respuesta.headers.get("Retry-After");
+          let espera = Number(retryAfter);
+
+          if (!Number.isFinite(espera) || espera <= 0) {
+            const fechaReintento = Date.parse(retryAfter || "");
+            espera = Number.isNaN(fechaReintento)
+              ? 60
+              : Math.max(1, Math.ceil((fechaReintento - Date.now()) / 1000));
+          }
+
+          setBloqueoHasta(Date.now() + espera * 1000);
+          setSegundosRestantes(espera);
+          setErrorGeneral("Has realizado demasiados intentos. Podrás volver a ingresar cuando termine la espera.");
+          return;
         }
 
-        throw new Error(
+        setErrorGeneral(
           datos?.error?.mensaje ??
           datos?.mensaje ??
           datos?.message ??
           "No fue posible iniciar sesión. Inténtalo nuevamente."
         );
+        return;
       }
 
       const usuario = datos?.usuario ?? datos?.datos?.usuario ?? datos?.data?.usuario;
@@ -110,15 +145,15 @@ export default function IniciarSesion({ onSesionIniciada }) {
       onSesionIniciada?.(usuario ?? { correo: correo.trim() });
       navigate("/", { replace: true });
     } catch (error) {
-      if (error.name === "AbortError") {
-        setErrorGeneral("El servidor tardó demasiado en responder. Inténtalo de nuevo.");
-      } else if (error instanceof TypeError) {
-        setErrorGeneral("No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.");
+      if (error.name === "AbortError" || error instanceof TypeError) {
+        setErrorConexion(true);
+        setErrorGeneral("");
       } else {
         setErrorGeneral(error.message);
       }
     } finally {
       clearTimeout(limite);
+      envioEnCursoRef.current = false;
       setCargando(false);
     }
   }
@@ -243,13 +278,31 @@ export default function IniciarSesion({ onSesionIniciada }) {
             </div>
 
             {errorGeneral && (
-              <p className="inicio-sesion-error-general cuerpo-p" role="alert">
-                {errorGeneral}
-              </p>
+              <div className="inicio-sesion-error-general cuerpo-p" role="alert">
+                <strong>{errorGeneral.startsWith("Correo o contraseña incorrectos") ? "Correo o contraseña incorrectos" : errorGeneral}</strong>
+                {errorGeneral.startsWith("Correo o contraseña incorrectos") && (
+                  <span>Revisa los datos e inténtalo de nuevo. Si no recuerdas tu contraseña, puedes restablecerla.</span>
+                )}
+                {segundosRestantes > 0 && (
+                  <span>Inténtalo de nuevo en {segundosRestantes} {segundosRestantes === 1 ? "segundo" : "segundos"}.</span>
+                )}
+              </div>
             )}
 
-            <button className="inicio-sesion-submit cuerpo-p-fuerte" type="submit" disabled={cargando}>
-              {cargando ? "Ingresando..." : "Ingresar"}
+            {errorConexion && (
+              <div className="inicio-sesion-error-general inicio-sesion-error-conexion cuerpo-p" role="alert">
+                <div>
+                  <strong>No pudimos conectarnos</strong>
+                  <span>Revisa tu conexión a internet e inténtalo de nuevo. Lo que escribiste se conserva.</span>
+                </div>
+                <button type="button" onClick={() => iniciarSesion()} disabled={formularioBloqueado}>
+                  Reintentar
+                </button>
+              </div>
+            )}
+
+            <button className="inicio-sesion-submit cuerpo-p-fuerte" type="submit" disabled={formularioBloqueado}>
+              {cargando ? "Ingresando…" : segundosRestantes > 0 ? `Espera ${segundosRestantes}s` : "Ingresar"}
             </button>
           </form>
 
