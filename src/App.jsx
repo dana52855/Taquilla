@@ -5,6 +5,7 @@ import LayoutPublico from "./layouts/LayoutPublico.jsx";
 import Home from "./pages/Home/Home.jsx";
 import Explorar from "./pages/Explorar/Explorar.jsx";
 import DetalleEvento from "./pages/DetalleEvento/DetalleEvento.jsx";
+import IniciarSesion from "./pages/IniciarSesion/IniciarSesion.jsx";
 
 const DURACION_COOKIE = 60 * 60 * 24 * 365;
 
@@ -100,6 +101,7 @@ function App() {
             en={en}
             enlaces={enlaces}
           />} />
+          <Route path="ingresar" element={<IniciarSesion />} />
           <Route path="eventos/:slug" element={<DetalleEvento
             {...datos}
             en={en}
