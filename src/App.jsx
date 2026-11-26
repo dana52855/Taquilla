@@ -68,7 +68,7 @@ function App() {
       vigente = false;
       window.removeEventListener("focus", consultarSesion);
     };
-  }, [navigate]);
+  }, [navigate, usuario]);
 
   async function cerrarSesion() {
     const respuesta = await fetch(`${API}/sesion`, {
