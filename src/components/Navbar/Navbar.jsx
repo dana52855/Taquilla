@@ -15,7 +15,8 @@ const Navbar = ({
   en,
   alternarIdioma,
   onAbrirAccesibilidad,
-  enlaces
+  enlaces,
+  usuario
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const nav = textos?.navbar;
@@ -33,7 +34,7 @@ const Navbar = ({
         <MarcaInverso />
         <div className="header-mobile-botones">
           <BotonIcono ancho={44} tipo='primario' icono='search' />
-          {!isOpen && <Boton className='cuerpo-p-fuerte' tipo='primario' href={enlaces['ingresar']}>{menuMovil?.botones?.ingresar}</Boton>}
+          {!isOpen && !usuario && <Boton className='cuerpo-p-fuerte' tipo='primario' href={enlaces['ingresar']}>{menuMovil?.botones?.ingresar}</Boton>}
           <BotonIcono ancho={44} tipo='primario' icono='menu' onClick={() => setIsOpen(true)} />
         </div>
       </div>
@@ -63,8 +64,16 @@ const Navbar = ({
               <SelectorIdioma en={en} alternarIdioma={alternarIdioma} aria-label={nav?.aria?.idioma} />
             </div>
             <div className="navbar-botones">
-              <Boton className='cuerpo-p-fuerte' tipo={isMobile ? 'primario' : 'secundario'} href={enlaces['ingresar']}>{nav?.botones?.ingresar}</Boton>
-              <Boton className='cuerpo-p-fuerte' tipo={isMobile ? 'secundario' : 'primario'} href={enlaces['crearCuenta']}>{nav?.botones?.crearCuenta}</Boton>
+              {usuario ? (
+                <span className="cuerpo-p-fuerte" aria-label="Sesión iniciada">
+                  {usuario.nombre ?? usuario.correo ?? usuario.email ?? "Sesión iniciada"}
+                </span>
+              ) : (
+                <>
+                  <Boton className='cuerpo-p-fuerte' tipo={isMobile ? 'primario' : 'secundario'} href={enlaces['ingresar']}>{nav?.botones?.ingresar}</Boton>
+                  <Boton className='cuerpo-p-fuerte' tipo={isMobile ? 'secundario' : 'primario'} href={enlaces['crearCuenta']}>{nav?.botones?.crearCuenta}</Boton>
+                </>
+              )}
             </div>
           </div>
         </nav>
