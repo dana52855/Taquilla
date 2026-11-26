@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Marca from "../../assets/logos/logo-normal.svg?react";
+import MarcaInverso from "../../assets/logos/logo-inverso.svg?react";
 import "./IniciarSesion.css";
 
 const API = import.meta.env.VITE_API_URL;
@@ -22,11 +24,11 @@ export default function IniciarSesion() {
 
     if (!correo.trim()) {
       nuevosErrores.correo = "Ingresa tu correo electrónico.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim())) {
+    } else if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(correo.trim())) {
       nuevosErrores.correo = "Ingresa un correo electrónico válido.";
     }
 
-    if (!contrasena.trim()) {
+    if (!contrasena) {
       nuevosErrores.contrasena = "Ingresa tu contraseña.";
     }
 
@@ -51,7 +53,14 @@ export default function IniciarSesion() {
 
     if (!validarFormulario()) return;
 
+    if (!API) {
+      setErrorGeneral("No está configurada la dirección del servidor.");
+      return;
+    }
+
     setCargando(true);
+    const controlador = new AbortController();
+    const limite = setTimeout(() => controlador.abort(), 12000);
 
     try {
       const respuesta = await fetch(`${API}/sesion`, {
@@ -64,6 +73,7 @@ export default function IniciarSesion() {
           email: correo.trim(),
           password: contrasena,
         }),
+        signal: controlador.signal,
       });
 
       let datos = {};
@@ -74,24 +84,39 @@ export default function IniciarSesion() {
       }
 
       if (!respuesta.ok) {
+        if (respuesta.status === 401 || respuesta.status === 403) {
+          throw new Error("El correo o la contraseña son incorrectos.");
+        }
+
         throw new Error(
           datos?.mensaje ??
           datos?.message ??
-          (respuesta.status === 401
-            ? "El correo o la contraseña son incorrectos."
-            : "No fue posible iniciar sesión. Inténtalo nuevamente.")
+          "No fue posible iniciar sesión. Inténtalo nuevamente."
         );
       }
 
-      const token = datos?.token ?? datos?.datos?.token ?? datos?.access_token;
+      const informacion = datos?.datos ?? datos?.data ?? datos;
       const sesion = {
-        ...datos,
-        ...(token ? { token } : {}),
-        correo: datos?.correo ?? datos?.usuario?.correo ?? correo.trim(),
+        ...informacion,
+        token:
+          informacion?.token ??
+          informacion?.access_token ??
+          informacion?.accessToken ??
+          null,
+        refreshToken:
+          informacion?.refreshToken ??
+          informacion?.refresh_token ??
+          null,
+        usuario:
+          informacion?.usuario ??
+          informacion?.user ??
+          informacion?.cliente ??
+          { email: correo.trim() },
       };
-      const almacenamiento = mantenerSesion ? localStorage : sessionStorage;
 
+      const almacenamiento = mantenerSesion ? localStorage : sessionStorage;
       almacenamiento.setItem("taquilla-sesion", JSON.stringify(sesion));
+
       if (mantenerSesion) {
         sessionStorage.removeItem("taquilla-sesion");
       } else {
@@ -100,39 +125,44 @@ export default function IniciarSesion() {
 
       navigate("/", { replace: true });
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      setErrorGeneral(
-        error instanceof TypeError
-          ? "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
-          : error.message
-      );
+      if (error.name === "AbortError") {
+        setErrorGeneral("El servidor tardó demasiado en responder. Inténtalo de nuevo.");
+      } else if (error instanceof TypeError) {
+        setErrorGeneral("No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.");
+      } else {
+        setErrorGeneral(error.message);
+      }
     } finally {
+      clearTimeout(limite);
       setCargando(false);
     }
   }
 
   return (
-    <section className="inicio-sesion">
-      <aside className="inicio-sesion-panel">
-        <div className="inicio-sesion-panel-contenido">
-          <p className="inicio-sesion-etiqueta">TAQUILLA</p>
-          <h1 className="titular-display">Tu próxima experiencia empieza aquí.</h1>
-          <p className="cuerpo-g">
-            Ingresa para descubrir eventos, guardar tus favoritos y vivir cada experiencia.
-          </p>
+    <main className="inicio-sesion">
+      <aside className="inicio-sesion-portada">
+        <Link className="inicio-sesion-logo-inverso" to="/" aria-label="Taquilla, ir al inicio">
+          <MarcaInverso />
+        </Link>
+
+        <div className="inicio-sesion-beneficios">
+          <h1 className="titular-display">Tu próxima noche empieza aquí.</h1>
+          <ul>
+            <li><span aria-hidden="true">✓</span>Descubre conciertos, teatro y deportes</li>
+            <li><span aria-hidden="true">✓</span>Filtra por categoría, fecha y ciudad</li>
+            <li><span aria-hidden="true">✓</span>Consulta horario, lugar y cómo llegar</li>
+          </ul>
         </div>
-        <span className="inicio-sesion-panel-pie cuerpo-p">Tu ciudad. Tus eventos. Tus momentos.</span>
       </aside>
 
-      <div className="inicio-sesion-contenedor">
+      <section className="inicio-sesion-contenido" aria-labelledby="titulo-iniciar-sesion">
         <div className="inicio-sesion-formulario">
-          <p className="inicio-sesion-volver cuerpo-p">
-            ¿Aún no tienes una cuenta? <Link to="/crearCuenta">Crear cuenta</Link>
-          </p>
+          <Link className="inicio-sesion-logo-movil" to="/" aria-label="Taquilla, ir al inicio">
+            <Marca />
+          </Link>
 
           <header className="inicio-sesion-encabezado">
-            <p className="cuerpo-p inicio-sesion-sobrelinea">BIENVENIDO DE NUEVO</p>
-            <h2 className="titular-h1">Iniciar sesión</h2>
+            <h2 className="titular-h1" id="titulo-iniciar-sesion">Iniciar sesión</h2>
             <p className="cuerpo-m">Ingresa tus datos para continuar.</p>
           </header>
 
@@ -142,7 +172,7 @@ export default function IniciarSesion() {
               <input
                 ref={correoRef}
                 id="correo"
-                name="correo"
+                name="email"
                 type="email"
                 autoComplete="email"
                 placeholder="nombre@correo.com"
@@ -150,23 +180,25 @@ export default function IniciarSesion() {
                 onChange={(evento) => {
                   setCorreo(evento.target.value);
                   setErrores((actuales) => ({ ...actuales, correo: "" }));
+                  setErrorGeneral("");
                 }}
                 aria-invalid={Boolean(errores.correo)}
                 aria-describedby={errores.correo ? "error-correo" : undefined}
               />
-              {errores.correo && <span className="inicio-sesion-error detalle-nota" id="error-correo">{errores.correo}</span>}
+              {errores.correo && (
+                <span className="inicio-sesion-error detalle-nota" id="error-correo" role="alert">
+                  {errores.correo}
+                </span>
+              )}
             </div>
 
             <div className="inicio-sesion-campo">
-              <div className="inicio-sesion-etiqueta-fila">
-                <label className="cuerpo-p-fuerte" htmlFor="contrasena">Contraseña</label>
-                <Link className="cuerpo-p" to="/recuperar-contrasena">¿Olvidaste tu contraseña?</Link>
-              </div>
+              <label className="cuerpo-p-fuerte" htmlFor="contrasena">Contraseña</label>
               <div className={`inicio-sesion-contrasena ${errores.contrasena ? "con-error" : ""}`}>
                 <input
                   ref={contrasenaRef}
                   id="contrasena"
-                  name="contrasena"
+                  name="password"
                   type={mostrarContrasena ? "text" : "password"}
                   autoComplete="current-password"
                   placeholder="Ingresa tu contraseña"
@@ -174,44 +206,73 @@ export default function IniciarSesion() {
                   onChange={(evento) => {
                     setContrasena(evento.target.value);
                     setErrores((actuales) => ({ ...actuales, contrasena: "" }));
+                    setErrorGeneral("");
                   }}
                   aria-invalid={Boolean(errores.contrasena)}
                   aria-describedby={errores.contrasena ? "error-contrasena" : undefined}
                 />
                 <button
-                  className="inicio-sesion-mostrar"
+                  className="inicio-sesion-ojo"
                   type="button"
                   onClick={() => setMostrarContrasena((valor) => !valor)}
                   aria-label={mostrarContrasena ? "Ocultar contraseña" : "Mostrar contraseña"}
                   aria-pressed={mostrarContrasena}
+                  title={mostrarContrasena ? "Ocultar contraseña" : "Mostrar contraseña"}
                 >
-                  {mostrarContrasena ? "Ocultar" : "Mostrar"}
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    {mostrarContrasena ? (
+                      <>
+                        <path d="M3 3l18 18" />
+                        <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                        <path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c5 0 8.5 4.5 9.5 7-.4 1-1.2 2.1-2.3 3.1" />
+                        <path d="M6.2 6.2C3.9 7.6 2.8 9.5 2.5 12c.8 2.1 4.2 7 9.5 7 1.2 0 2.3-.2 3.3-.7" />
+                      </>
+                    ) : (
+                      <>
+                        <path d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z" />
+                        <circle cx="12" cy="12" r="2.5" />
+                      </>
+                    )}
+                  </svg>
                 </button>
               </div>
-              {errores.contrasena && <span className="inicio-sesion-error detalle-nota" id="error-contrasena">{errores.contrasena}</span>}
+              {errores.contrasena && (
+                <span className="inicio-sesion-error detalle-nota" id="error-contrasena" role="alert">
+                  {errores.contrasena}
+                </span>
+              )}
             </div>
 
-            <label className="inicio-sesion-recordar cuerpo-p">
-              <input
-                type="checkbox"
-                checked={mantenerSesion}
-                onChange={(evento) => setMantenerSesion(evento.target.checked)}
-              />
-              Mantener la sesión iniciada
-            </label>
+            <div className="inicio-sesion-opciones">
+              <label className="inicio-sesion-recordar cuerpo-p">
+                <input
+                  type="checkbox"
+                  checked={mantenerSesion}
+                  onChange={(evento) => setMantenerSesion(evento.target.checked)}
+                />
+                <span>Mantener la sesión iniciada</span>
+              </label>
+              <Link className="cuerpo-p inicio-sesion-recuperar" to="/recuperar-contrasena">
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </div>
 
-            {errorGeneral && <p className="inicio-sesion-error-general cuerpo-p" role="alert">{errorGeneral}</p>}
+            {errorGeneral && (
+              <p className="inicio-sesion-error-general cuerpo-p" role="alert">
+                {errorGeneral}
+              </p>
+            )}
 
             <button className="inicio-sesion-submit cuerpo-p-fuerte" type="submit" disabled={cargando}>
               {cargando ? "Ingresando..." : "Ingresar"}
             </button>
           </form>
 
-          <p className="inicio-sesion-ayuda cuerpo-p">
-            ¿Necesitas ayuda? <a href="mailto:soporte@taquilla.com">Contáctanos</a>
+          <p className="inicio-sesion-crear cuerpo-p">
+            ¿No tienes cuenta? <Link to="/crearCuenta">Crea una cuenta</Link>
           </p>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
   );
 }
