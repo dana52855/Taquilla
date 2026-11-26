@@ -9,6 +9,7 @@ export default function LayoutPublico({
   en,
   alternarIdioma,
   enlaces,
+  usuario,
   consentimiento,
   onAceptarCookies,
   onRechazarCookies,
@@ -24,6 +25,7 @@ export default function LayoutPublico({
         alternarIdioma={alternarIdioma}
         onAbrirAccesibilidad={onAbrirAccesibilidad}
         enlaces={enlaces}
+        usuario={usuario}
       />
       <main>
         <Outlet />
