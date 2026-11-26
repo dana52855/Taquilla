@@ -67,46 +67,48 @@ function App() {
   }
 
   const enlaces = {
-    ingresar: '/ingresar',
-    crearCuenta: '/crearCuenta',
-    inicio: '/',
-    eventos: '/eventos',
-    explorar: '/explorar',
-    terminos: '/terminos-de-uso',
-    accesibilidad: '/accesibilidad'
+    ingresar: "/ingresar",
+    crearCuenta: "/crearCuenta",
+    inicio: "/",
+    eventos: "/eventos",
+    explorar: "/explorar",
+    terminos: "/terminos-de-uso",
+    accesibilidad: "/accesibilidad",
   };
 
   return (
     <div className="sitio">
       <Routes>
-        <Route path="/" element={<LayoutPublico
-          datos={datos}
-          en={en}
-          alternarIdioma={alternarIdioma}
-          enlaces={enlaces}
-          consentimiento={consentimiento}
-          onAceptarCookies={aceptarCookies}
-          onRechazarCookies={rechazarCookies}
-          accesibilidadAbierta={accesibilidadAbierta}
-          onAbrirAccesibilidad={() => setAccesibilidadAbierta(true)}
-          onCerrarAccesibilidad={() => setAccesibilidadAbierta(false)}
-        />}>
-          <Route index element={<Home
-            {...datos}
-            en={en}
-            enlaces={enlaces}
-          />} />
-          <Route path="explorar" element={<Explorar
-            {...datos}
-            en={en}
-            enlaces={enlaces}
-          />} />
-          <Route path="ingresar" element={<IniciarSesion />} />
-          <Route path="eventos/:slug" element={<DetalleEvento
-            {...datos}
-            en={en}
-            enlaces={enlaces}
-          />} />
+        <Route path="/ingresar" element={<IniciarSesion />} />
+        <Route
+          path="/"
+          element={
+            <LayoutPublico
+              datos={datos}
+              en={en}
+              alternarIdioma={alternarIdioma}
+              enlaces={enlaces}
+              consentimiento={consentimiento}
+              onAceptarCookies={aceptarCookies}
+              onRechazarCookies={rechazarCookies}
+              accesibilidadAbierta={accesibilidadAbierta}
+              onAbrirAccesibilidad={() => setAccesibilidadAbierta(true)}
+              onCerrarAccesibilidad={() => setAccesibilidadAbierta(false)}
+            />
+          }
+        >
+          <Route
+            index
+            element={<Home {...datos} en={en} enlaces={enlaces} />}
+          />
+          <Route
+            path="explorar"
+            element={<Explorar {...datos} en={en} enlaces={enlaces} />}
+          />
+          <Route
+            path="eventos/:slug"
+            element={<DetalleEvento {...datos} en={en} enlaces={enlaces} />}
+          />
         </Route>
       </Routes>
     </div>
