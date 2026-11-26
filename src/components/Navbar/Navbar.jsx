@@ -26,12 +26,14 @@ const Navbar = ({
   const menuMovil = textos?.menuMovil;
   const isMobile = useMediaQuery("(max-width: 1023px)");
 
-  const nombreUsuario =
+  const nombreUsuario = String(
     usuario?.nombre_completo ??
     usuario?.nombreCompleto ??
     usuario?.nombre ??
     usuario?.name ??
-    "Mi cuenta";
+    [usuario?.nombres, usuario?.apellidos].filter(Boolean).join(" ") ??
+    "Mi cuenta"
+  );
   const correoUsuario = usuario?.correo ?? usuario?.email ?? "";
 
   function obtenerIniciales() {
