@@ -24,15 +24,7 @@ const Navbar = ({
   const isMobile = useMediaQuery("(max-width: 1023px)");
 
   function obtenerIniciales() {
-    const nombre = usuario?.nombre ?? usuario?.nombres ?? "";
-    const apellido = usuario?.apellido ?? usuario?.apellidos ?? "";
-    const partes = `${nombre} ${apellido}`.trim().split(/\\s+/).filter(Boolean);
-
-    if (partes.length >= 2) {
-      return `${partes[0][0]}${partes[partes.length - 1][0]}`.toUpperCase();
-    }
-
-    return "LS";
+    return "Lc";
   }
 
   function abrirAccesibilidad() {
