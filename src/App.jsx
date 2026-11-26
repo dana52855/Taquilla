@@ -113,6 +113,7 @@ function App() {
               en={en}
               alternarIdioma={alternarIdioma}
               enlaces={enlaces}
+              usuario={usuario}
               consentimiento={consentimiento}
               onAceptarCookies={aceptarCookies}
               onRechazarCookies={rechazarCookies}
