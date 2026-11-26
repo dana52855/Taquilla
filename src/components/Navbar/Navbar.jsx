@@ -76,7 +76,7 @@ const Navbar = ({
           <BotonIcono ancho={44} tipo={inicio ? "primario" : "fantasma"} icono="menu" ariaLabel={menuMovil?.abrir} aria-expanded={isOpen} aria-controls="menu-publico" onClick={() => setIsOpen(true)} />
         </div>
       </div>
-      {cargando ? <div className='titular-h3 cargando'>{en ? 'Loading navigation...' : 'Cargando navegación...'}</div> :
+      {cargando ? <div className='titular-h3 cargando'>{textos?.estados?.cargando?.titulo}</div> :
         <nav id="menu-publico" className={`navbar ${isOpen ? 'open' : ''}`}>
           <div className="navbar-left">
             <div className='marca-navbar'>

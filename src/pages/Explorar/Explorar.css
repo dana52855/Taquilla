@@ -613,16 +613,15 @@
   }
 
   .explorar-tarjeta .tarjeta-evento {
-    display: grid;
-    grid-template-columns: 7rem minmax(0, 1fr);
-    grid-template-rows: auto;
+    display: flex;
+    flex-direction: column;
     align-items: stretch;
-    min-height: 10rem;
+    min-height: 0;
   }
 
   .explorar-tarjeta .portada-evento {
-    height: 100%;
-    min-height: 10rem;
+    height: 11rem;
+    min-height: 0;
   }
 
   .explorar-tarjeta .portada-evento svg {
@@ -632,8 +631,8 @@
 
   .explorar-tarjeta .texto-evento {
     min-width: 0;
-    gap: 0.375rem;
-    padding: 0.75rem;
+    gap: 0.625rem;
+    padding: 1rem;
   }
 
   .explorar-tarjeta .texto-evento .etiqueta {
@@ -677,7 +676,7 @@
   }
 
   .explorar-tarjeta .botones-evento > div:last-child {
-    display: none;
+    display: block;
   }
 
   .explorar-tarjeta .botones-evento .cuerpo-m-fuerte {
@@ -794,4 +793,10 @@
     min-height: 3.5rem;
     justify-content: center;
   }
+}
+
+.explorar-resumen-corto { display: none; }
+@media (max-width: 767px) {
+  .explorar-resumen-amplio { display: none; }
+  .explorar-resumen-corto { display: inline; }
 }

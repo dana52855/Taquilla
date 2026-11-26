@@ -189,7 +189,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
       if (precioDesde > PRECIO_MINIMO) parametros.set("precioMin", String(precioDesde));
       if (precioHasta < PRECIO_MAXIMO) parametros.set("precioMax", String(precioHasta));
       parametros.set("pagina", String(paginaActual));
-      parametros.set("limite", String(POR_PAGINA));
+      parametros.set("porPagina", String(POR_PAGINA));
 
       try {
         const respuesta = await solicitar(`/eventos?${parametros.toString()}`, {
@@ -429,7 +429,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           <span>{textos?.navbar?.enlaces?.explorar}</span>
         </div>
         <h1 className="titular-h1">{tituloExplorar}</h1>
-        <p className="cuerpo-m explorar-resumen">{textoResultados?.replace("{cantidad}", totalEventos)}</p>
+        <p className="cuerpo-m explorar-resumen"><span className="explorar-resumen-amplio">{textoResultados?.replace("{cantidad}", totalEventos)}</span><span className="explorar-resumen-corto">{textoResultadosCorto?.replace("{cantidad}", totalEventos)}</span></p>
       </section>
 
       <section className="explorar-cuerpo">

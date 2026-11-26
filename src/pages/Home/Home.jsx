@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import useEventos from "../../hooks/useEventos";
 import useCategorias from "../../hooks/useCategorias";
+import useCiudades from "../../hooks/useCiudades";
 import Tarjeta from "../../components/Tarjeta/Tarjeta";
 import Portada from "../../components/Portada/Portada";
 import Etiqueta from "../../components/Etiqueta/Etiqueta";
@@ -29,7 +30,9 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
   const textosCategorias = inicio?.categorias;
 
   const [consulta, setConsulta] = useState("");
-  const [ciudad, setCiudad] = useState("Manizales");
+  const [ciudadEditada, setCiudad] = useState(null);
+  const ciudades = useCiudades();
+  const ciudad = ciudadEditada ?? ciudades.find((nombre) => nombre.toLowerCase() === "manizales") ?? ciudades[0] ?? "";
   const [fecha, setFecha] = useState("");
 
   const {
@@ -45,14 +48,28 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
     error: errorCargando,
   } = useCategorias(true);
 
+  const parametrosProximos = new URLSearchParams({ orden: "fecha", porPagina: "4" });
+  if (ciudad && ciudades.includes(ciudad)) parametrosProximos.set("ciudad", ciudad);
+  if (movil) {
+    const sabado = new Date();
+    sabado.setDate(sabado.getDate() + (sabado.getDay() === 0 ? -1 : 6 - sabado.getDay()));
+    const domingo = new Date(sabado);
+    domingo.setDate(domingo.getDate() + 1);
+    const fechaISO = (dia) => `${dia.getFullYear()}-${String(dia.getMonth() + 1).padStart(2, "0")}-${String(dia.getDate()).padStart(2, "0")}`;
+    parametrosProximos.set("desde", fechaISO(sabado));
+    parametrosProximos.set("hasta", fechaISO(domingo));
+  }
   const {
     eventos: todosLosEventos,
     cargando: cargandoEventos,
     error: errorEventos,
     recargar: recargarEventos,
-  } = useEventos();
+  } = useEventos(false, parametrosProximos.toString());
 
   const eventoPrincipal = eventosDestacados?.[0];
+  const populares = [...new Set((Array.isArray(eventosDestacados) ? eventosDestacados : []).map((evento) => evento?.titulo).filter((titulo) => typeof titulo === "string" && titulo))].slice(0, 4);
+  const fechaPrincipal = new Date(eventoPrincipal?.fecha);
+  const fechaPrincipalTexto = Number.isNaN(fechaPrincipal.getTime()) ? "" : new Intl.DateTimeFormat(en ? "en-US" : "es-CO", { weekday: "short", day: "numeric", month: "short" }).format(fechaPrincipal);
 
   function buscarEventos(evento) {
     evento.preventDefault();
@@ -70,7 +87,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
       <meta name="description" content={inicio?.seo?.descripcion} />
       {cargandoTextos ? (
         <div className="titular-h3 cargando">
-          {en ? "LOADING HOME..." : "CARGANDO INICIO..."}
+          {textos?.estados?.cargando?.titulo}
         </div>
       ) : (
         <>
@@ -143,12 +160,17 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                     </span>
                   </label>
 
-                  <Boton className="cuerpo-m-fuerte home-buscador-filtros" tipo="primario">
+                  <Boton className="cuerpo-m-fuerte home-buscador-filtros" tipo="primario" type="submit" aria-label={hero?.buscador?.botones?.buscar}>
                     <span>{hero?.buscador?.botones?.buscar}</span>
                     <Icono nombre="sliders" className='boton-buscar-mobile' />
                   </Boton>
                 </form>
-                {hero?.buscador?.populares && <div className="home-populares">{hero.buscador.populares}</div>}
+                {hero?.buscador?.populares && populares.length > 0 && (
+                  <div className="home-populares">
+                    <span>{hero.buscador.populares}</span>
+                    {populares.map((titulo) => <button key={titulo} type="button" onClick={() => navigate(`${enlaces.explorar}?${new URLSearchParams({ q: titulo })}`)}>{titulo}</button>)}
+                  </div>
+                )}
               </div>
 
               {eventoPrincipal && <article className="home-evento-principal">
@@ -159,7 +181,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                   <div className="home-evento-pie">
                     <div>
                       <p className="cuerpo-p">
-                        {eventoPrincipal?.fecha && new Intl.DateTimeFormat(en ? "en-US" : "es-CO", { weekday: "short", day: "numeric", month: "short" }).format(new Date(eventoPrincipal.fecha))}
+                        {fechaPrincipalTexto}
                         {eventoPrincipal?.recinto?.nombre
                           ? ` · ${eventoPrincipal.recinto.nombre}`
                           : ""}
