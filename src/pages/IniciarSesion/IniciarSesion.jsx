@@ -162,8 +162,8 @@ export default function IniciarSesion() {
           </Link>
 
           <header className="inicio-sesion-encabezado">
-            <h2 className="titular-h1" id="titulo-iniciar-sesion">Iniciar sesión</h2>
-            <p className="cuerpo-m">Ingresa tus datos para continuar.</p>
+            <h2 className="titular-h1" id="titulo-iniciar-sesion">Ingresa a tu cuenta</h2>
+            <p className="cuerpo-m">Ingresa con el correo y la contraseña de tu cuenta.</p>
           </header>
 
           <form onSubmit={iniciarSesion} noValidate>
@@ -192,9 +192,9 @@ export default function IniciarSesion() {
               )}
             </div>
 
-            <div className="inicio-sesion-campo">
+            <div className={`inicio-sesion-campo inicio-sesion-campo-contrasena ${errores.contrasena ? "con-error" : ""}`}>
               <label className="cuerpo-p-fuerte" htmlFor="contrasena">Contraseña</label>
-              <div className={`inicio-sesion-contrasena ${errores.contrasena ? "con-error" : ""}`}>
+              <div className="inicio-sesion-contrasena">
                 <input
                   ref={contrasenaRef}
                   id="contrasena"
