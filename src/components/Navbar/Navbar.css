@@ -84,10 +84,10 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--fondo-inverso);
-  color: var(--texto-inverso);
+  background: var(--marca-primario-suave);
+  color: var(--texto-marca);
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1;
 }
 
