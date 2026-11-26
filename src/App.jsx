@@ -8,6 +8,7 @@ import DetalleEvento from "./pages/DetalleEvento/DetalleEvento.jsx";
 import IniciarSesion from "./pages/IniciarSesion/IniciarSesion.jsx";
 
 const DURACION_COOKIE = 60 * 60 * 24 * 365;
+const API = (import.meta.env.VITE_API_URL || "https://yanethm-taquilla-api.fly.dev/api/v1").replace(/\\/+$/, "");
 
 function leerCookie(nombre) {
   const prefijo = `${nombre}=`;
@@ -37,6 +38,30 @@ function App() {
       : "es";
   });
   const [accesibilidadAbierta, setAccesibilidadAbierta] = useState(false);
+  const [usuario, setUsuario] = useState(null);
+
+  // Recupera la sesión de la cookie de la API cuando ya se inició sesión antes.
+  useEffect(() => {
+    if (localStorage.getItem("sesionIniciada") !== "true") return;
+
+    fetch(`${API}/sesion`, {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    })
+      .then(async (respuesta) => {
+        if (!respuesta.ok) throw new Error("La sesión no está activa.");
+        return respuesta.json();
+      })
+      .then((datosSesion) => {
+        setUsuario(datosSesion?.usuario ?? datosSesion?.datos?.usuario ?? null);
+      })
+      .catch(() => {
+        localStorage.removeItem("sesionIniciada");
+        setUsuario(null);
+      });
+  }, []);
 
   const datos = useTextos(idioma);
   const en = idioma === "en";
@@ -79,7 +104,7 @@ function App() {
   return (
     <div className="sitio">
       <Routes>
-        <Route path="/ingresar" element={<IniciarSesion />} />
+        <Route path="/ingresar" element={<IniciarSesion onSesionIniciada={setUsuario} />} />
         <Route
           path="/"
           element={
