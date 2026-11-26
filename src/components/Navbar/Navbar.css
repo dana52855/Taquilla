@@ -304,4 +304,8 @@
   .navbar-sesion-persona {
     width: 100%;
   }
+
+  .navbar-botones:has(.navbar-sesion-movil) {
+    padding: 0;
+  }
 }
