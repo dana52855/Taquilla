@@ -13,7 +13,7 @@ export default function Footer({
 
   return (
     <footer className="footer">
-      {cargando ? <div className='titular-h3 cargando'>{en ? 'Loading footer...' : 'Cargando pie de página...'}</div> :
+      {cargando ? <div className='titular-h3 cargando'>{textos?.estados?.cargando?.titulo}</div> :
         <>
           <div className="footer-top">
             <div className="cuerpo-p brand">

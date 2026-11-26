@@ -101,7 +101,7 @@ export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDe
       <section className="panel-accesibilidad" role="dialog" aria-modal="true" aria-labelledby="titulo-accesibilidad">
         <header className="panel-accesibilidad-encabezado">
           <h2 id="titulo-accesibilidad" className="titular-h3">{obtenerTexto(panel?.titulo)}</h2>
-          <button className="panel-accesibilidad-cerrar" type="button" onClick={onCerrar} aria-label={obtenerTexto(panel?.cerrar ?? panel?.aria?.cerrar)}>
+          <button className="panel-accesibilidad-cerrar" type="button" onClick={onCerrar} aria-label={obtenerTexto(panel?.cerrar ?? textos?.general?.acciones?.cerrar)}>
             <Icono nombre="x" />
           </button>
         </header>
@@ -109,9 +109,9 @@ export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDe
         <div className="panel-accesibilidad-tamano">
           <h3 className="cuerpo-m-fuerte">{obtenerTexto(panel?.tamanoTexto?.titulo ?? panel?.tamanoTexto)}</h3>
           <div className="panel-accesibilidad-control">
-            <button type="button" onClick={() => cambiarTamanoTexto(-1)} aria-label={obtenerTexto(panel?.tamanoTexto?.disminuir)} disabled={preferencias.tamanoTexto <= -1}>−</button>
+            <button type="button" onClick={() => cambiarTamanoTexto(-1)} aria-label={obtenerTexto(panel?.aria?.disminuirTexto)} disabled={preferencias.tamanoTexto <= -1}>−</button>
             <span className="cuerpo-m-fuerte">A</span>
-            <button type="button" onClick={() => cambiarTamanoTexto(1)} aria-label={obtenerTexto(panel?.tamanoTexto?.aumentar)} disabled={preferencias.tamanoTexto >= 2}>+</button>
+            <button type="button" onClick={() => cambiarTamanoTexto(1)} aria-label={obtenerTexto(panel?.aria?.aumentarTexto)} disabled={preferencias.tamanoTexto >= 2}>+</button>
           </div>
         </div>
 
@@ -139,7 +139,7 @@ export default function PanelAccesibilidad({ textos, abierto, onCerrar, enlaceDe
         <p className="panel-accesibilidad-nota detalle-nota">{obtenerTexto(panel?.nota ?? panel?.textoGuardado)}</p>
 
         <footer className="panel-accesibilidad-pie">
-          <a href={enlaceDeclaracion}>{obtenerTexto(panel?.declaracion ?? panel?.enlaceDeclaracion)}</a>
+          <a href={enlaceDeclaracion}>{obtenerTexto(panel?.enlaces?.declaracion)}</a>
           <button type="button" className="cuerpo-p-fuerte" onClick={restablecer}>
             {obtenerTexto(panel?.restablecer ?? panel?.botones?.restablecer)}
           </button>

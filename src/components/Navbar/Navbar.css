@@ -176,7 +176,7 @@
 
   .navbar-botones {
     width: 100%;
-    display: center;
+    display: flex;
     flex-direction: column;
     gap: 0.75rem;
     padding: 1rem 1.5rem;
@@ -309,4 +309,13 @@
   .navbar-botones:has(.navbar-sesion-movil) {
     padding: 0;
   }
+}
+
+.buscador-navbar input { min-width: 0; flex: 1; }
+.buscador-navbar svg { width: 18px; height: 18px; flex: 0 0 18px; }
+.header-mobile > a, .marca-navbar > a { display: inline-flex; }
+@media (max-width: 1023px) {
+  .header-mobile-claro { background: var(--fondo-superficie); border-bottom: 1px solid var(--borde-sutil); }
+  .header-mobile-claro .header-mobile-botones { color: var(--texto-principal); }
+  .header-mobile-claro .boton { width: auto; }
 }

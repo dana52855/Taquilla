@@ -35,7 +35,7 @@
 }
 
 .inicio-sesion-beneficios h1 {
-  max-width: 10ch;
+  max-width: 100%;
   margin: 0 0 24px;
   font-size: 52px;
   line-height: 56px;
@@ -148,7 +148,7 @@
 }
 
 .inicio-sesion-campo-contrasena {
-  min-height: 80px;
+  min-height: 74px;
 }
 
 .inicio-sesion-contrasena {
@@ -388,7 +388,7 @@
   .inicio-sesion-contenido {
     display: block;
     min-height: 100vh;
-    padding: 62px 24px 32px;
+    padding: 24px 24px 32px;
   }
 
   .inicio-sesion-formulario {
@@ -400,7 +400,7 @@
     display: inline-flex;
     width: 109px;
     height: 32px;
-    margin-bottom: 7px;
+    margin-bottom: 0;
   }
 
   .inicio-sesion-encabezado h2 {

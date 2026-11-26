@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const API = import.meta.env.VITE_API_URL + "/eventos";
 
-function useEventos(destacados = false) {
+function useEventos(destacados = false, consulta = "") {
   const [eventos, setEventos] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(false);
@@ -20,7 +20,7 @@ function useEventos(destacados = false) {
     async function cargarEventos() {
       try {
         const respuesta = await fetch(
-          `${API}${destacados ? "/destacados" : ""}`,
+          `${API}${destacados ? "/destacados" : ""}${consulta ? `?${consulta}` : ""}`,
           {
             signal: controlador.signal,
           },
@@ -46,7 +46,7 @@ function useEventos(destacados = false) {
       clearTimeout(temporizador);
       controlador.abort();
     };
-  }, [intento, destacados]);
+  }, [intento, destacados, consulta]);
   return {
     eventos,
     cargando,

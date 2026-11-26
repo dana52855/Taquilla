@@ -41,3 +41,13 @@
     justify-content: space-between;
     padding: 0.75rem 0 0;
 }
+.tarjeta-evento { color: var(--texto-principal); text-decoration: none; }
+.tarjeta-evento:hover { box-shadow: var(--sombra-flotante); }
+.tarjeta-evento:focus-visible { outline: 2px solid var(--borde-fuerte); outline-offset: 2px; }
+.tarjeta-evento .portada-evento > svg { display: block; width: 100%; height: 100%; }
+.tarjeta-evento .texto-evento { flex: 1; min-width: 0; }
+.tarjeta-evento .botones-evento { margin-top: auto; gap: 8px; }
+.tarjeta-evento .info-evento > svg { width: 16px; height: 16px; flex: 0 0 16px; }
+.tarjeta-evento .info-evento > div { min-width: 0; overflow-wrap: anywhere; }
+.tarjeta-ver-evento { display: inline-flex; }
+@media (min-width: 768px) { .tarjeta-evento { min-height: 392px; } }

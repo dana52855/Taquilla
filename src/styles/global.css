@@ -113,3 +113,6 @@ body {
   display: flex;
   align-items: center;
 }
+
+.carga-textos { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px; padding: 24px; text-align: center; }
+.carga-textos button { font: inherit; padding: 10px 18px; border: 1px solid var(--borde-fuerte); border-radius: var(--radio-md); background: var(--fondo-superficie); cursor: pointer; }
