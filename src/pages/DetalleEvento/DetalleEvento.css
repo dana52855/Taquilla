@@ -623,3 +623,10 @@
     flex-direction: column;
   }
 }
+
+@media (max-width: 767px) {
+  .pagina-detalle-evento { background: var(--fondo-superficie); }
+  .detalle-cabecera { padding-bottom: 20px; border-bottom: 1px solid var(--borde-sutil); }
+  .detalle-expandido .detalle-seccion-llegar,
+  .detalle-expandido .detalle-seccion-politicas { display: block; }
+}

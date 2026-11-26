@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import useMediaQuery from "../../hooks/useMediaQuery";
 import useEventos from "../../hooks/useEventos";
 import useCategorias from "../../hooks/useCategorias";
 import Tarjeta from "../../components/Tarjeta/Tarjeta";
@@ -9,19 +10,19 @@ import Boton from "../../components/Boton/Boton";
 import Icono from "../../components/Icono";
 import "./Home.css";
 
-const PLACEHOLDER = "PLACEHOLDER";
-
 const iconosCategorias = {
   conciertos: "music",
   teatro: "star",
   deportes: "trophy",
   festivales: "flag",
   comedia: "smile",
-  familiares: "user",
+  familiares: "users",
 };
 
 function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
   const inicio = textos?.paginas?.inicio;
+  const navigate = useNavigate();
+  const movil = useMediaQuery("(max-width: 767px)");
   const hero = inicio?.hero;
   const destacados = inicio?.destacados;
   const proximos = inicio?.proximos;
@@ -35,6 +36,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
     eventos: eventosDestacados,
     cargando: cargandoDestacados,
     error: errorDestacados,
+    recargar: recargarDestacados,
   } = useEventos(true);
 
   const {
@@ -47,6 +49,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
     eventos: todosLosEventos,
     cargando: cargandoEventos,
     error: errorEventos,
+    recargar: recargarEventos,
   } = useEventos();
 
   const eventoPrincipal = eventosDestacados?.[0];
@@ -54,17 +57,17 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
   function buscarEventos(evento) {
     evento.preventDefault();
     const parametros = new URLSearchParams();
-    if (consulta.trim()) parametros.set("buscar", consulta.trim());
+    if (consulta.trim()) parametros.set("q", consulta.trim());
     if (ciudad.trim()) parametros.set("ciudad", ciudad.trim());
-    if (fecha) parametros.set("fecha", fecha);
+    if (fecha) { parametros.set("desde", fecha); parametros.set("hasta", fecha); }
     const sufijo = parametros.toString();
-    window.location.href = sufijo
-      ? `${enlaces.eventos}?${sufijo}`
-      : enlaces.eventos;
+    navigate(sufijo ? `${enlaces.explorar}?${sufijo}` : enlaces.explorar);
   }
 
   return (
     <div className="inicio-publico">
+      <title>{inicio?.seo?.titulo}</title>
+      <meta name="description" content={inicio?.seo?.descripcion} />
       {cargandoTextos ? (
         <div className="titular-h3 cargando">
           {en ? "LOADING HOME..." : "CARGANDO INICIO..."}
@@ -80,7 +83,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                   {hero?.titulo}
                 </h1>
 
-                <p className="cuerpo-m home-hero-descripcion">
+                <p className="cuerpo-g home-hero-descripcion">
                   {hero?.subtitulo}
                 </p>
 
@@ -95,10 +98,11 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                         className="cuerpo-p-fuerte"
                         value={consulta}
                         onChange={(evento) => setConsulta(evento.target.value)}
-                        placeholder={hero?.buscador?.placeholders?.que}
+                        placeholder={movil ? hero?.buscador?.placeholders?.movil : hero?.buscador?.placeholders?.que}
+                        aria-label={hero?.buscador?.etiquetas?.que}
                       />
                       <span className="home-buscador-resumen" hidden>
-                        {ciudad} · {hero?.buscador?.placeholders?.cuando}
+                        {hero?.buscador?.resumenMovil?.replace("{ciudad}", ciudad)?.replace("{fecha}", fecha || hero?.buscador?.placeholders?.cuando)}
                       </span>
                     </span>
                   </label>
@@ -129,6 +133,9 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                       </span>
                       <input
                         className="cuerpo-p-fuerte"
+                        type={fecha ? "date" : "text"}
+                        onFocus={(evento) => { evento.currentTarget.type = "date"; }}
+                        onBlur={(evento) => { if (!fecha) evento.currentTarget.type = "text"; }}
                         value={fecha}
                         onChange={(evento) => setFecha(evento.target.value)}
                         placeholder={hero?.buscador?.placeholders?.cuando}
@@ -136,14 +143,15 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                     </span>
                   </label>
 
-                  <Boton className="cuerpo-p-fuerte home-buscador-filtros" tipo="primario">
+                  <Boton className="cuerpo-m-fuerte home-buscador-filtros" tipo="primario">
                     <span>{hero?.buscador?.botones?.buscar}</span>
                     <Icono nombre="sliders" className='boton-buscar-mobile' />
                   </Boton>
                 </form>
+                {hero?.buscador?.populares && <div className="home-populares">{hero.buscador.populares}</div>}
               </div>
 
-              <article className="home-evento-principal">
+              {eventoPrincipal && <article className="home-evento-principal">
                 <Portada tamano="g" {...eventoPrincipal?.afiche} />
                 <div className="home-evento-ficha">
                   <Etiqueta tono="marca">{hero?.destacado?.etiqueta}</Etiqueta>
@@ -151,7 +159,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                   <div className="home-evento-pie">
                     <div>
                       <p className="cuerpo-p">
-                        {eventoPrincipal?.fecha}
+                        {eventoPrincipal?.fecha && new Intl.DateTimeFormat(en ? "en-US" : "es-CO", { weekday: "short", day: "numeric", month: "short" }).format(new Date(eventoPrincipal.fecha))}
                         {eventoPrincipal?.recinto?.nombre
                           ? ` · ${eventoPrincipal.recinto.nombre}`
                           : ""}
@@ -159,7 +167,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                       <p className="cuerpo-m-fuerte">
                         {hero?.destacado?.desde?.replace(
                           "{precio}",
-                          `$${eventoPrincipal?.precioDesde}`,
+                          eventoPrincipal?.precioDesde != null ? new Intl.NumberFormat(en ? "en-US" : "es-CO", { style: "currency", currency: "COP", currencyDisplay: "narrowSymbol", maximumFractionDigits: 0 }).format(eventoPrincipal.precioDesde) : "",
                         )}
                       </p>
                     </div>
@@ -167,7 +175,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                     <Boton
                       className="cuerpo-p-fuerte"
                       tipo="primario"
-                      href={eventoPrincipal?.slug ? `${enlaces.eventos}/${encodeURIComponent(eventoPrincipal.slug)}` : enlaces.eventos}
+                      href={eventoPrincipal?.slug ? `${enlaces.eventos}/${encodeURIComponent(eventoPrincipal.slug)}` : enlaces.explorar}
                     >
                       {hero?.destacado?.botones?.verEvento}
                     </Boton>
@@ -175,20 +183,20 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
 
                   </div>
                 </div>
-              </article>
+              </article>}
             </div>
           </section>
 
           <section className="home-categorias">
             <Link
-              to={enlaces.eventos}
+              to={enlaces.explorar}
               className="home-categoria home-categoria-todos"
             >
               {inicio?.filtrosMovil?.todos}
             </Link>
             {categorias?.map((categoria) => (
               <Link
-                to={`${enlaces.eventos}?categoria=${categoria?.id}`}
+                to={`${enlaces.explorar}?categoria=${encodeURIComponent(categoria?.id)}`}
                 className="home-categoria"
                 type="button"
                 key={categoria?.id}
@@ -197,7 +205,7 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
                   <Icono nombre={iconosCategorias[categoria?.id]} />
                 </span>
                 <span className="home-categoria-textos">
-                  <span className="cuerpo-p-fuerte">{categoria?.nombre}</span>
+                  <span className="cuerpo-p-fuerte">{textos?.general?.categorias?.[categoria?.id] ?? categoria?.nombre}</span>
                   <span className="detalle-nota">
                     {categoria?.eventos === 1
                       ? textosCategorias?.eventos?.uno?.replace(
@@ -217,12 +225,12 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
           <section className="home-destacados">
             <div className="home-seccion-cabecera">
               <div>
-                <h2 className="titular-h2">{destacados?.titulo}</h2>
+                <h2 className="titular-h2">{movil ? inicio?.filtrosMovil?.destacados : destacados?.titulo}</h2>
                 <p className="cuerpo-m">{destacados?.subtitulo}</p>
               </div>
               <Link
                 className="home-ver-todos cuerpo-p-fuerte"
-                to={enlaces.eventos}
+                to={enlaces.explorar}
               >
                 {destacados?.enlaces?.verTodos}
                 <Icono nombre="arrowr" />
@@ -231,14 +239,17 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
 
             {cargandoDestacados ? (
               <div className="titular-h3 cargando">
-                {en ? "Loading events..." : "Cargando eventos..."}
+                {textos?.estados?.cargando?.titulo}
               </div>
             ) : errorDestacados ? (
               <div className="home-eventos-error">
                 <p className="cuerpo-p">
-                  {en ? "Error on loading events..." : "Error al cargar eventos..."}
+                  {textos?.estados?.error?.texto}
                 </p>
+                <button type="button" onClick={recargarDestacados}>{textos?.estados?.error?.botones?.reintentar}</button>
               </div>
+            ) : !eventosDestacados?.length ? (
+              <p className="cuerpo-p" role="status">{textos?.estados?.vacio?.texto}</p>
             ) : (
               <div className="home-eventos-grid">
                 {eventosDestacados?.slice(0,4)?.map((evento) => (
@@ -257,13 +268,13 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
             <div className="home-seccion-cabecera">
               <div>
                 <h2 className="titular-h2">
-                  {proximos?.titulo?.replace("{ciudad}", ciudad)}
+                  {movil ? inicio?.filtrosMovil?.finDeSemana : proximos?.titulo?.replace("{ciudad}", ciudad)}
                 </h2>
                 <p className="cuerpo-m">{proximos?.subtitulo}</p>
               </div>
               <Link
                 className="home-ver-todos cuerpo-p-fuerte"
-                to={enlaces.eventos}
+                to={enlaces.explorar}
               >
                 {destacados?.enlaces?.verTodos}
                 <Icono className="flecha" nombre="arrowr" />
@@ -272,14 +283,17 @@ function Home({ textos, cargando: cargandoTextos, en, enlaces }) {
 
             {cargandoEventos ? (
               <div className="titular-h3 cargando">
-                {en ? "Loading events..." : "Cargando eventos..."}
+                {textos?.estados?.cargando?.titulo}
               </div>
             ) : errorEventos ? (
               <div className="home-eventos-error">
                 <p className="cuerpo-p">
-                  {en ? "Error on loading events..." : "Error al cargar eventos..."}
+                  {textos?.estados?.error?.texto}
                 </p>
+                <button type="button" onClick={recargarEventos}>{textos?.estados?.error?.botones?.reintentar}</button>
               </div>
+            ) : !todosLosEventos?.length ? (
+              <p className="cuerpo-p" role="status">{textos?.estados?.vacio?.texto}</p>
             ) : (
               <div className="home-eventos-grid">
                 {todosLosEventos?.slice(0,4)?.map((evento) => (

@@ -1,83 +1,65 @@
 import { useEffect, useState } from "react";
+import useApi from "./useApi";
 
-const API = import.meta.env.VITE_API_URL + '/textos';
+const pendientes = new Map();
 
-const CLAVES_MENU = ["inicio", "explorar"]
+function solicitarTextos(solicitar, idioma) {
+  // StrictMode vuelve a ejecutar el efecto en desarrollo: reutiliza la petición
+  // pendiente en vez de iniciar otro GET para los mismos textos.
+  if (pendientes.has(idioma)) return pendientes.get(idioma);
 
-function validarTextos(datos) {
-  const textos = datos?.textos;
-  const nav = textos?.navbar;
-  const etiquetas = [
-    nav?.logo?.texto,
-    nav?.logo?.aria,
-    ...CLAVES_MENU.map((clave) => nav?.enlaces?.[clave]),
-    nav?.buscador?.placeholder,
-    nav?.buscador?.aria,
-    nav?.botones?.ingresar,
-    nav?.botones?.crearCuenta,
-    nav?.aria?.idioma,
-    nav?.aria?.accesibilidad,
-    textos?.menuMovil?.abrir,
-    textos?.menuMovil?.cerrar,
-    nav?.usuario?.menu,
-    nav?.usuario?.panel,
-    nav?.usuario?.cerrarSesion,
+  const controlador = new AbortController();
+  const limite = setTimeout(() => controlador.abort(), 12000);
+  const promesa = (async () => {
+    try {
+      const respuesta = await solicitar(`/textos?idioma=${encodeURIComponent(idioma)}`, {
+        signal: controlador.signal,
+      });
+      if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+      const datos = await respuesta.json();
+      if (!datos?.textos || typeof datos.textos !== "object" || Array.isArray(datos.textos)) {
+        throw new Error("Respuesta de textos inválida");
+      }
+      return datos.textos;
+    } finally {
+      clearTimeout(limite);
+      pendientes.delete(idioma);
+    }
+  })();
 
-  ];
-
-  if (!etiquetas.every((valor) => typeof valor === "string" && valor.trim())) {
-    throw new Error("La respuesta no contiene los textos del navbar.");
-  }
-  return textos;
+  pendientes.set(idioma, promesa);
+  return promesa;
 }
 
 export function useTextos(idioma) {
-  const [textos, setTextos] = useState(null);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState(false);
+  const solicitar = useApi();
+  const [estado, setEstado] = useState({ idioma, textos: null, cargando: true, error: false });
   const [intento, setIntento] = useState(0);
 
   useEffect(() => {
-    const controlador = new AbortController();
-    const limite = setTimeout(() => controlador.abort(), 12000);
     let vigente = true;
-    setCargando(true);
-    setError(false);
-    setTextos(null);
+    setEstado({ idioma, textos: null, cargando: true, error: false });
 
-    async function cargarTextosNavbar() {
-      try {
-        const respuesta = await fetch(`${API}?idioma=${idioma}`, {
-          signal: controlador.signal,
-        });
-        if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
-        //Si si respondio los datos correctamente
-        const datos = await respuesta.json();
-        const nuevosTextos = validarTextos(datos);
-        if (vigente) setTextos(nuevosTextos);
-      } catch (error) {
+    solicitarTextos(solicitar, idioma).then(
+      (textos) => {
+        if (vigente) setEstado({ idioma, textos, cargando: false, error: false });
+      },
+      (error) => {
         if (vigente) {
           console.error("Error al cargar los textos:", error);
-          setError(true);
+          setEstado({ idioma, textos: null, cargando: false, error: true });
         }
-      } finally {
-        clearTimeout(limite);
-        if (vigente) setCargando(false);
-      }
-    }
+      },
+    );
 
-    cargarTextosNavbar();
-    return () => {
-      vigente = false;
-      clearTimeout(limite);
-      controlador.abort();
-    };
-  }, [idioma, intento]);
+    return () => { vigente = false; };
+  }, [solicitar, idioma, intento]);
 
+  const actual = estado.idioma === idioma ? estado : { textos: null, cargando: true, error: false };
   return {
-    textos,
-    cargando,
-    error,
+    textos: actual.textos,
+    cargando: actual.cargando,
+    error: actual.error,
     recargar: () => setIntento((valor) => valor + 1),
   };
 }

@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useTextos } from "./hooks/useTextos";
+import useApi from "./hooks/useApi";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import LayoutPublico from "./layouts/LayoutPublico.jsx";
 import Home from "./pages/Home/Home.jsx";
 import Explorar from "./pages/Explorar/Explorar.jsx";
 import DetalleEvento from "./pages/DetalleEvento/DetalleEvento.jsx";
 import IniciarSesion from "./pages/IniciarSesion/IniciarSesion.jsx";
-
-const API = "https://yanethm-taquilla-api.fly.dev/api/v1";
 
 const DURACION_COOKIE = 60 * 60 * 24 * 365;
 
@@ -31,6 +30,7 @@ function eliminarCookie(nombre) {
 
 function App() {
   const navigate = useNavigate();
+  const solicitar = useApi();
   const [consentimiento, setConsentimiento] = useState(() => {
     const guardado = leerCookie("consentimiento");
     return guardado === "aceptado" || guardado === "rechazado" ? guardado : null;
@@ -51,7 +51,7 @@ function App() {
 
     async function consultarSesion() {
       try {
-        const respuesta = await fetch(`${API}/sesion`, {
+        const respuesta = await solicitar("/sesion", {
           method: "GET",
           credentials: "include",
           cache: "no-store",
@@ -90,17 +90,17 @@ function App() {
       vigente = false;
       window.removeEventListener("focus", consultarSesion);
     };
-  }, []);
+  }, [navigate, solicitar]);
 
   async function cerrarSesion() {
-    const respuesta = await fetch(`${API}/sesion`, {
+    const respuesta = await solicitar("/sesion", {
       method: "DELETE",
       credentials: "include",
       headers: { Accept: "application/json" },
     });
 
     if (!respuesta.ok && respuesta.status !== 401) {
-      throw new Error("No fue posible cerrar sesión. Inténtalo nuevamente.");
+      throw new Error(String(respuesta.status));
     }
 
     setUsuario(null);
@@ -145,10 +145,24 @@ function App() {
     accesibilidad: "/accesibilidad",
   };
 
+  // Única pantalla que tiene textos locales: todavía no existe el catálogo de la API.
+  if (datos.cargando || !datos.textos) {
+    return (
+      <main className="carga-textos" role="status" aria-live="polite">
+        <p>{en ? "Loading interface texts…" : "Cargando textos de la interfaz…"}</p>
+        {datos.error && (
+          <button type="button" onClick={datos.recargar}>
+            {en ? "Retry loading texts" : "Reintentar carga de textos"}
+          </button>
+        )}
+      </main>
+    );
+  }
+
   return (
     <div className="sitio">
       <Routes>
-        <Route path="/ingresar" element={<IniciarSesion onSesionIniciada={setUsuario} />} />
+        <Route path="/ingresar" element={<IniciarSesion textos={datos.textos} onSesionIniciada={setUsuario} />} />
         <Route
           path="/"
           element={

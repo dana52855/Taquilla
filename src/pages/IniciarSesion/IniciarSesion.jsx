@@ -3,10 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import Marca from "../../assets/logos/logo-normal.svg?react";
 import MarcaInverso from "../../assets/logos/logo-inverso.svg?react";
 import "./IniciarSesion.css";
+import useApi from "../../hooks/useApi";
 
-const API = "https://yanethm-taquilla-api.fly.dev/api/v1";
-
-export default function IniciarSesion({ onSesionIniciada }) {
+export default function IniciarSesion({ textos, onSesionIniciada }) {
+  const solicitar = useApi();
+  const ingreso = textos?.paginas?.ingresar;
+  const presentacion = ingreso?.presentacion;
+  const formulario = ingreso?.formulario;
+  const erroresIngreso = ingreso?.errores;
   const navigate = useNavigate();
   const correoRef = useRef(null);
   const contrasenaRef = useRef(null);
@@ -43,23 +47,23 @@ export default function IniciarSesion({ onSesionIniciada }) {
     const nuevosErrores = {};
 
     if (!correo.trim()) {
-      nuevosErrores.correo = "Ingresa tu correo electrónico.";
+      nuevosErrores.correo = erroresIngreso?.correoObligatorio;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim())) {
-      nuevosErrores.correo = "Ingresa un correo electrónico válido.";
+      nuevosErrores.correo = textos?.formularios?.validacion?.correoInvalido;
     }
 
     if (!contrasena) {
-      nuevosErrores.contrasena = "Ingresa tu contraseña.";
+      nuevosErrores.contrasena = erroresIngreso?.claveObligatoria;
     }
 
     setErrores(nuevosErrores);
 
-    if (nuevosErrores.correo) {
+    if (!correo.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim())) {
       correoRef.current?.focus();
       return false;
     }
 
-    if (nuevosErrores.contrasena) {
+    if (!contrasena) {
       contrasenaRef.current?.focus();
       return false;
     }
@@ -75,18 +79,13 @@ export default function IniciarSesion({ onSesionIniciada }) {
 
     if (!validarFormulario()) return;
 
-    if (!API) {
-      setErrorGeneral("No está configurada la dirección del servidor.");
-      return;
-    }
-
     envioEnCursoRef.current = true;
     setCargando(true);
     const controlador = new AbortController();
     const limite = setTimeout(() => controlador.abort(), 12000);
 
     try {
-      const respuesta = await fetch(`${API}/sesion`, {
+      const respuesta = await solicitar("/sesion", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -111,7 +110,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
         const codigo = datos?.error?.codigo ?? datos?.codigo;
 
         if (respuesta.status === 401 || codigo === "credenciales_invalidas") {
-          setErrorGeneral("Correo o contraseña incorrectos");
+          setErrorGeneral(erroresIngreso?.credenciales?.titulo);
           return;
         }
 
@@ -128,15 +127,12 @@ export default function IniciarSesion({ onSesionIniciada }) {
 
           setBloqueoHasta(Date.now() + espera * 1000);
           setSegundosRestantes(espera);
-          setErrorGeneral("Has realizado demasiados intentos. Podrás volver a ingresar cuando termine la espera.");
+          setErrorGeneral(erroresIngreso?.demasiadosIntentos?.titulo);
           return;
         }
 
         setErrorGeneral(
-          datos?.error?.mensaje ??
-          datos?.mensaje ??
-          datos?.message ??
-          "No fue posible iniciar sesión. Inténtalo nuevamente."
+          textos?.errores?.[codigo] ?? textos?.errores?.generico
         );
         return;
       }
@@ -145,7 +141,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
       let usuario = datos?.usuario ?? datos?.datos?.usuario ?? datos?.data?.usuario;
 
       try {
-        const respuestaSesion = await fetch(`${API}/sesion`, {
+        const respuestaSesion = await solicitar("/sesion", {
           method: "GET",
           credentials: "include",
           cache: "no-store",
@@ -174,7 +170,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
         setErrorConexion(true);
         setErrorGeneral("");
       } else {
-        setErrorGeneral(error.message);
+        setErrorGeneral(textos?.errores?.generico);
       }
     } finally {
       clearTimeout(limite);
@@ -185,35 +181,37 @@ export default function IniciarSesion({ onSesionIniciada }) {
 
   return (
     <main className="inicio-sesion">
+      <title>{ingreso?.seo?.titulo}</title>
+      <meta name="description" content={ingreso?.seo?.descripcion} />
       <aside className="inicio-sesion-portada">
-        <Link className="inicio-sesion-logo-inverso" to="/" aria-label="Taquilla, ir al inicio">
+        <Link className="inicio-sesion-logo-inverso" to="/" aria-label={textos?.navbar?.logo?.aria}>
           <MarcaInverso />
         </Link>
 
         <div className="inicio-sesion-beneficios">
-          <h1 className="titular-display">Tu próxima noche empieza aquí.</h1>
+          <h1 className="titular-display">{presentacion?.lema}</h1>
           <ul>
-            <li><span aria-hidden="true">✓</span>Descubre conciertos, teatro y deportes</li>
-            <li><span aria-hidden="true">✓</span>Filtra por categoría, fecha y ciudad</li>
-            <li><span aria-hidden="true">✓</span>Consulta horario, lugar y cómo llegar</li>
+            <li><span aria-hidden="true">✓</span>{presentacion?.beneficios?.descubre}</li>
+            <li><span aria-hidden="true">✓</span>{presentacion?.beneficios?.filtra}</li>
+            <li><span aria-hidden="true">✓</span>{presentacion?.beneficios?.consulta}</li>
           </ul>
         </div>
       </aside>
 
       <section className="inicio-sesion-contenido" aria-labelledby="titulo-iniciar-sesion">
         <div className="inicio-sesion-formulario">
-          <Link className="inicio-sesion-logo-movil" to="/" aria-label="Taquilla, ir al inicio">
+          <Link className="inicio-sesion-logo-movil" to="/" aria-label={textos?.navbar?.logo?.aria}>
             <Marca />
           </Link>
 
           <header className="inicio-sesion-encabezado">
-            <h2 className="titular-h1" id="titulo-iniciar-sesion">Ingresa a tu cuenta</h2>
-            <p className="cuerpo-m">Ingresa con el correo y la contraseña de tu cuenta.</p>
+            <h2 className="titular-h1" id="titulo-iniciar-sesion">{formulario?.titulo}</h2>
+            <p className="cuerpo-m">{formulario?.subtitulo}</p>
           </header>
 
           <form onSubmit={iniciarSesion} noValidate>
             <div className="inicio-sesion-campo">
-              <label className="cuerpo-p-fuerte" htmlFor="correo">Correo electrónico</label>
+              <label className="cuerpo-p-fuerte" htmlFor="correo">{formulario?.etiquetas?.correo}</label>
               <input
                 ref={correoRef}
                 id="correo"
@@ -221,7 +219,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
                 type="email"
                 autoComplete="email"
                 disabled={formularioBloqueado}
-                placeholder="nombre@correo.com"
+                placeholder={formulario?.placeholders?.correo}
                 value={correo}
                 onChange={(evento) => {
                   setCorreo(evento.target.value);
@@ -240,7 +238,7 @@ export default function IniciarSesion({ onSesionIniciada }) {
             </div>
 
             <div className={`inicio-sesion-campo inicio-sesion-campo-contrasena ${errores.contrasena ? "con-error" : ""}`}>
-              <label className="cuerpo-p-fuerte" htmlFor="contrasena">Contraseña</label>
+              <label className="cuerpo-p-fuerte" htmlFor="contrasena">{formulario?.etiquetas?.clave}</label>
               <div className="inicio-sesion-contrasena">
                 <input
                   ref={contrasenaRef}
@@ -249,7 +247,6 @@ export default function IniciarSesion({ onSesionIniciada }) {
                   type={mostrarContrasena ? "text" : "password"}
                   autoComplete="current-password"
                   disabled={formularioBloqueado}
-                  placeholder="Ingresa tu contraseña"
                   value={contrasena}
                   onChange={(evento) => {
                     setContrasena(evento.target.value);
@@ -265,9 +262,9 @@ export default function IniciarSesion({ onSesionIniciada }) {
                   type="button"
                   disabled={formularioBloqueado}
                   onClick={() => setMostrarContrasena((valor) => !valor)}
-                  aria-label={mostrarContrasena ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  aria-label={mostrarContrasena ? formulario?.botones?.ocultarClave : formulario?.botones?.mostrarClave}
                   aria-pressed={mostrarContrasena}
-                  title={mostrarContrasena ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  title={mostrarContrasena ? formulario?.botones?.ocultarClave : formulario?.botones?.mostrarClave}
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     {mostrarContrasena ? (
@@ -301,21 +298,21 @@ export default function IniciarSesion({ onSesionIniciada }) {
                   checked={mantenerSesion}
                   onChange={(evento) => setMantenerSesion(evento.target.checked)}
                 />
-                <span>Mantener la sesión iniciada</span>
+                <span>{formulario?.etiquetas?.mantenerSesion}</span>
               </label>
               <Link className="cuerpo-p inicio-sesion-recuperar" to="/recuperar-contrasena">
-                ¿Olvidaste tu contraseña?
+                {formulario?.enlaces?.olvidasteClave}
               </Link>
             </div>
 
             {errorGeneral && (
               <div className="inicio-sesion-error-general cuerpo-p" role="alert">
                 <strong>{errorGeneral}</strong>
-                {errorGeneral.startsWith("Correo o contraseña incorrectos") && (
-                  <span>Revisa los datos e inténtalo de nuevo. Si no recuerdas tu contraseña, puedes restablecerla.</span>
+                {errorGeneral === erroresIngreso?.credenciales?.titulo && (
+                  <span>{erroresIngreso?.credenciales?.texto}</span>
                 )}
                 {segundosRestantes > 0 && (
-                  <span>Inténtalo de nuevo en {segundosRestantes} {segundosRestantes === 1 ? "segundo" : "segundos"}.</span>
+                  <span>{erroresIngreso?.demasiadosIntentos?.texto?.replace("{segundos}", segundosRestantes)}</span>
                 )}
               </div>
             )}
@@ -323,22 +320,22 @@ export default function IniciarSesion({ onSesionIniciada }) {
             {errorConexion && (
               <div className="inicio-sesion-error-general inicio-sesion-error-conexion cuerpo-p" role="alert">
                 <div>
-                  <strong>No pudimos conectarnos</strong>
-                  <span>Revisa tu conexión a internet e inténtalo de nuevo. Lo que escribiste se conserva.</span>
+                  <strong>{erroresIngreso?.conexion?.titulo}</strong>
+                  <span>{erroresIngreso?.conexion?.texto}</span>
                 </div>
                 <button type="button" onClick={() => iniciarSesion()} disabled={formularioBloqueado}>
-                  Reintentar
+                  {erroresIngreso?.conexion?.botones?.reintentar}
                 </button>
               </div>
             )}
 
             <button className="inicio-sesion-submit cuerpo-p-fuerte" type="submit" disabled={formularioBloqueado}>
-              {cargando ? "Ingresando…" : segundosRestantes > 0 ? `Espera ${segundosRestantes}s` : "Ingresar"}
+              {cargando ? formulario?.mensajes?.ingresando : formulario?.botones?.ingresar}
             </button>
           </form>
 
           <p className="inicio-sesion-crear cuerpo-p">
-            ¿No tienes cuenta? <Link to="/crearCuenta">Crea una cuenta</Link>
+            {formulario?.mensajes?.sinCuenta} <Link to="/crearCuenta">{formulario?.enlaces?.crearCuenta}</Link>
           </p>
         </div>
       </section>

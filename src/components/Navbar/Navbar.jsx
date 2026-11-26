@@ -6,7 +6,7 @@ import Boton from '../Boton/Boton';
 import BotonIcono from '../BotonIcono/BotonIcono';
 import SelectorIdioma from '../SelectorIdioma/SelectorIdioma'
 import useMediaQuery from '../../hooks/useMediaQuery';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Icono from '../Icono';
 
 const Navbar = ({
@@ -20,6 +20,10 @@ const Navbar = ({
   onCerrarSesion
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [consulta, setConsulta] = useState("");
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const inicio = pathname === "/";
   const [cuentaAbierta, setCuentaAbierta] = useState(false);
   const [errorCerrarSesion, setErrorCerrarSesion] = useState("");
   const nav = textos?.navbar;
@@ -31,7 +35,7 @@ const Navbar = ({
     usuario?.nombreCompleto ??
     usuario?.nombre ??
     usuario?.name ??
-    ([usuario?.nombres, usuario?.apellidos].filter(Boolean).join(" ") || "Mi cuenta")
+    ([usuario?.nombres, usuario?.apellidos].filter(Boolean).join(" ") || nav?.usuario?.menu || "")
   );
   const correoUsuario = usuario?.correo ?? usuario?.email ?? "";
 
@@ -39,7 +43,7 @@ const Navbar = ({
     const partes = nombreUsuario.trim().split(/\s+/).filter(Boolean);
     return partes.length > 1
       ? `${partes[0][0]}${partes[partes.length - 1][0]}`.toUpperCase()
-      : (partes[0]?.slice(0, 2) ?? "LC").toUpperCase();
+      : (partes[0]?.slice(0, 2) ?? "").toUpperCase();
   }
 
   async function salirDeLaCuenta() {
@@ -49,7 +53,7 @@ const Navbar = ({
       setCuentaAbierta(false);
       setIsOpen(false);
     } catch (error) {
-      setErrorCerrarSesion(error.message || "No fue posible cerrar sesión.");
+      setErrorCerrarSesion(textos?.errores?.generico);
     }
   }
 
@@ -60,24 +64,24 @@ const Navbar = ({
 
   return (
     <header className='header'>
-      <div className="header-mobile">
-        <MarcaInverso />
+      <div className={`header-mobile ${inicio ? "" : "header-mobile-claro"}`}>
+        <Link to={enlaces.inicio} aria-label={nav?.logo?.aria}>{inicio ? <MarcaInverso /> : <Marca />}</Link>
         <div className="header-mobile-botones">
-          <BotonIcono ancho={44} tipo='primario' icono='search' />
+          <BotonIcono ancho={44} tipo={inicio ? "primario" : "fantasma"} icono="search" ariaLabel={nav?.buscador?.aria} onClick={() => navigate(enlaces.explorar)} />
           {!usuario && !isOpen && (
-            <Boton className='cuerpo-p-fuerte' tipo='primario' href={enlaces['ingresar']}>
+            <Boton className='cuerpo-p-fuerte' tipo={inicio ? 'primario' : 'fantasma'} href={enlaces['ingresar']}>
               {menuMovil?.botones?.ingresar}
             </Boton>
           )}
-          <BotonIcono ancho={44} tipo='primario' icono='menu' onClick={() => setIsOpen(true)} />
+          <BotonIcono ancho={44} tipo={inicio ? "primario" : "fantasma"} icono="menu" ariaLabel={menuMovil?.abrir} aria-expanded={isOpen} aria-controls="menu-publico" onClick={() => setIsOpen(true)} />
         </div>
       </div>
       {cargando ? <div className='titular-h3 cargando'>{en ? 'Loading navigation...' : 'Cargando navegación...'}</div> :
-        <nav className={`navbar ${isOpen ? 'open' : ''}`}>
+        <nav id="menu-publico" className={`navbar ${isOpen ? 'open' : ''}`}>
           <div className="navbar-left">
             <div className='marca-navbar'>
-              <Marca />
-              {isMobile && <BotonIcono ancho={44} tipo='fantasma' icono='x' onClick={() => setIsOpen(false)} />}
+              <Link to={enlaces.inicio} aria-label={nav?.logo?.aria}><Marca /></Link>
+              {isMobile && <BotonIcono ancho={44} tipo='fantasma' icono='x' ariaLabel={menuMovil?.cerrar} onClick={() => setIsOpen(false)} />}
             </div>
             <div className="cuerpo-p-fuerte navbar-enlaces">
               <Link to={enlaces['inicio']}>{nav?.enlaces?.inicio}</Link>
@@ -85,17 +89,17 @@ const Navbar = ({
             </div>
           </div>
           <div className="navbar-right">
-            <div className="buscador-navbar">
-              <Icono nombre='search' />
-              <input className='cuerpo-p' type="text" placeholder={nav?.buscador?.placeholder} />
-            </div>
+            <form className="buscador-navbar" onSubmit={(evento) => { evento.preventDefault(); navigate(`${enlaces.explorar}?${new URLSearchParams({ q: consulta.trim() })}`); }}>
+              <Icono nombre="search" />
+              <input className="cuerpo-p" type="search" aria-label={nav?.buscador?.aria} placeholder={nav?.buscador?.placeholder} value={consulta} onChange={(evento) => setConsulta(evento.target.value)} />
+            </form>
             <div className='seccion-utilidades'>
               {isMobile && menuMovil?.secciones?.accesibilidad}
               <BotonIcono ancho={40} tipo='secundario' icono='person' ariaLabel={nav?.aria?.accesibilidad} onClick={abrirAccesibilidad} />
             </div>
             <div className='seccion-utilidades'>
               {isMobile && menuMovil?.secciones?.idioma}
-              <SelectorIdioma en={en} alternarIdioma={alternarIdioma} aria-label={nav?.aria?.idioma} />
+              <SelectorIdioma textos={textos} en={en} alternarIdioma={alternarIdioma} aria-label={nav?.aria?.idioma} />
             </div>
             <div className="navbar-botones">
               {usuario ? (
@@ -103,7 +107,7 @@ const Navbar = ({
                   <button
                     className="avatar-usuario"
                     type="button"
-                    aria-label="Abrir menú de cuenta"
+                    aria-label={nav?.usuario?.menu}
                     aria-expanded={cuentaAbierta}
                     onClick={() => setCuentaAbierta((abierta) => !abierta)}
                   >
@@ -119,7 +123,7 @@ const Navbar = ({
                         </span>
                       </div>
                       <button type="button" className="navbar-cerrar-sesion" onClick={salirDeLaCuenta}>
-                        Cerrar sesión
+                        {nav?.usuario?.cerrarSesion}
                       </button>
                       {errorCerrarSesion && <p className="navbar-error-sesion" role="alert">{errorCerrarSesion}</p>}
                     </div>
@@ -141,7 +145,7 @@ const Navbar = ({
                     </span>
                   </div>
                   <button type="button" className="navbar-cerrar-sesion" onClick={salirDeLaCuenta}>
-                    Cerrar sesión
+                    {nav?.usuario?.cerrarSesion}
                   </button>
                   {errorCerrarSesion && <p className="navbar-error-sesion" role="alert">{errorCerrarSesion}</p>}
                 </div>

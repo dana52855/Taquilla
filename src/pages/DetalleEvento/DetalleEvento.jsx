@@ -5,11 +5,11 @@ import Tarjeta from "../../components/Tarjeta/Tarjeta";
 import Icono from "../../components/Icono";
 import "./DetalleEvento.css";
 
-function formatoFecha(fecha) {
+function formatoFecha(fecha, en) {
   if (!fecha) return "";
   const valor = new Date(fecha);
   if (Number.isNaN(valor.getTime())) return fecha;
-  return new Intl.DateTimeFormat("es-CO", {
+  return new Intl.DateTimeFormat(en ? "en-US" : "es-CO", {
     weekday: "short",
     day: "numeric",
     month: "short",
@@ -17,7 +17,7 @@ function formatoFecha(fecha) {
   }).format(valor).replace(".", "");
 }
 
-function obtenerHoraEvento(evento) {
+function obtenerHoraEvento(evento, en) {
   const horaExplicita = evento?.hora ?? evento?.horaInicio ?? evento?.hora_inicio ?? evento?.hora_inicio_evento;
   if (horaExplicita) return horaExplicita;
 
@@ -30,7 +30,7 @@ function obtenerHoraEvento(evento) {
   const valor = new Date(fechaCompleta);
   if (Number.isNaN(valor.getTime())) return "";
 
-  return new Intl.DateTimeFormat("es-CO", {
+  return new Intl.DateTimeFormat(en ? "en-US" : "es-CO", {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
@@ -48,32 +48,32 @@ function obtenerDireccion(evento) {
   return typeof direccion === "string" ? direccion : "";
 }
 
-function PortadaDetalle({ afiche, onVolver, onCompartir }) {
+function PortadaDetalle({ afiche, onVolver, onCompartir, textos }) {
   return (
     <div
       className="detalle-portada"
       style={{
         background: `linear-gradient(164deg, ${afiche?.color1 ?? "#AF7E78"} 0%, ${afiche?.color2 ?? "#603A5A"} 100%)`,
       }}
-      aria-label="Afiche del evento"
-      role="img"
     >
       <span className="detalle-portada-circulo detalle-portada-circulo-uno" />
       <span className="detalle-portada-circulo detalle-portada-circulo-dos" />
       <div className="detalle-portada-acciones">
-        <button type="button" onClick={onVolver} aria-label="Volver"><Icono nombre="chevl" /></button>
-        <button type="button" onClick={onCompartir} aria-label="Compartir evento"><Icono nombre="share" /></button>
+        <button type="button" onClick={onVolver} aria-label={textos?.general?.acciones?.volver}><Icono nombre="chevl" /></button>
+        <button type="button" onClick={onCompartir} aria-label={textos?.general?.acciones?.compartir}><Icono nombre="share" /></button>
       </div>
     </div>
   );
 }
 
-function EstadoDetalle({ estado, recargar }) {
+function EstadoDetalle({ estado, recargar, textos }) {
+  const detalle = textos?.paginas?.detalleEvento;
+  const estados = textos?.estados;
   if (estado === "cargando") {
     return (
       <div className="detalle-estado" role="status">
         <span className="detalle-spinner" />
-        <p className="cuerpo-m">Cargando información del evento...</p>
+        <p className="cuerpo-m">{estados?.cargando?.titulo}</p>
       </div>
     );
   }
@@ -81,9 +81,9 @@ function EstadoDetalle({ estado, recargar }) {
   if (estado === "no-encontrado") {
     return (
       <section className="detalle-estado" role="alert">
-        <h1 className="titular-h2">No encontramos este evento</h1>
-        <p className="cuerpo-m">Puede que el evento ya no esté disponible o que el enlace sea incorrecto.</p>
-        <Link className="detalle-boton detalle-boton-primario" to="/explorar">Explorar eventos</Link>
+        <h1 className="titular-h2">{detalle?.noEncontrado?.titulo}</h1>
+        <p className="cuerpo-m">{detalle?.noEncontrado?.texto}</p>
+        <Link className="detalle-boton detalle-boton-primario" to="/explorar">{detalle?.noEncontrado?.botones?.volver}</Link>
       </section>
     );
   }
@@ -91,9 +91,9 @@ function EstadoDetalle({ estado, recargar }) {
   if (estado === "error") {
     return (
       <section className="detalle-estado" role="alert">
-        <h1 className="titular-h2">No pudimos cargar el evento</h1>
-        <p className="cuerpo-m">Comprueba tu conexión e inténtalo de nuevo.</p>
-        <button className="detalle-boton detalle-boton-primario" type="button" onClick={recargar}>Volver a intentar</button>
+        <h1 className="titular-h2">{estados?.error?.titulo}</h1>
+        <p className="cuerpo-m">{estados?.error?.texto}</p>
+        <button className="detalle-boton detalle-boton-primario" type="button" onClick={recargar}>{estados?.error?.botones?.reintentar}</button>
       </section>
     );
   }
@@ -102,6 +102,7 @@ function EstadoDetalle({ estado, recargar }) {
 }
 
 export default function DetalleEvento({ textos, en = false }) {
+  const detalle = textos?.paginas?.detalleEvento;
   const { slug } = useParams();
   const navigate = useNavigate();
   const { evento, relacionados, estado, recargar } = useDetalleEvento(slug);
@@ -110,16 +111,16 @@ export default function DetalleEvento({ textos, en = false }) {
   if (estado !== "listo" || !evento) {
     return (
       <div className={`pagina-detalle-evento ${descripcionExpandida ? "detalle-expandido" : ""}`}>
-        <EstadoDetalle estado={estado} recargar={recargar} />
+        <EstadoDetalle estado={estado} recargar={recargar} textos={textos} />
       </div>
     );
   }
 
-  const titulo = typeof evento?.titulo === "string" ? evento.titulo : "Evento";
+  const titulo = typeof evento?.titulo === "string" ? evento.titulo : "";
   const descripcion = typeof evento?.descripcion === "string" ? evento.descripcion : "";
   const fechaCompleta = evento?.fecha ?? evento?.fechaInicio ?? evento?.fecha_inicio ?? evento?.fechaHora ?? evento?.fecha_hora ?? evento?.inicio;
-  const fecha = formatoFecha(fechaCompleta);
-  const hora = obtenerHoraEvento(evento);
+  const fecha = formatoFecha(fechaCompleta, en);
+  const hora = obtenerHoraEvento(evento, en);
   const recinto = obtenerNombreRecinto(evento);
   const direccion = obtenerDireccion(evento);
   const categoria = typeof evento?.categoria === "string" ? evento.categoria : evento?.categoria?.nombre ?? "";
@@ -143,19 +144,19 @@ export default function DetalleEvento({ textos, en = false }) {
 
   return (
     <div className={`pagina-detalle-evento ${descripcionExpandida ? "detalle-expandido" : ""}`}>
-      <title>{titulo} | Taquilla</title>
+      <title>{detalle?.seo?.titulo?.replace("{titulo}", titulo)}</title>
       <meta name="description" content={String(descripcion).slice(0, 160)} />
 
       <section className="detalle-portada-seccion">
-        <nav className="detalle-migas cuerpo-p" aria-label="Ruta de navegación">
-          <Link to="/">Inicio</Link>
+        <nav className="detalle-migas cuerpo-p" aria-label={textos?.navbar?.logo?.aria}>
+          <Link to="/">{textos?.navbar?.enlaces?.inicio}</Link>
           <Icono nombre="chevr" />
-          <Link to="/explorar">Explorar</Link>
+          <Link to="/explorar">{textos?.navbar?.enlaces?.explorar}</Link>
           <Icono nombre="chevr" />
           <span aria-current="page">{titulo}</span>
         </nav>
         <div className="detalle-portada-contenedor">
-          <PortadaDetalle afiche={evento?.afiche} onVolver={() => navigate(-1)} onCompartir={compartirEvento} />
+          <PortadaDetalle textos={textos} afiche={evento?.afiche} onVolver={() => navigate(-1)} onCompartir={compartirEvento} />
         </div>
       </section>
 
@@ -164,7 +165,7 @@ export default function DetalleEvento({ textos, en = false }) {
           <div className="detalle-cabecera">
             <div className="detalle-etiquetas">
               {categoria && <span className="detalle-etiqueta">{categoria}</span>}
-              {edad && <span className="detalle-etiqueta detalle-etiqueta-secundaria">{typeof edad === "number" ? `Mayores de ${edad}` : edad}</span>}
+              {edad && <span className="detalle-etiqueta detalle-etiqueta-secundaria">{typeof edad === "number" ? detalle?.etiquetas?.edadMinima?.replace("{edad}", edad) : edad}</span>}
             </div>
             <h1 className="titular-display detalle-titulo">{titulo}</h1>
             {typeof evento?.artista === "string" && <p className="cuerpo-g detalle-artista">{evento.artista}</p>}
@@ -172,38 +173,38 @@ export default function DetalleEvento({ textos, en = false }) {
               {fecha && (
                 <div className="detalle-dato">
                   <span className="detalle-dato-icono"><Icono nombre="calendar" /></span>
-                  <span><small>Fecha</small><strong>{fecha}</strong></span>
+                  <span><small>{detalle?.info?.fecha}</small><strong>{fecha}</strong></span>
                 </div>
               )}
               {hora && (
                 <div className="detalle-dato">
                   <span className="detalle-dato-icono"><Icono nombre="clock" /></span>
-                  <span><small>Hora</small><strong>{hora}</strong></span>
+                  <span><small>{detalle?.info?.hora}</small><strong>{hora}</strong></span>
                 </div>
               )}
               {recinto && (
                 <div className="detalle-dato">
                   <span className="detalle-dato-icono"><Icono nombre="pin" /></span>
-                  <span><small>Lugar</small><strong>{recinto}</strong></span>
+                  <span><small>{detalle?.info?.lugar}</small><strong>{recinto}</strong></span>
                 </div>
               )}
             </div>
           </div>
 
-          <nav className="detalle-pestanas" aria-label="Información del evento">
-            <a className="activa" href="#descripcion">Descripción</a>
-            <a href="#llegar">Cómo llegar</a>
-            <a href="#politicas">Políticas</a>
+          <nav className="detalle-pestanas" aria-label={detalle?.seo?.descripcion}>
+            <a className="activa" href="#descripcion">{detalle?.pestanas?.descripcion}</a>
+            <a href="#llegar">{detalle?.pestanas?.comoLlegar}</a>
+            {politicas && <a href="#politicas">{detalle?.pestanas?.politicas}</a>}
           </nav>
 
           <section className="detalle-seccion-texto detalle-seccion-descripcion" id="descripcion">
-            <h2 className="titular-h2">Sobre el evento</h2>
+            <h2 className="titular-h2">{detalle?.descripcion?.titulo}</h2>
             <p className={`cuerpo-m detalle-descripcion ${descripcionExpandida ? "expandida" : ""}`}>
-              {descripcion || "Consulta los detalles de este evento."}
+              {descripcion}
             </p>
-            {hayMasInformacion && (
+            {hayMasInformacion && !descripcionExpandida && (
               <button className="detalle-leer-mas" type="button" onClick={() => setDescripcionExpandida((actual) => !actual)} aria-expanded={descripcionExpandida}>
-                {descripcionExpandida ? "Leer menos" : "Leer más"}
+                {detalle?.descripcion?.botones?.leerMas}
               </button>
             )}
 
@@ -211,20 +212,26 @@ export default function DetalleEvento({ textos, en = false }) {
           </section>
 
           <section className="detalle-seccion-texto detalle-seccion-llegar" id="llegar">
-            <h2 className="titular-h2">Cómo llegar</h2>
+            <h2 className="titular-h2">{detalle?.pestanas?.comoLlegar}</h2>
             <div className="detalle-mapa">
               <Icono nombre="pin" />
-              <span>Mapa del lugar</span>
+              <span>{detalle?.mapa?.titulo}</span>
             </div>
-            <p className="detalle-direccion">{[recinto, direccion].filter(Boolean).join(" · ") || "Consulta la ubicación con el organizador."}</p>
+            <p className="detalle-direccion">{[recinto, direccion].filter(Boolean).join(" · ")}</p>
           </section>
+          {politicas && (
+            <section className="detalle-seccion-texto detalle-seccion-politicas" id="politicas">
+              <h2 className="titular-h2">{detalle?.pestanas?.politicas}</h2>
+              <p className="cuerpo-m">{politicas}</p>
+            </section>
+          )}
         </div>
 
       </section>
 
       <section className="detalle-relacionados">
         <div className="detalle-relacionados-cabecera">
-          <h2 className="titular-h2">También te puede interesar</h2>
+          <h2 className="titular-h2">{detalle?.relacionados?.titulo}</h2>
         </div>
         {relacionados.length > 0 ? (
           <div className="detalle-relacionados-grid">
@@ -233,7 +240,7 @@ export default function DetalleEvento({ textos, en = false }) {
             ))}
           </div>
         ) : (
-          <p className="cuerpo-p detalle-sin-datos">No hay eventos relacionados por el momento.</p>
+          <p className="cuerpo-p detalle-sin-datos">{textos?.estados?.vacio?.texto}</p>
         )}
       </section>
     </div>

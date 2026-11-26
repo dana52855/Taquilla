@@ -4,9 +4,9 @@ import Tarjeta from "../../components/Tarjeta/Tarjeta";
 import Icono from "../../components/Icono";
 import Boton from "../../components/Boton/Boton";
 import "./Explorar.css";
+import useApi from "../../hooks/useApi";
 
-const API = import.meta.env.VITE_API_URL;
-const POR_PAGINA = 12;
+const POR_PAGINA = 9;
 const PRECIO_MINIMO = 30000;
 const PRECIO_MAXIMO = 150000;
 
@@ -104,6 +104,7 @@ function formatoPrecio(valor) {
 
 export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const solicitar = useApi();
   const explorar = textos?.paginas?.explorar;
   const filtros = explorar?.filtros;
   const fechaFiltro = filtros?.fecha;
@@ -151,8 +152,8 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
     async function cargarOpciones() {
       try {
         const [respuestaCategorias, respuestaCiudades] = await Promise.all([
-          fetch(`${API}/categorias`, { signal: controlador.signal }),
-          fetch(`${API}/ciudades`, { signal: controlador.signal }),
+          solicitar(`/categorias`, { signal: controlador.signal }),
+          solicitar(`/ciudades`, { signal: controlador.signal }),
         ]);
         if (!respuestaCategorias.ok || !respuestaCiudades.ok) {
           throw new Error("No se pudieron cargar las opciones de filtros.");
@@ -171,7 +172,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
     }
     cargarOpciones();
     return () => controlador.abort();
-  }, []);
+  }, [solicitar]);
 
   useEffect(() => {
     const controlador = new AbortController();
@@ -191,7 +192,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
       parametros.set("limite", String(POR_PAGINA));
 
       try {
-        const respuesta = await fetch(`${API}/eventos?${parametros.toString()}`, {
+        const respuesta = await solicitar(`/eventos?${parametros.toString()}`, {
           signal: controlador.signal,
         });
         if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
@@ -210,7 +211,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
     }
     cargarEventos();
     return () => controlador.abort();
-  }, [categoriasActuales.join("|"), ciudadActual, busquedaActual, ordenActual, paginaActual, fechaDesde, fechaHasta, precioDesde, precioHasta, intento]);
+  }, [categoriasActuales.join("|"), ciudadActual, busquedaActual, ordenActual, paginaActual, fechaDesde, fechaHasta, precioDesde, precioHasta, intento, solicitar]);
 
   function actualizarFiltros(cambios, limpiar = false) {
     const siguientes = limpiar ? new URLSearchParams() : new URLSearchParams(searchParams);
@@ -309,6 +310,8 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
   const totalEventos = paginacion.total ?? eventos.length;
   const totalPaginas = paginacion.paginas ?? Math.max(1, Math.ceil(totalEventos / POR_PAGINA));
   const textoResultados = totalEventos === 1 ? explorar?.resultados?.uno : explorar?.resultados?.otro;
+  const textoResultadosCorto = totalEventos === 1 ? explorar?.resultadosCorto?.uno : explorar?.resultadosCorto?.otro;
+  const tituloExplorar = textos?.footer?.columnas?.explora?.enlaces?.explorar ?? textos?.navbar?.enlaces?.explorar;
 
   const categoriasActivas = categorias.filter((categoria) => categoriasActuales.includes(obtenerClaveCategoria(categoria)));
   const hayFiltrosActivos = categoriasActuales.length > 0 || Boolean(ciudadActual || busquedaActual || fechaDesde || fechaHasta) || precioDesde > PRECIO_MINIMO || precioHasta < PRECIO_MAXIMO;
@@ -338,12 +341,12 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
               const activa = categoriasActuales.includes(clave);
               return movil ? (
                 <button key={clave} type="button" className={`explorar-chip ${activa ? "activo" : ""}`} aria-pressed={activa} onClick={() => alternarCategoria(clave)}>
-                  {obtenerNombre(categoria)}
+                  {textos?.general?.categorias?.[clave] ?? obtenerNombre(categoria)}
                 </button>
               ) : (
                 <label className="explorar-categoria-opcion" key={clave}>
                   <input type="checkbox" checked={activa} onChange={() => alternarCategoria(clave)} />
-                  <span>{obtenerNombre(categoria)}</span>
+                  <span>{textos?.general?.categorias?.[clave] ?? obtenerNombre(categoria)}</span>
                   {cantidad !== undefined && cantidad !== null && <small>{cantidad}</small>}
                 </label>
               );
@@ -399,7 +402,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
             <span>{formatoPrecio(precioTemporalDesde)}</span>
             <span>{formatoPrecio(precioTemporalHasta)}</span>
           </div>
-          <button type="button" className="explorar-aplicar-secundario" onClick={aplicarPrecio}>{typeof filtros?.aplicarPrecio === "string" ? filtros.aplicarPrecio : ""}</button>
+          <button type="button" className="explorar-aplicar-secundario" onClick={aplicarPrecio}>{textos?.general?.acciones?.aplicar}</button>
         </section>
 
         {movil && (
@@ -417,13 +420,15 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
 
   return (
     <div className="pagina-explorar">
+      <title>{explorar?.seo?.titulo}</title>
+      <meta name="description" content={explorar?.seo?.descripcion} />
       <section className="explorar-encabezado">
         <div className="explorar-migas cuerpo-p">
           <Link to={enlaces?.inicio || "/"}>{textos?.navbar?.enlaces?.inicio}</Link>
           <Icono nombre="chevr" />
-          <span>{obtenerTexto(explorar?.seo?.titulo)}</span>
+          <span>{textos?.navbar?.enlaces?.explorar}</span>
         </div>
-        <h1 className="titular-h1">{obtenerTexto(explorar?.seo?.titulo)}</h1>
+        <h1 className="titular-h1">{tituloExplorar}</h1>
         <p className="cuerpo-m explorar-resumen">{textoResultados?.replace("{cantidad}", totalEventos)}</p>
       </section>
 
@@ -434,8 +439,8 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           <div className="explorar-barra-resultados">
             <form className="explorar-busqueda-resultados" onSubmit={buscar}>
               <Icono nombre="search" />
-              <input aria-label={typeof filtros?.buscar === "string" ? filtros.buscar : ""} placeholder={typeof filtros?.buscar === "string" ? filtros.buscar : ""} value={busqueda} onChange={(evento) => setBusqueda(evento.target.value)} />
-              <button type="submit" aria-label={typeof filtros?.buscar === "string" ? filtros.buscar : ""}><Icono nombre="arrowr" /></button>
+              <input aria-label={textos?.navbar?.buscador?.placeholder} placeholder={textos?.navbar?.buscador?.placeholder} value={busqueda} onChange={(evento) => setBusqueda(evento.target.value)} />
+              <button type="submit" aria-label={textos?.navbar?.buscador?.placeholder}><Icono nombre="arrowr" /></button>
             </form>
             <button type="button" className="explorar-abrir-filtros" onClick={() => setFiltrosAbiertos(true)} aria-label={typeof filtros?.titulo === "string" ? filtros.titulo : ""}>
               <Icono nombre="sliders" />
@@ -454,7 +459,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
             <div className="explorar-filtros-activos">
               {categoriasActivas.map((categoria) => {
                 const clave = obtenerClaveCategoria(categoria);
-                return <button key={clave} type="button" onClick={() => alternarCategoria(clave)}>{obtenerNombre(categoria)} <Icono nombre="x" /></button>;
+                return <button key={clave} type="button" onClick={() => alternarCategoria(clave)}>{textos?.general?.categorias?.[clave] ?? obtenerNombre(categoria)} <Icono nombre="x" /></button>;
               })}
               {ciudadActual && <button type="button" onClick={() => actualizarFiltros({ ciudad: "" })}>{ciudadActual} <Icono nombre="x" /></button>}
               {busquedaActual && <button type="button" onClick={() => { actualizarFiltros({ q: "" }); setBusqueda(""); }}>{busquedaActual} <Icono nombre="x" /></button>}
@@ -465,11 +470,11 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
           )}
 
           {cargando ? (
-            <div className="explorar-estado titular-h3" />
+            <div className="explorar-estado titular-h3" role="status">{textos?.estados?.cargando?.titulo}</div>
           ) : error ? (
             <div className="explorar-estado">
-              <p className="cuerpo-m">{obtenerTexto(explorar?.error?.texto, "texto")}</p>
-              <button type="button" className="explorar-limpiar" onClick={() => setIntento((actual) => actual + 1)}>{obtenerTexto(explorar?.error?.boton)}</button>
+              <p className="cuerpo-m">{textos?.estados?.error?.texto}</p>
+              <button type="button" className="explorar-limpiar" onClick={() => setIntento((actual) => actual + 1)}>{textos?.estados?.error?.botones?.reintentar}</button>
             </div>
           ) : eventosVisibles.length === 0 ? (
             <div className="explorar-vacio">
@@ -511,7 +516,7 @@ export default function Explorar({ textos, cargando: cargandoTextos, en, enlaces
             <div className="explorar-panel-titulo">
               <h2 className="titular-h3">{typeof filtros?.titulo === "string" ? filtros.titulo : ""}</h2>
               <button className="explorar-limpiar" type="button" onClick={() => { actualizarFiltros({}, true); setBusqueda(""); }}>{typeof botonesFiltros?.limpiar === "string" ? botonesFiltros.limpiar : ""}</button>
-              <button type="button" className="explorar-cerrar-panel" onClick={() => setFiltrosAbiertos(false)} aria-label={typeof filtros?.cerrar === "string" ? filtros.cerrar : ""}><Icono nombre="x" /></button>
+              <button type="button" className="explorar-cerrar-panel" onClick={() => setFiltrosAbiertos(false)} aria-label={textos?.general?.acciones?.cerrar}><Icono nombre="x" /></button>
             </div>
             {controlesFiltros(true)}
           </section>
