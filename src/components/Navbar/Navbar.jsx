@@ -26,8 +26,30 @@ const Navbar = ({
   const menuMovil = textos?.menuMovil;
   const isMobile = useMediaQuery("(max-width: 1023px)");
 
+  const nombreUsuario =
+    usuario?.nombre_completo ??
+    usuario?.nombreCompleto ??
+    usuario?.nombre ??
+    usuario?.name ??
+    "Laura Cardona";
+  const correoUsuario = usuario?.correo ?? usuario?.email ?? "";
+
   function obtenerIniciales() {
-    return "LC";
+    const partes = nombreUsuario.trim().split(/\s+/).filter(Boolean);
+    return partes.length > 1
+      ? `${partes[0][0]}${partes[partes.length - 1][0]}`.toUpperCase()
+      : (partes[0]?.slice(0, 2) ?? "LC").toUpperCase();
+  }
+
+  async function salirDeLaCuenta() {
+    try {
+      setErrorCerrarSesion("");
+      await onCerrarSesion?.();
+      setCuentaAbierta(false);
+      setIsOpen(false);
+    } catch (error) {
+      setErrorCerrarSesion(error.message || "No fue posible cerrar sesión.");
+    }
   }
 
   function abrirAccesibilidad() {
