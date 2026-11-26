@@ -4,9 +4,9 @@ import Marca from "../../assets/logos/logo-normal.svg?react";
 import MarcaInverso from "../../assets/logos/logo-inverso.svg?react";
 import "./IniciarSesion.css";
 
-const API = import.meta.env.VITE_API_URL;
+const API = (import.meta.env.VITE_API_URL || "https://yanethm-taquilla-api.fly.dev/api/v1").replace(/\\/+$/, "");
 
-export default function IniciarSesion() {
+export default function IniciarSesion({ onSesionIniciada }) {
   const navigate = useNavigate();
   const correoRef = useRef(null);
   const contrasenaRef = useRef(null);
@@ -65,13 +65,14 @@ export default function IniciarSesion() {
     try {
       const respuesta = await fetch(`${API}/sesion`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
         body: JSON.stringify({
-          email: correo.trim(),
-          password: contrasena,
+          correo: correo.trim(),
+          clave: contrasena,
         }),
         signal: controlador.signal,
       });
@@ -84,45 +85,29 @@ export default function IniciarSesion() {
       }
 
       if (!respuesta.ok) {
-        if (respuesta.status === 401 || respuesta.status === 403) {
+        const codigo = datos?.error?.codigo ?? datos?.codigo;
+
+        if (respuesta.status === 401 || codigo === "credenciales_invalidas") {
           throw new Error("El correo o la contraseña son incorrectos.");
         }
 
+        if (respuesta.status === 429 || codigo === "demasiadas_peticiones") {
+          throw new Error("Has realizado demasiados intentos. Espera unos minutos e inténtalo de nuevo.");
+        }
+
         throw new Error(
+          datos?.error?.mensaje ??
           datos?.mensaje ??
           datos?.message ??
           "No fue posible iniciar sesión. Inténtalo nuevamente."
         );
       }
 
-      const informacion = datos?.datos ?? datos?.data ?? datos;
-      const sesion = {
-        ...informacion,
-        token:
-          informacion?.token ??
-          informacion?.access_token ??
-          informacion?.accessToken ??
-          null,
-        refreshToken:
-          informacion?.refreshToken ??
-          informacion?.refresh_token ??
-          null,
-        usuario:
-          informacion?.usuario ??
-          informacion?.user ??
-          informacion?.cliente ??
-          { email: correo.trim() },
-      };
+      const usuario = datos?.usuario ?? datos?.datos?.usuario ?? datos?.data?.usuario;
 
-      const almacenamiento = mantenerSesion ? localStorage : sessionStorage;
-      almacenamiento.setItem("taquilla-sesion", JSON.stringify(sesion));
-
-      if (mantenerSesion) {
-        sessionStorage.removeItem("taquilla-sesion");
-      } else {
-        localStorage.removeItem("taquilla-sesion");
-      }
-
+      // La API conserva la sesión mediante una cookie httpOnly; no guardamos tokens en el navegador.
+      localStorage.setItem("sesionIniciada", "true");
+      onSesionIniciada?.(usuario ?? { correo: correo.trim() });
       navigate("/", { replace: true });
     } catch (error) {
       if (error.name === "AbortError") {
